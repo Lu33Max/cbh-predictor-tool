@@ -100,6 +100,31 @@ namespace CBHPredictorWebAPI.Controllers
             return NoContent();
         }
 
+        [HttpDelete]
+        public async Task<ActionResult<IEnumerable<LeadEntry>>> DeleteLeadEntries()
+        {
+            var list = new List<LeadEntry>();
+            list = await _context.LeadEntries.ToListAsync();
+
+            var leadEntry = list[0];
+            while(leadEntry != null)
+            {
+                _context.LeadEntries.Remove(leadEntry);
+                await _context.SaveChangesAsync();
+                list = await _context.LeadEntries.ToListAsync();
+
+                if (list.Count == 0)
+                {
+                    break;
+                } else
+                {
+                    leadEntry = list[0];
+                }
+            }
+
+            return NoContent();
+        }
+
         private bool LeadEntryExists(Guid id)
         {
             return _context.LeadEntries.Any(e => e.id == id);
