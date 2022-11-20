@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CBHPredictorWebAPI.Migrations
 {
     [DbContext(typeof(CBHDBContext))]
-    [Migration("20221120151319_CBHDB")]
+    [Migration("20221120154102_CBHDB")]
     partial class CBHDB
     {
         /// <inheritdoc />
@@ -31,51 +31,43 @@ namespace CBHPredictorWebAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("channel")
+                    b.Property<int?>("channel")
                         .HasColumnType("int");
 
-                    b.Property<int>("countryID")
+                    b.Property<int?>("countryID")
                         .HasColumnType("int");
 
                     b.Property<string>("diagnosisOfInterest")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("fieldOfInterest")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("leadDate")
+                    b.Property<DateTime?>("leadDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("leadID")
+                    b.Property<int?>("leadID")
                         .HasColumnType("int");
 
                     b.Property<string>("leadNo")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("leadStatus")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("matrixOfInterest")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("organisationID")
+                    b.Property<int?>("organisationID")
                         .HasColumnType("int");
 
                     b.Property<string>("paramOfInterest")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("quantityOfInterest")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("specificOfInterest")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
@@ -90,41 +82,36 @@ namespace CBHPredictorWebAPI.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("cbhSampleID")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("customerID")
+                    b.Property<int?>("customerID")
                         .HasColumnType("int");
 
                     b.Property<string>("matrix")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("orderID")
+                    b.Property<int?>("orderID")
                         .HasColumnType("int");
 
-                    b.Property<int>("productID")
+                    b.Property<int?>("productID")
                         .HasColumnType("int");
 
-                    b.Property<float>("quantity")
+                    b.Property<float?>("quantity")
                         .HasColumnType("real");
 
                     b.Property<string>("storageTemp")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("supplierCountryID")
+                    b.Property<int?>("supplierCountryID")
                         .HasColumnType("int");
 
-                    b.Property<int>("supplierID")
+                    b.Property<int?>("supplierID")
                         .HasColumnType("int");
 
                     b.Property<string>("supplierSampleID")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("unit")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");

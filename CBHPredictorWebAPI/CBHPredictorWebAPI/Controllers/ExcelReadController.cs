@@ -1,6 +1,8 @@
-﻿using CBHPredictorWebAPI.Models;
+﻿using CBHPredictorWebAPI.Data;
+using CBHPredictorWebAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 
 namespace CBHPredictorWebAPI.Controllers
@@ -9,6 +11,13 @@ namespace CBHPredictorWebAPI.Controllers
     [ApiController]
     public class ExcelReadController : ControllerBase
     {
+        private readonly CBHDBContext _context;
+
+        public ExcelReadController(CBHDBContext context)
+        {
+            _context = context;
+        }
+
         [HttpPost]
         public async Task<List<LeadEntry>> Import(IFormFile file)
         {
@@ -27,22 +36,25 @@ namespace CBHPredictorWebAPI.Controllers
                         list.Add(new LeadEntry() {
                             id = Guid.NewGuid(),
                             leadID = Convert.ToInt32(worksheet.Cells[row,1].Value),
-                            leadNo = worksheet.Cells[row,2].Value.ToString(),
-                            leadStatus = worksheet.Cells[row,3].Value.ToString(),
+                            leadNo = worksheet.Cells[row,2].Value?.ToString(),
+                            leadStatus = worksheet.Cells[row,3].Value?.ToString(),
                             leadDate = DateTime.FromOADate(Convert.ToDouble(worksheet.Cells[row,4].Value)),
                             organisationID = Convert.ToInt32(worksheet.Cells[row,5].Value),
                             countryID = Convert.ToInt32(worksheet.Cells[row,6].Value),
                             channel= Convert.ToInt32(worksheet.Cells[row,7].Value),
-                            fieldOfInterest = worksheet.Cells[row,8].Value.ToString(),
+                            fieldOfInterest = worksheet.Cells[row,8].Value?.ToString(),
                             specificOfInterest = worksheet.Cells[row,9].Value?.ToString(),
                             paramOfInterest = worksheet.Cells[row,10].Value?.ToString(),
                             diagnosisOfInterest = worksheet.Cells[row,11].Value?.ToString(),
                             matrixOfInterest = worksheet.Cells[row,12].Value?.ToString(),
                             quantityOfInterest = worksheet.Cells[row,13].Value?.ToString()
                         });
+
+                        _context.LeadEntries.Add(list[row-2]);
                     }
                 }    
             }
+            await _context.SaveChangesAsync();
             return list;
         }
     }
