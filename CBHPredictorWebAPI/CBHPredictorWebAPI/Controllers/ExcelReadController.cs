@@ -25,9 +25,10 @@ namespace CBHPredictorWebAPI.Controllers
                     for(int row = 2; row < rowCount; row++)
                     {
                         list.Add(new LeadEntry() {
-                            leadID= Convert.ToInt32(worksheet.Cells[row,1].Value),
-                            leadNo= worksheet.Cells[row,2].Value.ToString(),
-                            leadStatus= worksheet.Cells[row,3].Value.ToString(),
+                            id = Guid.NewGuid(),
+                            leadID = Convert.ToInt32(worksheet.Cells[row,1].Value),
+                            leadNo = worksheet.Cells[row,2].Value.ToString(),
+                            leadStatus = worksheet.Cells[row,3].Value.ToString(),
                             leadDate = DateTime.FromOADate(Convert.ToDouble(worksheet.Cells[row,4].Value))
                             //organisationID = Convert.ToInt32(worksheet.Cells[row,5].Value),
                             //countryID = Convert.ToInt32(worksheet.Cells[row,6].Value),

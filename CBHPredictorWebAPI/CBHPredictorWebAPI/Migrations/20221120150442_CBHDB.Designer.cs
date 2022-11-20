@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CBHPredictorWebAPI.Migrations
 {
     [DbContext(typeof(CBHDBContext))]
-    [Migration("20221116135503_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20221120150442_CBHDB")]
+    partial class CBHDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,7 +45,7 @@ namespace CBHPredictorWebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ladDate")
+                    b.Property<DateTime>("leadDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("leadID")

@@ -42,7 +42,7 @@ namespace CBHPredictorWebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ladDate")
+                    b.Property<DateTime>("leadDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("leadID")

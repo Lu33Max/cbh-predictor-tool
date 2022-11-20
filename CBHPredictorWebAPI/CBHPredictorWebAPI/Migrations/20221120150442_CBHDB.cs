@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CBHPredictorWebAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class CBHDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,7 @@ namespace CBHPredictorWebAPI.Migrations
                     leadID = table.Column<int>(type: "int", nullable: false),
                     leadNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     leadStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ladDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    leadDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     organisationID = table.Column<int>(type: "int", nullable: false),
                     countryID = table.Column<int>(type: "int", nullable: false),
                     channel = table.Column<int>(type: "int", nullable: false),
