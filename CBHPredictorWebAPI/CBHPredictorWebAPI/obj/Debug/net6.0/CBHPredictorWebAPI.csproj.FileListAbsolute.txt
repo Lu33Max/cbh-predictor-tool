@@ -875,9 +875,6 @@ G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\CBHP
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\CBHPredictorWebAPI.pdb
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Azure.Core.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Azure.Identity.dll
-G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\EPPlus.dll
-G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\EPPlus.Interfaces.dll
-G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\EPPlus.System.Drawing.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\ExcelDataReader.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\ExcelDataReader.DataSet.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Humanizer.dll
@@ -927,7 +924,6 @@ G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Micr
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Microsoft.IdentityModel.Protocols.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Microsoft.IdentityModel.Tokens.dll
-G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Microsoft.IO.RecyclableMemoryStream.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Microsoft.NET.StringTools.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Microsoft.OpenApi.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Microsoft.SqlServer.Server.dll
@@ -965,7 +961,6 @@ G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Syst
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\System.IdentityModel.Tokens.Jwt.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\System.Memory.Data.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\System.Runtime.Caching.dll
-G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\System.Security.Cryptography.Pkcs.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\System.Security.Cryptography.ProtectedData.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\System.Security.Permissions.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\System.Text.Encoding.CodePages.dll
@@ -1138,7 +1133,6 @@ G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\runt
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\runtimes\win\lib\netstandard2.0\System.Runtime.Caching.dll
-G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.Pkcs.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Text.Encoding.CodePages.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll
