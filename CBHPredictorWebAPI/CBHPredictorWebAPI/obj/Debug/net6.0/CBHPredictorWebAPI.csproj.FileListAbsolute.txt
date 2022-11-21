@@ -866,12 +866,6 @@ C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-pred
 C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\ExcelDataReader.DataSet.dll
 C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\System.Text.Encoding.CodePages.dll
 C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Text.Encoding.CodePages.dll
-C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\EPPlus.dll
-C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\EPPlus.Interfaces.dll
-C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\EPPlus.System.Drawing.dll
-C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\Microsoft.IO.RecyclableMemoryStream.dll
-C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\System.Security.Cryptography.Pkcs.dll
-C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.Pkcs.dll
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\appsettings.Development.json
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\appsettings.json
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\CBHPredictorWebAPI.exe
