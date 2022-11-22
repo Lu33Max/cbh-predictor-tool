@@ -1,10 +1,7 @@
 ﻿using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using ExcelDataReader;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-//using OfficeOpenXml;
 using System.Data;
 
 namespace CBHPredictorWebAPI.Controllers
@@ -20,49 +17,10 @@ namespace CBHPredictorWebAPI.Controllers
             _context = context;
         }
 
-        //[HttpPost]
-        //public async Task<List<LeadEntry>> Import(IFormFile file)
-        //{
-        //    var list = new List<LeadEntry>();
-        //    using (var stream = new MemoryStream())
-        //    {
-        //        await file.CopyToAsync(stream);
-
-        //        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-        //        using (var package = new ExcelPackage(stream))
-        //        {
-        //            ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-        //            var rowCount = worksheet.Dimension.Rows;
-        //            for(int row = 2; row < rowCount; row++)
-        //            {
-        //                list.Add(new LeadEntry() {
-        //                    id = Guid.NewGuid(),
-        //                    leadID = Convert.ToInt32(worksheet.Cells[row,1].Value),
-        //                    leadNo = worksheet.Cells[row,2].Value?.ToString(),
-        //                    leadStatus = worksheet.Cells[row,3].Value?.ToString(),
-        //                    leadDate = DateTime.FromOADate(Convert.ToDouble(worksheet.Cells[row,4].Value)),
-        //                    organisationID = Convert.ToInt32(worksheet.Cells[row,5].Value),
-        //                    countryID = Convert.ToInt32(worksheet.Cells[row,6].Value),
-        //                    channel= Convert.ToInt32(worksheet.Cells[row,7].Value),
-        //                    fieldOfInterest = worksheet.Cells[row,8].Value?.ToString(),
-        //                    specificOfInterest = worksheet.Cells[row,9].Value?.ToString(),
-        //                    paramOfInterest = worksheet.Cells[row,10].Value?.ToString(),
-        //                    diagnosisOfInterest = worksheet.Cells[row,11].Value?.ToString(),
-        //                    matrixOfInterest = worksheet.Cells[row,12].Value?.ToString(),
-        //                    quantityOfInterest = worksheet.Cells[row,13].Value?.ToString()
-        //                });
-
-        //                _context.LeadEntries.Add(list[row-2]);
-        //            }
-        //        }    
-        //    }
-        //    await _context.SaveChangesAsync();
-        //    return list;
-        //}
-
+        // Reads all Data from the Input Table and writes it to the LeadEntries Table
         [HttpPost]
         [Route("/LeadTable")]
-        public async Task<List<LeadEntry>> Import2(IFormFile file)
+        public async Task<String> LeadImport(IFormFile file)
         {
             var list = new List<LeadEntry>();
 
@@ -103,12 +61,13 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            return list;
+            return "Done";
         }
 
+        // Reads all Data from the Input Table and writes it to the OrderEntries Table
         [HttpPost]
         [Route("/OrderTable")]
-        public async Task<List<OrderEntry>> OrderImport(IFormFile file)
+        public async Task<String> OrderImport(IFormFile file)
         {
             var list = new List<OrderEntry>();
 
@@ -147,9 +106,10 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            return list;
+            return "Done";
         }
 
+        //// Converter Functions // Check for Null Values
         public static int? ConvertToInt(object obj)
         {
             if (obj == null || obj == DBNull.Value)
