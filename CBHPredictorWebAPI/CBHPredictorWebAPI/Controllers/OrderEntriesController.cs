@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
-using Microsoft.CodeAnalysis;
-using System.Drawing.Drawing2D;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -24,6 +17,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // GET: api/OrderEntries
+        // Gets all Entries in the OrderEntries Table
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderEntry>>> GetOrderEntries()
         {
@@ -31,6 +25,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // GET: api/OrderEntries/5
+        // Gets one specific Entry in the OrderEntries Table by ID
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderEntry>> GetOrderEntry([FromRoute]Guid id)
         {
@@ -45,7 +40,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // PUT: api/OrderEntries/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // Edits one specific Entry in the OrderEntries Table by ID
         [HttpPut("{id}")]
         public async Task<IActionResult> PutOrderEntry([FromRoute]Guid id, OrderEntry orderEntry)
         {
@@ -76,7 +71,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // POST: api/OrderEntries
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // Adds one Entry to the OrderEntries Table
         [HttpPost]
         public async Task<ActionResult<OrderEntry>> PostOrderEntry(OrderEntry orderEntry)
         {
@@ -87,6 +82,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // DELETE: api/OrderEntries/5
+        // Deletes one specific Entry in the OrderEntries Table by ID
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrderEntry(Guid id)
         {
@@ -102,6 +98,8 @@ namespace CBHPredictorWebAPI.Controllers
             return NoContent();
         }
 
+        // DELETE: api/LeadEntries
+        // Deletes all Entries in the OrderEntries Table
         [HttpDelete]
         public async Task<ActionResult<IEnumerable<OrderEntry>>> DeleteOrderEntries()
         {
@@ -127,6 +125,7 @@ namespace CBHPredictorWebAPI.Controllers
 
             return NoContent();
         }
+
         private bool OrderEntryExists(Guid id)
         {
             return _context.OrderEntries.Any(e => e.id == id);

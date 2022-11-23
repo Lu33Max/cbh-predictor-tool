@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
@@ -22,6 +17,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // GET: api/LeadEntries
+        // Gets all Entries in the LeadEntries Table
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeadEntry>>> GetLeadEntries()
         {
@@ -29,6 +25,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // GET: api/LeadEntries/5
+        // Gets one specific Entry in the LeadEntries Table by ID
         [HttpGet("{id}")]
         public async Task<ActionResult<LeadEntry>> GetLeadEntry(Guid id)
         {
@@ -43,7 +40,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // PUT: api/LeadEntries/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // Edits one specific Entry in the LeadEntries Table by ID
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLeadEntry(Guid id, LeadEntry leadEntry)
         {
@@ -74,7 +71,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // POST: api/LeadEntries
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // Adds one Entry to the LeadEntries Table
         [HttpPost]
         public async Task<ActionResult<LeadEntry>> PostLeadEntry(LeadEntry leadEntry)
         {
@@ -85,6 +82,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // DELETE: api/LeadEntries/5
+        // Deletes one specific Entry in the LeadEntries Table by ID
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLeadEntry(Guid id)
         {
@@ -100,6 +98,8 @@ namespace CBHPredictorWebAPI.Controllers
             return NoContent();
         }
 
+        // DELETE: api/LeadEntries
+        // Deletes all Entries in the LeadEntries Table
         [HttpDelete]
         public async Task<ActionResult<IEnumerable<LeadEntry>>> DeleteLeadEntries()
         {
