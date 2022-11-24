@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CBHPredictorWebAPI.Migrations
 {
     [DbContext(typeof(CBHDBContext))]
-    [Migration("20221120154102_CBHDB")]
+    [Migration("20221124115217_CBHDB")]
     partial class CBHDB
     {
         /// <inheritdoc />
@@ -81,17 +81,59 @@ namespace CBHPredictorWebAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("age")
+                        .HasColumnType("int");
+
                     b.Property<string>("cbhSampleID")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("collectionCountry")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("collectionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("countryID")
+                        .HasColumnType("int");
 
                     b.Property<int?>("customerID")
                         .HasColumnType("int");
 
+                    b.Property<string>("diagnosis")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("donorID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ethnicity")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("histologicalDiagnosis")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("icd")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("labParameter")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("matrix")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("orderDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("orderID")
                         .HasColumnType("int");
+
+                    b.Property<int?>("orderPrice")
+                        .HasColumnType("int");
+
+                    b.Property<string>("organ")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("productID")
                         .HasColumnType("int");
@@ -99,16 +141,32 @@ namespace CBHPredictorWebAPI.Migrations
                     b.Property<float?>("quantity")
                         .HasColumnType("real");
 
-                    b.Property<string>("storageTemp")
+                    b.Property<string>("resultInterpretation")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("supplierCountryID")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("resultNumerical")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("resultUnit")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("storageTemp")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("supplierID")
                         .HasColumnType("int");
 
                     b.Property<string>("supplierSampleID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("testKitManufacturer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("testMethod")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("testSystemManufacturer")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("unit")

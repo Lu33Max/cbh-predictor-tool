@@ -87,17 +87,36 @@ namespace CBHPredictorWebAPI.Controllers
                         OrderEntry order = new OrderEntry()
                         {
                             id = Guid.NewGuid(),
-                            orderID = ConvertToInt(row["orderid"]),
-                            productID = ConvertToInt(row["productid"]),
-                            quantity = ConvertToFloat(row["qty"]),
-                            supplierSampleID = ConvertToString(row["Supplier_Sample_ID"]),
-                            cbhSampleID = ConvertToString(row["CBH_sample_id"]),
-                            supplierID = ConvertToInt(row["supplierid"]),
-                            matrix = ConvertToString(row["matrix"]),
-                            supplierCountryID = ConvertToInt(row["Supplier_Countryid"]),
-                            unit = ConvertToString(row["unit"]),
+                            customerID = ConvertToInt(row["customerid"]),
+                            orderID = ConvertToInt(row["Orderid"]),
+                            orderDate = ConvertToDate(row["OrderDate"]),
+                            orderPrice = ConvertToInt(row["price_CBH"]),
                             storageTemp = ConvertToString(row["Storage_Temperature"]),
-                            customerID = ConvertToInt(row["Customer Id"])
+                            donorID = ConvertToString(row["CBH_Donor_ID"]),
+                            cbhSampleID = ConvertToString(row["CBH_sample_id"]),
+                            matrix = ConvertToString(row["Matrix"]),
+                            supplierID = ConvertToInt(row["Supplierid"]),
+                            supplierSampleID = ConvertToString(row["Supplier_Sample_ID"]),
+                            productID = ConvertToInt(row["pid"]),
+                            countryID = ConvertToInt(row["country"]),
+                            quantity = ConvertToFloat(row["Quantity"]),
+                            unit = ConvertToString(row["Unit"]),
+                            age = ConvertToInt(row["Age"]),
+                            gender = ConvertToString(row["Gender"]),
+                            ethnicity = ConvertToString(row["Ethnicity"]),
+                            labParameter = ConvertToString(row["Lab_Parameter"]),
+                            resultNumerical = ConvertToDecimal(row["Result_Numerical"]),
+                            resultUnit = ConvertToString(row["Result_Unit"]),
+                            resultInterpretation = ConvertToString(row["Result_Interpretation"]),
+                            testMethod = ConvertToString(row["Test_Method"]),
+                            testKitManufacturer = ConvertToString(row["Test_Kit_Manufacturer"]),
+                            testSystemManufacturer = ConvertToString(row["Test_System_Manufacturer"]),
+                            diagnosis = ConvertToString(row["Diagnosis"]),
+                            icd = ConvertToString(row["ICD_Code"]),
+                            histologicalDiagnosis = ConvertToString(row["Histological_Diagnosis"]),
+                            organ = ConvertToString(row["Organ"]),
+                            collectionCountry = ConvertToString(row["Country_of_Collection"]),
+                            //collectionDate = ConvertToDate(row["Date_of_Collection"])
                         };
 
                         list.Add(order);
@@ -112,7 +131,7 @@ namespace CBHPredictorWebAPI.Controllers
         //// Converter Functions // Check for Null Values
         public static int? ConvertToInt(object obj)
         {
-            if (obj == null || obj == DBNull.Value)
+            if (obj == null || obj == DBNull.Value || obj is string)
             {
                 return null;
             }
@@ -130,6 +149,17 @@ namespace CBHPredictorWebAPI.Controllers
             else
             {
                 return Convert.ToSingle(obj);
+            }
+        }
+        public static decimal? ConvertToDecimal (object obj)
+        {
+            if (obj == null || obj == DBNull.Value || obj is string)
+            {
+                return null;
+            }
+            else
+            {
+                return Convert.ToDecimal(obj);
             }
         }
         public static string? ConvertToString(object obj)
