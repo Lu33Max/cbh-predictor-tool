@@ -12,6 +12,34 @@ namespace CBHPredictorWebAPI.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "BingSearchTerms",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    terms = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    impressions = table.Column<int>(type: "int", nullable: true),
+                    clicks = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BingSearchTerms", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GoogleSearchTerms",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    terms = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    impressions = table.Column<int>(type: "int", nullable: true),
+                    clicks = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GoogleSearchTerms", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LeadEntries",
                 columns: table => new
                 {
@@ -80,6 +108,12 @@ namespace CBHPredictorWebAPI.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "BingSearchTerms");
+
+            migrationBuilder.DropTable(
+                name: "GoogleSearchTerms");
+
             migrationBuilder.DropTable(
                 name: "LeadEntries");
 

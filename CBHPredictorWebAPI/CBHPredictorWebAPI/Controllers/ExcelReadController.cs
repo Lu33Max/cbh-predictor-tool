@@ -128,6 +128,80 @@ namespace CBHPredictorWebAPI.Controllers
             return "Done";
         }
 
+        [HttpPost]
+        [Route("/GoogleTable")]
+        public async Task<String> GoogleSearchTermsImport(IFormFile file)
+        {
+            var list = new List<GoogleSearchTerm>();
+
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            using (var stream = new MemoryStream())
+            {
+                await file.CopyToAsync(stream);
+
+                using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    {
+                        ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
+                    });
+
+                    foreach (DataRow row in result.Tables[0].Rows)
+                    {
+                        GoogleSearchTerm order = new GoogleSearchTerm()
+                        {
+                            id = Guid.NewGuid(),
+                            terms = ConvertToString(row["Terms"]),
+                            impressions = ConvertToInt(row["Impressions"]),
+                            clicks = ConvertToInt(row["Clicks"]),
+                        };
+
+                        list.Add(order);
+                        _context.Add(order);
+                    }
+                }
+            }
+            await _context.SaveChangesAsync();
+            return "Done";
+        }
+
+        [HttpPost]
+        [Route("/BingTable")]
+        public async Task<String> BingSearchTermsImport(IFormFile file)
+        {
+            var list = new List<BingSearchTerm>();
+
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            using (var stream = new MemoryStream())
+            {
+                await file.CopyToAsync(stream);
+
+                using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    {
+                        ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
+                    });
+
+                    foreach (DataRow row in result.Tables[0].Rows)
+                    {
+                        BingSearchTerm order = new BingSearchTerm()
+                        {
+                            id = Guid.NewGuid(),
+                            terms = ConvertToString(row["Search term"]),
+                            impressions = ConvertToInt(row["Impr."]),
+                            clicks = ConvertToInt(row["Clicks"]),
+                        };
+
+                        list.Add(order);
+                        _context.Add(order);
+                    }
+                }
+            }
+            await _context.SaveChangesAsync();
+            return "Done";
+        }
+
         //// Converter Functions // Check for Null Values
         public static int? ConvertToInt(object obj)
         {

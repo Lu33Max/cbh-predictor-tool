@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CBHPredictorWebAPI.Migrations
 {
     [DbContext(typeof(CBHDBContext))]
-    [Migration("20221124115217_CBHDB")]
+    [Migration("20221124154415_CBHDB")]
     partial class CBHDB
     {
         /// <inheritdoc />
@@ -24,6 +24,46 @@ namespace CBHPredictorWebAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("CBHPredictorWebAPI.Models.BingSearchTerm", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("clicks")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("impressions")
+                        .HasColumnType("int");
+
+                    b.Property<string>("terms")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("BingSearchTerms");
+                });
+
+            modelBuilder.Entity("CBHPredictorWebAPI.Models.GoogleSearchTerm", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("clicks")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("impressions")
+                        .HasColumnType("int");
+
+                    b.Property<string>("terms")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("GoogleSearchTerms");
+                });
 
             modelBuilder.Entity("CBHPredictorWebAPI.Models.LeadEntry", b =>
                 {

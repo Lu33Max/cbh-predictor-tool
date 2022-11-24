@@ -22,6 +22,46 @@ namespace CBHPredictorWebAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CBHPredictorWebAPI.Models.BingSearchTerm", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("clicks")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("impressions")
+                        .HasColumnType("int");
+
+                    b.Property<string>("terms")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("BingSearchTerms");
+                });
+
+            modelBuilder.Entity("CBHPredictorWebAPI.Models.GoogleSearchTerm", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("clicks")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("impressions")
+                        .HasColumnType("int");
+
+                    b.Property<string>("terms")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("GoogleSearchTerms");
+                });
+
             modelBuilder.Entity("CBHPredictorWebAPI.Models.LeadEntry", b =>
                 {
                     b.Property<Guid>("id")
