@@ -77,53 +77,27 @@ namespace CBHPredictorWebAPI.Controllers
         {
             _context.BingSearchTerms.Add(BingSearchTerm);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetSearchTerm", new { id = BingSearchTerm.id }, BingSearchTerm);
         }
 
         // DELETE: api/BingSearchTerms/5
         // Deletes one specific Entry in the BingSearchTerms Table by ID
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSearchTerm(Guid id)
+        public async Task<String> DeleteSearchTerm(Guid id)
         {
-            var BingSearchTerm = await _context.BingSearchTerms.FindAsync(id);
-            if (BingSearchTerm == null)
-            {
-                return NotFound();
-            }
-
-            _context.BingSearchTerms.Remove(BingSearchTerm);
+            await _context.BingSearchTerms.Where(e => e.id == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
-
-            return NoContent();
+            return "Success";
         }
 
         // DELETE: api/LeadEntries
         // Deletes all Entries in the BingSearchTerms Table
         [HttpDelete]
-        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> DeleteSearchTerm()
+        public async Task<String> DeleteSearchTerms()
         {
-            var list = new List<BingSearchTerm>();
-            list = await _context.BingSearchTerms.ToListAsync();
-
-            var BingSearchTerm = list[0];
-            while (BingSearchTerm != null)
-            {
-                _context.BingSearchTerms.Remove(BingSearchTerm);
-                await _context.SaveChangesAsync();
-                list = await _context.BingSearchTerms.ToListAsync();
-
-                if (list.Count == 0)
-                {
-                    break;
-                }
-                else
-                {
-                    BingSearchTerm = list[0];
-                }
-            }
-
-            return NoContent();
+            await _context.GoogleSearchTerms.ExecuteDeleteAsync();
+            await _context.SaveChangesAsync();
+            return "Success";
         }
 
         private bool SearchTermExists(Guid id)

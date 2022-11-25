@@ -75,54 +75,29 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<LeadEntry>> PostLeadEntry(LeadEntry leadEntry)
         {
-            _context.LeadEntries.Add(leadEntry);
+            await _context.LeadEntries.AddAsync(leadEntry);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetLeadEntry", new { id = leadEntry.id }, leadEntry);
         }
 
         // DELETE: api/LeadEntries/5
         // Deletes one specific Entry in the LeadEntries Table by ID
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLeadEntry(Guid id)
+        public async Task<String> DeleteLeadEntry(Guid id)
         {
-            var leadEntry = await _context.LeadEntries.FindAsync(id);
-            if (leadEntry == null)
-            {
-                return NotFound();
-            }
-
-            _context.LeadEntries.Remove(leadEntry);
+            await _context.LeadEntries.Where(e => e.id == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
-
-            return NoContent();
+            return "Success";
         }
 
         // DELETE: api/LeadEntries
         // Deletes all Entries in the LeadEntries Table
         [HttpDelete]
-        public async Task<ActionResult<IEnumerable<LeadEntry>>> DeleteLeadEntries()
+        public async Task<String> DeleteLeadEntries()
         {
-            var list = new List<LeadEntry>();
-            list = await _context.LeadEntries.ToListAsync();
-
-            var leadEntry = list[0];
-            while(leadEntry != null)
-            {
-                _context.LeadEntries.Remove(leadEntry);
-                await _context.SaveChangesAsync();
-                list = await _context.LeadEntries.ToListAsync();
-
-                if (list.Count == 0)
-                {
-                    break;
-                } else
-                {
-                    leadEntry = list[0];
-                }
-            }
-
-            return NoContent();
+            await _context.LeadEntries.ExecuteDeleteAsync();
+            await _context.SaveChangesAsync();
+            return "Success";
         }
 
         private bool LeadEntryExists(Guid id)

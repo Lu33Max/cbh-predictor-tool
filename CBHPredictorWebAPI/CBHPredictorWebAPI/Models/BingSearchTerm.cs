@@ -1,7 +1,4 @@
-﻿using MessagePack;
-
-
-namespace CBHPredictorWebAPI.Models
+﻿namespace CBHPredictorWebAPI.Models
 {
     public class BingSearchTerm
     {

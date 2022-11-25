@@ -75,55 +75,29 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<GoogleSearchTerm>> PostSearchTerm(GoogleSearchTerm googleSearchTerm)
         {
-            _context.GoogleSearchTerms.Add(googleSearchTerm);
+            await _context.GoogleSearchTerms.AddAsync(googleSearchTerm);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetSearchTerm", new { id = googleSearchTerm.id }, googleSearchTerm);
         }
 
         // DELETE: api/GoogleSearchTerms/5
         // Deletes one specific Entry in the GoogleSearchTerms Table by ID
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSearchTerm(Guid id)
+        public async Task<String> DeleteSearchTerm(Guid id)
         {
-            var googleSearchTerm = await _context.GoogleSearchTerms.FindAsync(id);
-            if (googleSearchTerm == null)
-            {
-                return NotFound();
-            }
-
-            _context.GoogleSearchTerms.Remove(googleSearchTerm);
+            await _context.GoogleSearchTerms.Where(e => e.id == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
-
-            return NoContent();
+            return "Success";
         }
 
         // DELETE: api/LeadEntries
         // Deletes all Entries in the GoogleSearchTerms Table
         [HttpDelete]
-        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> DeleteSearchTerm()
+        public async Task<String> DeleteSearchTerms()
         {
-            var list = new List<GoogleSearchTerm>();
-            list = await _context.GoogleSearchTerms.ToListAsync();
-
-            var googleSearchTerm = list[0];
-            while (googleSearchTerm != null)
-            {
-                _context.GoogleSearchTerms.Remove(googleSearchTerm);
-                await _context.SaveChangesAsync();
-                list = await _context.GoogleSearchTerms.ToListAsync();
-
-                if (list.Count == 0)
-                {
-                    break;
-                }
-                else
-                {
-                    googleSearchTerm = list[0];
-                }
-            }
-
-            return NoContent();
+            await _context.GoogleSearchTerms.ExecuteDeleteAsync();
+            await _context.SaveChangesAsync();
+            return "Success";
         }
 
         private bool SearchTermExists(Guid id)
