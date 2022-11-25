@@ -256,15 +256,23 @@ namespace CBHPredictorWebAPI.Controllers
         }
         public static DateTime? ConvertToDate(object obj)
         {
-            if (obj == null || obj == DBNull.Value)
+            if (obj == null || obj == DBNull.Value || obj.ToString().Equals("not specified"))
             {
                 return null;
             }
             else if (obj is string)
             {
-                return Convert.ToDateTime(obj);
-            } else
-            {
+                try
+                {
+                    return Convert.ToDateTime(obj);
+                }
+                catch 
+                {
+                    return null;
+                }
+            } 
+            else
+            {                
                 return (DateTime)obj;
             }
         }
