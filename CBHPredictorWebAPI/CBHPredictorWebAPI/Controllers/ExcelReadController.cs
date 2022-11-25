@@ -116,7 +116,7 @@ namespace CBHPredictorWebAPI.Controllers
                             histologicalDiagnosis = ConvertToString(row["Histological_Diagnosis"]),
                             organ = ConvertToString(row["Organ"]),
                             collectionCountry = ConvertToString(row["Country_of_Collection"]),
-                            //collectionDate = ConvertToDate(row["Date_of_Collection"])
+                            collectionDate = ConvertToDate(row["Date_of_Collection"])
                         };
 
                         list.Add(order);
@@ -260,7 +260,10 @@ namespace CBHPredictorWebAPI.Controllers
             {
                 return null;
             }
-            else
+            else if (obj is string)
+            {
+                return Convert.ToDateTime(obj);
+            } else
             {
                 return (DateTime)obj;
             }
