@@ -39,6 +39,25 @@ namespace CBHPredictorWebAPI.Controllers
             return searchTerm;
         }
 
+        // Gets all Entries in BingSearchTerms that meet a specified criterium
+        [HttpGet("GetAny/{col}/{value}/{exact}")]
+        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> GetByAny(string col, string value, bool exact)
+        {
+            char[] arr = value.ToCharArray();
+            string command;
+
+            if (exact)
+            {
+                command = "SELECT * FROM GoogleSearchTerms WHERE [" + col + "] LIKE {0}";
+            }
+            else
+            {
+                command = "SELECT * FROM GoogleSearchTerms WHERE [" + col + "] LIKE '%' + {0} + '%'";
+            }
+
+            return await _context.GoogleSearchTerms.FromSqlRaw(command, value).ToListAsync();
+        }
+
         // PUT: api/GoogleSearchTerms/5
         // Edits one specific Entry in the GoogleSearchTerms Table by ID
         [HttpPut("{id}")]

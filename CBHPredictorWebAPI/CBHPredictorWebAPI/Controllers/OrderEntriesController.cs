@@ -39,6 +39,24 @@ namespace CBHPredictorWebAPI.Controllers
             return orderEntry;
         }
 
+        [HttpGet("GetAny/{col}/{value}/{exact}")]
+        public async Task<ActionResult<IEnumerable<OrderEntry>>> GetByAny(string col, string value, bool exact)
+        {
+            char[] arr = value.ToCharArray();
+            string command;
+
+            if (exact)
+            {
+                command = "SELECT * FROM OrderEntries WHERE [" + col + "] LIKE {0}";
+            }
+            else
+            {
+                command = "SELECT * FROM OrderEntries WHERE [" + col + "] LIKE '%' + {0} + '%'";
+            }
+
+            return await _context.OrderEntries.FromSqlRaw(command, value).ToListAsync();
+        }
+
         // PUT: api/OrderEntries/5
         // Edits one specific Entry in the OrderEntries Table by ID
         [HttpPut("{id}")]

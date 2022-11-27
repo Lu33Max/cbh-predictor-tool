@@ -40,10 +40,23 @@ namespace CBHPredictorWebAPI.Controllers
             return searchTerm;
         }
 
-        [HttpGet("GetByName/{row}/{value}")]
-        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetByName(string row, string value)
+        // Gets all Entries in BingSearchTerms that meet a specified criterium
+        [HttpGet("GetAny/{col}/{value}/{exact}")]
+        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetByAny(string col, string value, bool exact)
         {
-            return await _context.BingSearchTerms.FromSqlRaw("SELECT * FROM BingSearchTerms WHERE + {0} + LIKE '%' + {1} + '%'", row, value).ToListAsync();
+            char[] arr = value.ToCharArray();
+            string command;
+
+            if (exact)
+            {
+                command = "SELECT * FROM BingSearchTerms WHERE [" + col + "] LIKE {0}";
+            } 
+            else
+            {
+                command = "SELECT * FROM BingSearchTerms WHERE [" + col + "] LIKE '%' + {0} + '%'";
+            }
+            
+            return await _context.BingSearchTerms.FromSqlRaw(command, value).ToListAsync();
         }
 
         // PUT: api/BingSearchTerms/5
