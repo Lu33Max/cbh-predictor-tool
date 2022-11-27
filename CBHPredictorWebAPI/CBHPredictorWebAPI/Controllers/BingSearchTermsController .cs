@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
+using Microsoft.Data.SqlClient;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -26,7 +27,7 @@ namespace CBHPredictorWebAPI.Controllers
 
         // GET: api/BingSearchTerms/5
         // Gets one specific Entry in the BingSearchTerms Table by ID
-        [HttpGet("{id}")]
+        [HttpGet("GetByID/{id}")]
         public async Task<ActionResult<BingSearchTerm>> GetSearchTerm([FromRoute]Guid id)
         {
             var searchTerm = await _context.BingSearchTerms.FindAsync(id);
@@ -37,6 +38,12 @@ namespace CBHPredictorWebAPI.Controllers
             }
 
             return searchTerm;
+        }
+
+        [HttpGet("GetByName/{row}/{value}")]
+        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetByName(string row, string value)
+        {
+            return await _context.BingSearchTerms.FromSqlRaw("SELECT * FROM BingSearchTerms WHERE + {0} + LIKE '%' + {1} + '%'", row, value).ToListAsync();
         }
 
         // PUT: api/BingSearchTerms/5
