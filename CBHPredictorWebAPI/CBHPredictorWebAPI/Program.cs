@@ -1,5 +1,6 @@
 using CBHPredictorWebAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace CBHPredictorWebAPI
 {
@@ -8,6 +9,19 @@ namespace CBHPredictorWebAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CORSPolicy",
+                    builder =>
+                    {
+                        builder
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins("http://localhost:3000", "https://appname.azurestaticapps.net");
+                    });
+            }
+                );
 
             // Add services to the container.
 
@@ -32,7 +46,9 @@ namespace CBHPredictorWebAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseAuthorization();
+            app.UseHttpsRedirection();
+
+            app.UseCors("CORSPolicy");
 
             app.MapControllers();
 
