@@ -9,6 +9,18 @@ namespace CBHPredictorWebAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CORSPolicy",
+                    builder =>
+                    {
+                        builder
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins("http://localhost:3000", "https://appname.azurestaticapps.net");
+                    });
+            });
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -33,6 +45,10 @@ namespace CBHPredictorWebAPI
             }
 
             app.UseAuthorization();
+
+            app.UseHttpsRedirection();
+
+            app.UseCors("CORSPolicy");
 
             app.MapControllers();
 
