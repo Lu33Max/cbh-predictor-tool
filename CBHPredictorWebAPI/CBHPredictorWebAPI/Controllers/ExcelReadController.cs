@@ -11,6 +11,7 @@ namespace CBHPredictorWebAPI.Controllers
     public class ExcelReadController : ControllerBase
     {
         private readonly CBHDBContext _context;
+        public enum Month { Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec }
 
         public ExcelReadController(CBHDBContext context)
         {
@@ -29,14 +30,14 @@ namespace CBHPredictorWebAPI.Controllers
             {
                 await file.CopyToAsync(stream);
 
-                using(IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
+                using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
                     {
                         ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
                     });
 
-                    foreach(DataRow row in result.Tables[0].Rows) {
+                    foreach (DataRow row in result.Tables[0].Rows) {
                         LeadEntry lead = new LeadEntry()
                         {
                             id = Guid.NewGuid(),
@@ -130,7 +131,7 @@ namespace CBHPredictorWebAPI.Controllers
 
         [HttpPost]
         [Route("/GoogleTable")]
-        public async Task<String> GoogleSearchTermsImport(IFormFile file)
+        public async Task<String> GoogleSearchTermsImport(IFormFile file, Month _month, int _year)
         {
             var list = new List<GoogleSearchTerm>();
 
@@ -154,6 +155,8 @@ namespace CBHPredictorWebAPI.Controllers
                             terms = ConvertToString(row["Terms"]),
                             impressions = ConvertToInt(row["Impressions"]),
                             clicks = ConvertToInt(row["Clicks"]),
+                            month = _month.ToString(),
+                            year = _year
                         };
 
                         list.Add(order);
@@ -167,7 +170,7 @@ namespace CBHPredictorWebAPI.Controllers
 
         [HttpPost]
         [Route("/BingTable")]
-        public async Task<String> BingSearchTermsImport(IFormFile file)
+        public async Task<String> BingSearchTermsImport(IFormFile file, Month _month, int _year)
         {
             var list = new List<BingSearchTerm>();
 
@@ -191,6 +194,8 @@ namespace CBHPredictorWebAPI.Controllers
                             terms = ConvertToString(row["Search term"]),
                             impressions = ConvertToInt(row["Impr."]),
                             clicks = ConvertToInt(row["Clicks"]),
+                            month = _month.ToString(),
+                            year = _year
                         };
 
                         list.Add(order);

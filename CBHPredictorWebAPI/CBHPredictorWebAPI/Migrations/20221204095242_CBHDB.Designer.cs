@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CBHPredictorWebAPI.Migrations
 {
     [DbContext(typeof(CBHDBContext))]
-    [Migration("20221124154415_CBHDB")]
+    [Migration("20221204095242_CBHDB")]
     partial class CBHDB
     {
         /// <inheritdoc />
@@ -37,8 +37,14 @@ namespace CBHPredictorWebAPI.Migrations
                     b.Property<int?>("impressions")
                         .HasColumnType("int");
 
+                    b.Property<string>("month")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("terms")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("year")
+                        .HasColumnType("int");
 
                     b.HasKey("id");
 
@@ -57,8 +63,14 @@ namespace CBHPredictorWebAPI.Migrations
                     b.Property<int?>("impressions")
                         .HasColumnType("int");
 
+                    b.Property<string>("month")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("terms")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("year")
+                        .HasColumnType("int");
 
                     b.HasKey("id");
 

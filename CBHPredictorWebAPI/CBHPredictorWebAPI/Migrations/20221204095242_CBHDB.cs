@@ -18,7 +18,9 @@ namespace CBHPredictorWebAPI.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     terms = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     impressions = table.Column<int>(type: "int", nullable: true),
-                    clicks = table.Column<int>(type: "int", nullable: true)
+                    clicks = table.Column<int>(type: "int", nullable: true),
+                    month = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    year = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -32,7 +34,9 @@ namespace CBHPredictorWebAPI.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     terms = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     impressions = table.Column<int>(type: "int", nullable: true),
-                    clicks = table.Column<int>(type: "int", nullable: true)
+                    clicks = table.Column<int>(type: "int", nullable: true),
+                    month = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    year = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
