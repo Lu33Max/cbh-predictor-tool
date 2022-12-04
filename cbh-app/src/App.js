@@ -89,24 +89,71 @@ export default function App() {
     });
   }
 
+  //// Delete all Posts from Table ////
+  function deleteAllPosts(){
+    var url;
+
+    switch (window.$activeTable) {
+      case 'Bing':
+        url = Constants.API_URL_BING_POSTS;
+        break;
+      case 'Google':
+        url = Constants.API_URL_GOOGLE_POSTS;
+        break;
+      case 'Lead':
+        url = Constants.API_URL_LEAD_POSTS;
+        break;
+      case 'Order':
+        url = Constants.API_URL_ORDER_POSTS;
+        break;
+      default:
+        alert(`Error: Table with name "${window.$activeTable}" does not exist`)
+        return;
+    }
+
+    fetch(url, {
+      method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(responseFromServer => {
+      console.log(responseFromServer);
+      onPostsDeleted();
+    })
+    .catch((error) => {
+      console.log(error);
+      alert(error);
+    });
+  }
+
   //// Rendered View ////
   return (
-    <div className="container">
+    <div class="container-fluid">
       <div className="row min-vh-100">
         <div className="col d-flex flex-column justify-content-center align-items-center">
           {(showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null) && (
             <div>
-            <h1>Predictor Tool</h1>
- 
-            <div className="mt-5">
-              <button onClick={() => getPosts('Bing')} className="btn btn-dark btn-lg w-100">Load Bing Table</button>
-              <button onClick={() => getPosts('Google')} className="btn btn-dark btn-lg w-100 mt-2">Load Google Table</button>
-              <button onClick={() => getPosts('Lead')} className="btn btn-dark btn-lg w-100 mt-2">Load Lead Table</button>
-              <button onClick={() => getPosts('Order')} className="btn btn-dark btn-lg w-100 mt-2">Load Order Table</button>
-
-              <button onClick={() => setShowingCreateNewPostForm(true)} className="btn btn-secondary btn-lg w-100 mt-4">Create new Post</button>
+              <h1 className="mt-3">CBH Predictor Tool</h1>
+              
+              <div class="row mt-5">
+                <div class="col-sm">
+                  <button onClick={() => getPosts('Bing')} className="btn btn-dark btn-lg w-100 h-100">Bing Table</button>
+                </div>
+                <div class="col-sm">
+                  <button onClick={() => getPosts('Google')} className="btn btn-dark btn-lg w-100 h-100">Google Table</button>
+                </div>
+                <div class="col-sm">
+                  <button onClick={() => getPosts('Lead')} className="btn btn-dark btn-lg w-100 h-100">Lead Table</button>
+                </div>
+                <div class="col-sm">
+                  <button onClick={() => getPosts('Order')} className="btn btn-dark btn-lg w-100 h-100">Order Table</button>
+                </div>
+              </div>
+              
+              <div className="mt-3">
+                <button onClick={() => setShowingCreateNewPostForm(true)} className="btn btn-secondary btn-lg w-100">Create new Post</button>
+                <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete all posts from table "${window.$activeTable}"?`)) deleteAllPosts() }} className="btn btn-danger btn-lg w-100 mt-2">Delete All Posts</button>
+              </div>
             </div>
-           </div>
           )}
           
           {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && window.$activeTable === "Bing") && renderBingTable()}
@@ -186,7 +233,35 @@ export default function App() {
     );
   }
   function renderGoogleTable(){
-    // Bitte ergänzen
+    return(
+      <div className="table-responsive mt-5">
+        <table className="table table-bordered border-dark">
+          <thead>
+            <tr>
+              <th scope="col">Search Term</th>
+              <th scope="col">Clicks</th>
+              <th scope="col">Impressions</th>
+              <th scope="col">CRUD Operations</th>                                        
+            </tr>
+          </thead>
+          <tbody>
+           {posts.map((post) => (
+             <tr  key={post.id}>
+               <td>{post.terms}</td>
+               <td>{post.impressions}</td>
+               <td>{post.clicks}</td>                     
+              <td>
+                 <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
+              </td>
+             </tr>
+           ))}
+          </tbody>
+        </table>
+
+        <button onClick={() => setPosts([])} className="btn btn-dark btn-lg w-100 mb-4">Close Table</button>
+      </div>
+    );
   }
   function renderLeadTable(){
     return(
@@ -240,7 +315,89 @@ export default function App() {
     );
   }
   function renderOrderTable(){
-    // Bitte ergänzen
+    return(
+      <div className="table-responsive mt-5">
+        <table className="table table-bordered border-dark">
+          <thead>
+            <tr>
+              <th scope="col">customerID</th>
+              <th scope="col">orderID</th>
+              <th scope="col">orderDate</th>
+              <th scope="col">orderPrice</th>
+              <th scope="col">storageTemp</th>
+              <th scope="col">donorID</th>
+              <th scope="col">cbhSampleID</th>
+              <th scope="col">matrix</th>
+              <th scope="col">supplierID</th>
+              <th scope="col">supplierSampleID</th>
+              <th scope="col">productID</th>     
+              <th scope="col">countryID</th>              
+              <th scope="col">quantity</th>
+              <th scope="col">unit</th>
+              <th scope="col">age</th> 
+              <th scope="col">gender</th> 
+              <th scope="col">ethnicity</th> 
+              <th scope="col">labParameter</th> 
+              <th scope="col">resultNumerical</th> 
+              <th scope="col">resultUnit</th> 
+              <th scope="col">resultInterpretation</th>
+              <th scope="col">testMethod</th> 
+              <th scope="col">testKitManufacturer</th> 
+              <th scope="col">testSystemManufacturer</th> 
+              <th scope="col">diagnosis</th> 
+              <th scope="col">icd</th> 
+              <th scope="col">histologicalDiagnosis</th> 
+              <th scope="col">organ</th>
+              <th scope="col">collectionCountry</th>
+              <th scope="col">collectionDate</th>         
+              <th scope="col">CRUD Operations</th>                                           
+            </tr>
+          </thead>
+          <tbody>
+           {posts.map((post) => (
+             <tr  key={post.id}>
+               <td>{post.customerID}</td>
+               <td>{post.orderID}</td>
+               <td>{post.orderDate}</td>
+               <td>{post.orderPrice}</td>
+               <td>{post.storageTemp}</td>
+               <td>{post.donorID}</td>
+               <td>{post.cbhSampleID}</td>
+               <td>{post.matrix}</td>
+               <td>{post.supplierID}</td>
+               <td>{post.supplierSampleID}</td>
+               <td>{post.productID}</td>
+               <td>{post.countryID}</td>        
+               <td>{post.quantity}</td>               
+               <td>{post.unit}</td>
+               <td>{post.age}</td> 
+               <td>{post.gender}</td> 
+               <td>{post.ethnicity}</td> 
+               <td>{post.labParameter}</td> 
+               <td>{post.resultNumerical}</td> 
+               <td>{post.resultUnit}</td> 
+               <td>{post.resultInterpretation}</td> 
+               <td>{post.testMethod}</td> 
+               <td>{post.testKitManufacturer}</td> 
+               <td>{post.testSystemManufacturer}</td> 
+               <td>{post.diagnosis}</td>
+               <td>{post.icd}</td> 
+               <td>{post.histologicalDiagnosis}</td> 
+               <td>{post.organ}</td> 
+               <td>{post.collectionCountry}</td> 
+               <td>{post.collectionDate}</td>                       
+              <td>
+                 <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
+              </td>
+             </tr>
+           ))}
+          </tbody>
+        </table>
+
+        <button onClick={() => setPosts([])} className="btn btn-dark btn-lg w-100 mb-4">close table</button>
+      </div>
+    );
   }
 
   //// Reset and Alert after each CRUD Operation ////
@@ -251,8 +408,7 @@ export default function App() {
       return;
     }
 
-    alert(`Post succesfully created. After clicking OK, your new post with id "${createdPost.id}" will show up in the table below.`);
-
+    alert(`Post succesfully created. After clicking OK, your new post will show up in the table below.`);
     getPosts(window.$activeTable);
   }
   function onPostUpdated(updatedPost){
@@ -276,8 +432,8 @@ export default function App() {
     }
 
     setPosts(postsCopy);
-
-    alert(`Post successfully updated. After clicking OK, look for the post with ID "${updatedPost.id}" in the table below to see the updates.`);
+    alert(`Post successfully updated. After clicking OK, look for the post in the table below to see the updates.`);
+    getPosts(window.$activeTable);
   }
   function onPostDeleted(deletedPostID){
     let postsCopy = [...posts];
@@ -293,7 +449,12 @@ export default function App() {
     }
 
     setPosts(postsCopy);
-
     alert('Post successfully deleted. After clicking OK, look at the table below to see your post disappear.');
+    getPosts(window.$activeTable);
   } 
+  function onPostsDeleted(){
+    setPosts([]);
+    alert(`Sucessfully deleted posts from "${window.$activeTable}" Table.`);
+    getPosts(window.$activeTable);
+  }
 }

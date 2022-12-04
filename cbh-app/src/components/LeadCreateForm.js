@@ -61,11 +61,6 @@ export default function LeadCreateForm(props) {
             <h1 className="mt-5">Create new post</h1>
 
             <div className="mt-5">
-                <label className="h3 form-label">ID</label>
-                <input value={formData.id} name="id" type="text" className="form-control" onChange={handleChange} />
-            </div>
-
-            <div className="mt-5">
                 <label className="h3 form-label">Post leadID</label>
                 <input value={formData.leadID} name="leadID" type="text" className="form-control" onChange={handleChange} />
             </div>

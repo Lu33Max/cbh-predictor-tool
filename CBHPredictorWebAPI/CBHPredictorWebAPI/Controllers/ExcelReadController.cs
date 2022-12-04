@@ -61,7 +61,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            return "Done";
+            return "{\"success\":1}";
         }
 
         // Reads all Data from the Input Table and writes it to the OrderEntries Table
@@ -125,7 +125,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            return "Done";
+            return "{\"success\":1}";
         }
 
         [HttpPost]
@@ -162,7 +162,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            return "Done";
+            return "{\"success\":1}";
         }
 
         [HttpPost]
@@ -199,7 +199,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            return "Done";
+            return "{\"success\":1}";
         }
 
         //// Converter Functions // Check for Null Values

@@ -51,11 +51,6 @@ export default function BingCreateForm(props) {
             <h1 className="mt-5">Create new post</h1>
 
             <div className="mt-5">
-                <label className="h3 form-label">ID</label>
-                <input value={formData.id} name="id" type="text" className="form-control" onChange={handleChange} />
-            </div>
-
-            <div className="mt-5">
                 <label className="h3 form-label">Post terms</label>
                 <input value={formData.terms} name="terms" type="text" className="form-control" onChange={handleChange} />
             </div>
