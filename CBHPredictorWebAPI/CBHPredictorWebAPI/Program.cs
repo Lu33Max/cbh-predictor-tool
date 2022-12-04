@@ -20,8 +20,7 @@ namespace CBHPredictorWebAPI
                         .AllowAnyHeader()
                         .WithOrigins("http://localhost:3000", "https://appname.azurestaticapps.net");
                     });
-            }
-                );
+            });
 
             // Add services to the container.
 
@@ -45,6 +44,10 @@ namespace CBHPredictorWebAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseHttpsRedirection();
+
+            app.UseCors("CORSPolicy");
 
             app.UseHttpsRedirection();
 

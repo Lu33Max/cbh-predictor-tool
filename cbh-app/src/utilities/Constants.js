@@ -1,0 +1,33 @@
+const API_BASE_URL_DEVELOPMENT = 'http://localhost:5210';
+const API_BASE_URL_PRODUCTION = 'http://appname.azurewebsites.net';
+
+const ENDPOINTS = {
+    BING_POSTS: 'api/BingSearchTerms',
+    GOOGLE_POSTS: 'api/GoogleSearchTerms',
+    LEAD_POSTS: 'api/LeadEntries',
+    ORDER_POSTS: 'api/OrderEntries',
+
+    GET_POST_BY_ID: 'get-post-by-id'
+};
+
+const development = {
+    API_URL_BING_POSTS: `${API_BASE_URL_DEVELOPMENT}/${ENDPOINTS.BING_POSTS}`,
+    API_URL_GOOGLE_POSTS: `${API_BASE_URL_DEVELOPMENT}/${ENDPOINTS.GOOGLE_POSTS}`,
+    API_URL_LEAD_POSTS: `${API_BASE_URL_DEVELOPMENT}/${ENDPOINTS.LEAD_POSTS}`,
+    API_URL_ORDER_POSTS: `${API_BASE_URL_DEVELOPMENT}/${ENDPOINTS.ORDER_POSTS}`,
+
+    API_URL_GET_POST_BY_ID: `${API_BASE_URL_DEVELOPMENT}/${ENDPOINTS.GET_POST_BY_ID}`,
+};
+
+const production = {
+    API_URL_BING_POSTS: `${API_BASE_URL_PRODUCTION}/${ENDPOINTS.BING_POSTS}`,
+    API_URL_GOOGLE_POSTS: `${API_BASE_URL_PRODUCTION}/${ENDPOINTS.GOOGLE_POSTS}`,
+    API_URL_LEAD_POSTS: `${API_BASE_URL_PRODUCTION}/${ENDPOINTS.LEAD_POSTS}`,
+    API_URL_ORDER_POSTS: `${API_BASE_URL_PRODUCTION}/${ENDPOINTS.ORDER_POSTS}`,
+
+    API_URL_GET_POST_BY_ID: `${API_BASE_URL_PRODUCTION}/${ENDPOINTS.GET_POST_BY_ID}`
+};
+
+const Constants = process.env.NODE_ENV === 'development' ? development : production;
+
+export default Constants;
