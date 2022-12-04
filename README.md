@@ -14,15 +14,15 @@ Zur Lösung des Problems
         - Rechtsklick > Löschen
     2. WebAPI in Visual Studio öffnen
         - Tools(Extras) > NuGet Paket Manager > NuGet Paket Manager Console
-        - Befehl **Update-Database** eingeben
+        - Befehl *Update-Database* eingeben
 
 #### 2. Die Website lässt sich nicht öffnen
 Aufgrund eines Fehlers beim ersten Interface-Commit kann es sein, dass die Website beim Öffnen nur einen weißen Bildschirm zeigt.
 
 Zur Lösung des Problems
 
-    1. In den **cbh-app** Ordner navigieren
-    2. Klick in die Adresszeile > **cmd** eintippen
-        - **npm install react-scripts** in Konsole eingeben
+    1. In den *cbh-app* Ordner navigieren
+    2. Klick in die Adresszeile > *cmd* eintippen
+        - *npm install react-scripts* in Konsole eingeben
 
 In den aktuellen Interfacce-Versionen sollte dieses Problem eigentlich behoben sein. Falls es doch noch auftreten sollte, bitte Bescheid geben.
