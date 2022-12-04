@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Constants from '../utilities/Constants'
 
-export default function PostUpdateForm(props) {
+export default function LeadUpdateForm(props) {
     const initialFormData = Object.freeze({
         id: props.post.id,
         leadID: props.post.leadID,
@@ -48,7 +48,7 @@ export default function PostUpdateForm(props) {
             quantityOfInterest: formData.quantityOfInterest
         };
 
-        const url = `${Constants.API_URL_UPDATE_POST}/${props.post.id}`;
+        const url = `${Constants.API_URL_LEAD_POSTS}/${props.post.id}`;
 
         fetch(url, {
             method: 'PUT',
@@ -57,14 +57,14 @@ export default function PostUpdateForm(props) {
             },
             body: JSON.stringify(postToUpdate)
         })
-            .then(response => response.json())
-            .then(responseFromServer => {
-                console.log(responseFromServer);
-            })
-            .catch((error) => {
-                console.log(error);
-                alert(error);
-            });
+        .then(response => response.json())
+        .then(responseFromServer => {
+            console.log(responseFromServer);
+        })
+        .catch((error) => {
+            console.log(error);
+            alert(error);
+        });
 
         props.onPostUpdated(postToUpdate);
     };

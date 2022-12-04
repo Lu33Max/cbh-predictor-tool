@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Constants from '../utilities/Constants'
 
-export default function PostCreateForm(props) {
+export default function LeadCreateForm(props) {
     const initialFormData = Object.freeze({
        //Enter possible values here which are already displayed as an example
     });
@@ -35,7 +35,7 @@ export default function PostCreateForm(props) {
             quantityOfInterest: formData.quantityOfInterest
         };
 
-        const url = Constants.API_URL_CREATE_POST;
+        const url = Constants.API_URL_LEAD_POSTS;
 
         fetch(url, {
             method: 'POST',
