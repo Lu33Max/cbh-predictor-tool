@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using Microsoft.Data.SqlClient;
+using static CBHPredictorWebAPI.Controllers.ExcelReadController;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -57,6 +58,18 @@ namespace CBHPredictorWebAPI.Controllers
             }
             
             return await _context.BingSearchTerms.FromSqlRaw(command, value).ToListAsync();
+        }
+
+        //Gets all Entries from the given month and year
+        [HttpGet("GetMonth/{month}/{year}")]
+        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetByMonth(Month month, int year)
+        {
+            //char[] arr = value.ToCharArray();
+            string command;
+
+            command = "SELECT * from BingSearchTerms WHERE month = '" + month + "' AND year = " + year;
+
+            return await _context.BingSearchTerms.FromSqlRaw(command).ToListAsync();
         }
 
         // PUT: api/BingSearchTerms/5
