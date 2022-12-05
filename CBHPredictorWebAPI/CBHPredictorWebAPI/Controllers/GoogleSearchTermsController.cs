@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
+using static CBHPredictorWebAPI.Controllers.ExcelReadController;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -43,7 +44,6 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpGet("GetAny/{col}/{value}/{exact}")]
         public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> GetByAny(string col, string value, bool exact)
         {
-            char[] arr = value.ToCharArray();
             string command;
 
             if (exact)
@@ -56,6 +56,15 @@ namespace CBHPredictorWebAPI.Controllers
             }
 
             return await _context.GoogleSearchTerms.FromSqlRaw(command, value).ToListAsync();
+        }
+
+        //Gets all Entries from the given month and year
+        [HttpGet("GetMonth/{month}/{year}")]
+        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetByMonth(Month month, int year)
+        {
+            string command = "SELECT * from GoogleSearchTerms WHERE month = {0} AND year = {1}";
+
+            return await _context.BingSearchTerms.FromSqlRaw(command, month.ToString(), year).ToListAsync();
         }
 
         // PUT: api/GoogleSearchTerms/5
@@ -94,7 +103,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<GoogleSearchTerm>> PostSearchTerm(GoogleSearchTerm googleSearchTerm)
         {
-            googleSearchTerm.id= Guid.NewGuid();
+            googleSearchTerm.id = Guid.NewGuid();
             await _context.GoogleSearchTerms.AddAsync(googleSearchTerm);
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetSearchTerm", new { id = googleSearchTerm.id }, googleSearchTerm);

@@ -42,7 +42,6 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpGet("GetAny/{col}/{value}/{exact}")]
         public async Task<ActionResult<IEnumerable<OrderEntry>>> GetByAny(string col, string value, bool exact)
         {
-            char[] arr = value.ToCharArray();
             string command;
 
             if (exact)
