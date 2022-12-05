@@ -6,7 +6,9 @@ export default function GoogleUpdateForm(props) {
         id: props.post.id,
         terms: props.post.terms,
         impressions: props.post.impressions,
-        clicks: props.post.clicks
+        clicks: props.post.clicks,
+        month: props.post.month,
+        year: props.post.year
     });
 
     const [formData, setFormData] = useState(initialFormData);
@@ -25,7 +27,9 @@ export default function GoogleUpdateForm(props) {
             id: formData.id,
             terms: formData.terms,
             impressions: formData.impressions,
-            clicks: formData.clicks
+            clicks: formData.clicks,
+            month: formData.month,
+            year: formData.year
         };
 
         const url = `${Constants.API_URL_GOOGLE_POSTS}/${props.post.id}`;
@@ -66,6 +70,16 @@ export default function GoogleUpdateForm(props) {
             <div className="mt-4">
                 <label className="h3 form-label">Post clicks</label>
                 <input value={formData.clicks} name="clicks" type="text" className="form-control" onChange={handleChange} />
+            </div>
+
+            <div className="mt-4">
+                <label className="h3 form-label">Post month</label>
+                <input value={formData.month} name="month" type="text" className="form-control" onChange={handleChange} />
+            </div>
+            
+            <div className="mt-4">
+                <label className="h3 form-label">Post year</label>
+                <input value={formData.year} name="year" type="text" className="form-control" onChange={handleChange} />
             </div>
 
             <button onClick={handleSubmit} className="btn btn-dark btn-lg w-100 mt-5">Submit</button>

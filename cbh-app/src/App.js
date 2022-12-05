@@ -8,6 +8,7 @@ import LeadCreateForm from "./components/LeadCreateForm"
 import LeadUpdateForm from "./components/LeadUpdateForm"
 import OrderCreateForm from "./components/OrderCreateForm"
 import OrderUpdateForm from "./components/OrderUpdateForm"
+import FileUploadForm from "./components/FileUploadForm";
 
 window.$activeTable = "";
 
@@ -15,8 +16,10 @@ export default function App() {
   const [posts, setPosts] = useState([]);
   const [showingCreateNewPostForm, setShowingCreateNewPostForm] = useState(false);
   const [postCurrentlyBeingUpdated, setPostCurrentlyBeingUpdated] = useState(null);
+  const [showingFileUploadForm, setShowingFileUploadForm] = useState(false);
 
-  //// Get Posts from Server ////
+  //// Basic CRUD Operations ////
+  // Get all Posts from Server
   function getPosts(table){
     setPosts([]);
     window.$activeTable = table;
@@ -52,8 +55,7 @@ export default function App() {
       alert(error);
     });
   }
-
-  //// Delete Post by ID ////
+  // Delete Post by ID
   function deletePost(id){
     var url;
 
@@ -88,8 +90,7 @@ export default function App() {
       alert(error);
     });
   }
-
-  //// Delete all Posts from Table ////
+  // Delete all Posts from Table
   function deleteAllPosts(){
     var url;
 
@@ -127,40 +128,39 @@ export default function App() {
 
   //// Rendered View ////
   return (
-    <div class="container-fluid">
+    <div className="container-fluid">
       <div className="row min-vh-100">
         <div className="col d-flex flex-column justify-content-center align-items-center">
-          {(showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null) && (
+          {(showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false) && (
             <div>
               <h1 className="mt-3">CBH Predictor Tool</h1>
               
-              <div class="row mt-5">
-                <div class="col-sm">
+              <div className="row mt-5">
+                <div className="col-sm">
                   <button onClick={() => getPosts('Bing')} className="btn btn-dark btn-lg w-100 h-100">Bing Table</button>
                 </div>
-                <div class="col-sm">
+                <div className="col-sm">
                   <button onClick={() => getPosts('Google')} className="btn btn-dark btn-lg w-100 h-100">Google Table</button>
                 </div>
-                <div class="col-sm">
+                <div className="col-sm">
                   <button onClick={() => getPosts('Lead')} className="btn btn-dark btn-lg w-100 h-100">Lead Table</button>
                 </div>
-                <div class="col-sm">
+                <div className="col-sm">
                   <button onClick={() => getPosts('Order')} className="btn btn-dark btn-lg w-100 h-100">Order Table</button>
                 </div>
               </div>
               
-              <div className="mt-3">
-                <button onClick={() => setShowingCreateNewPostForm(true)} className="btn btn-secondary btn-lg w-100">Create new Post</button>
-                <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete all posts from table "${window.$activeTable}"?`)) deleteAllPosts() }} className="btn btn-danger btn-lg w-100 mt-2">Delete All Posts</button>
-              </div>
+              {(window.$activeTable !== "") && showButtons()}
+              
             </div>
           )}
           
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && window.$activeTable === "Bing") && renderBingTable()}
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && window.$activeTable === "Google") && renderGoogleTable()}
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && window.$activeTable === "Lead") && renderLeadTable()}
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && window.$activeTable === "Order") && renderOrderTable()}
+          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Bing") && renderBingTable()}
+          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Google") && renderGoogleTable()}
+          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Lead") && renderLeadTable()}
+          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Order") && renderOrderTable()}
 
+          {showingFileUploadForm && showUploadForm()}
           {showingCreateNewPostForm && showCreateForm()}
           {postCurrentlyBeingUpdated !== null && showUpdateForm()}
         </div>
@@ -168,7 +168,21 @@ export default function App() {
     </div>
   );
 
+  //// Show Buttons ////
+  function showButtons(){
+    return(
+      <div className="mt-3">
+        <button onClick={() => setShowingFileUploadForm(true)} className="btn btn-dark btn-lg w-100 mt-2">Upload Excel File</button>
+        <button onClick={() => setShowingCreateNewPostForm(true)} className="btn btn-secondary btn-lg w-100 mt-2">Create new Post</button>
+        <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete all posts from table "${window.$activeTable}"?`)) deleteAllPosts() }} className="btn btn-danger btn-lg w-100 mt-2">Delete All Posts</button>
+      </div>
+    )
+  }
+
   //// Show Forms ////
+  function showUploadForm(){
+    return <FileUploadForm onFileUploaded={onFileUploaded}/>
+  }
   function showCreateForm(){
     switch (window.$activeTable) {
       case 'Bing':
@@ -210,19 +224,24 @@ export default function App() {
               <th scope="col">Search Term</th>
               <th scope="col">Clicks</th>
               <th scope="col">Impressions</th>
+              <th scope="col">Date</th>
               <th scope="col">CRUD Operations</th>                                        
             </tr>
           </thead>
           <tbody>
            {posts.map((post) => (
-             <tr  key={post.id}>
-               <td>{post.terms}</td>
-               <td>{post.impressions}</td>
-               <td>{post.clicks}</td>                     
-              <td>
-                 <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
-              </td>
+             <tr key={post.id}>
+                <td>{post.terms}</td>
+                <td>{post.impressions}</td>
+                <td>{post.clicks}</td>
+                <td>
+                  {post.month}<br/>
+                  {post.year}
+                </td>                     
+                <td>
+                  <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                  <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
+                </td>
              </tr>
            ))}
           </tbody>
@@ -245,17 +264,21 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-           {posts.map((post) => (
-             <tr  key={post.id}>
-               <td>{post.terms}</td>
-               <td>{post.impressions}</td>
-               <td>{post.clicks}</td>                     
-              <td>
+            {posts.map((post) => (
+              <tr  key={post.id}>
+                <td>{post.terms}</td>
+                <td>{post.impressions}</td>
+                <td>{post.clicks}</td>  
+                <td>
+                  {post.month}<br/>
+                  {post.year}
+                </td>                     
+                <td>
                  <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
                  <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
-              </td>
-             </tr>
-           ))}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
 
@@ -401,6 +424,12 @@ export default function App() {
   }
 
   //// Reset and Alert after each CRUD Operation ////
+  function onFileUploaded(created){
+    setShowingFileUploadForm(false);
+
+    if(created) alert(`Sucessfully uploaded the file contents to "${window.$activeTable}" Table.`);
+    getPosts(window.$activeTable);
+  }
   function onPostCreated(createdPost){
     setShowingCreateNewPostForm(false);
 

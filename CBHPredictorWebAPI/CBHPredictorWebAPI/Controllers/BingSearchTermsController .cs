@@ -125,7 +125,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpDelete]
         public async Task<String> DeleteSearchTerms()
         {
-            await _context.GoogleSearchTerms.ExecuteDeleteAsync();
+            await _context.BingSearchTerms.ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
             return "{\"success\":1}";
         }
