@@ -62,7 +62,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            return "Done";
+            return "{\"success\":1}";
         }
 
         // Reads all Data from the Input Table and writes it to the OrderEntries Table
@@ -126,11 +126,11 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            return "Done";
+            return "{\"success\":1}";
         }
 
         [HttpPost]
-        [Route("/GoogleTable")]
+        [Route("/GoogleTable/{_month}/{_year}")]
         public async Task<String> GoogleSearchTermsImport(IFormFile file, Month _month, int _year)
         {
             var list = new List<GoogleSearchTerm>();
@@ -165,11 +165,11 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            return "Done";
+            return "{\"success\":1}";
         }
 
         [HttpPost]
-        [Route("/BingTable")]
+        [Route("/BingTable/{_month}/{_year}")]
         public async Task<String> BingSearchTermsImport(IFormFile file, Month _month, int _year)
         {
             var list = new List<BingSearchTerm>();
@@ -204,7 +204,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            return "Done";
+            return "{\"success\":1}";
         }
 
         //// Converter Functions // Check for Null Values

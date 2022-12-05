@@ -95,7 +95,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(googleSearchTerm);
         }
 
         // POST: api/GoogleSearchTerms
@@ -103,6 +103,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<GoogleSearchTerm>> PostSearchTerm(GoogleSearchTerm googleSearchTerm)
         {
+            googleSearchTerm.id = Guid.NewGuid();
             await _context.GoogleSearchTerms.AddAsync(googleSearchTerm);
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetSearchTerm", new { id = googleSearchTerm.id }, googleSearchTerm);
@@ -115,7 +116,7 @@ namespace CBHPredictorWebAPI.Controllers
         {
             await _context.GoogleSearchTerms.Where(e => e.id == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
-            return "Success";
+            return "{\"success\":1}";
         }
 
         // DELETE: api/LeadEntries
@@ -125,7 +126,7 @@ namespace CBHPredictorWebAPI.Controllers
         {
             await _context.GoogleSearchTerms.ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
-            return "Success";
+            return "{\"success\":1}";
         }
 
         private bool SearchTermExists(Guid id)

@@ -1,22 +1,9 @@
 import React, { useState } from 'react'
 import Constants from '../utilities/Constants'
 
-export default function PostUpdateForm(props) {
+export default function LeadCreateForm(props) {
     const initialFormData = Object.freeze({
-        id: props.post.id,
-        leadID: props.post.leadID,
-        leadNO: props.post.leadNO,
-        leadStatus: props.post.leadStatus,
-        leadDate: props.post.leadDate,
-        organisationID: props.post.organisationID,
-        countryID: props.post.countryID,
-        channel: props.post.channel,
-        fieldOfInterest: props.post.fieldOfInterest,
-        specificOfInterest: props.post.specificOfInterest,
-        paramOfInterest: props.post.paramOfInterest,
-        diagnosisOfInterest: props.post.diagnosisOfInterest,
-        matrixOfInterest: props.post.matrixOfInterest,
-        quantityOfInterest: props.post.quantityOfInterest
+       //Enter possible values here which are already displayed as an example
     });
 
     const [formData, setFormData] = useState(initialFormData);
@@ -31,7 +18,7 @@ export default function PostUpdateForm(props) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const postToUpdate = {
+        const postToCreate = {
             id: formData.id,
             leadID: formData.leadID,
             leadNO: formData.leadNO,
@@ -48,14 +35,14 @@ export default function PostUpdateForm(props) {
             quantityOfInterest: formData.quantityOfInterest
         };
 
-        const url = `${Constants.API_URL_UPDATE_POST}/${props.post.id}`;
+        const url = Constants.API_URL_LEAD_POSTS;
 
         fetch(url, {
-            method: 'PUT',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(postToUpdate)
+            body: JSON.stringify(postToCreate)
         })
             .then(response => response.json())
             .then(responseFromServer => {
@@ -66,12 +53,12 @@ export default function PostUpdateForm(props) {
                 alert(error);
             });
 
-        props.onPostUpdated(postToUpdate);
+        props.onPostCreated(postToCreate);
     };
 
     return (
         <form className="w-100 px-5">
-            <h1 className="mt-5">Updating the post with id "{props.post.id}".</h1>
+            <h1 className="mt-5">Create new post</h1>
 
             <div className="mt-5">
                 <label className="h3 form-label">Post leadID</label>
@@ -139,7 +126,7 @@ export default function PostUpdateForm(props) {
             </div>
 
             <button onClick={handleSubmit} className="btn btn-dark btn-lg w-100 mt-5">Submit</button>
-            <button onClick={() => props.onPostUpdated(null)} className="btn btn-secondary btn-lg w-100 mt-3">Cancel</button>
+            <button onClick={() => props.onPostCreated(null)} className="btn btn-secondary btn-lg w-100 mt-3">Cancel</button>
         </form>
     );
 }

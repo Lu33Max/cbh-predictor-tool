@@ -84,7 +84,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(orderEntry);
         }
 
         // POST: api/OrderEntries
@@ -92,6 +92,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderEntry>> PostOrderEntry(OrderEntry orderEntry)
         {
+            orderEntry.id = Guid.NewGuid();
             await _context.OrderEntries.AddAsync(orderEntry);
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetOrderEntry", new { id = orderEntry.id }, orderEntry);
@@ -104,7 +105,7 @@ namespace CBHPredictorWebAPI.Controllers
         {
             await _context.OrderEntries.Where(e => e.id == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
-            return "Success";
+            return "{\"success\":1}";
         }
 
         // DELETE: api/LeadEntries
@@ -114,7 +115,7 @@ namespace CBHPredictorWebAPI.Controllers
         {
             await _context.OrderEntries.ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
-            return "Success";
+            return "{\"success\":1}";
         }
 
         private bool OrderEntryExists(Guid id)

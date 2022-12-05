@@ -1,9 +1,22 @@
 import React, { useState } from 'react'
 import Constants from '../utilities/Constants'
 
-export default function PostCreateForm(props) {
+export default function LeadUpdateForm(props) {
     const initialFormData = Object.freeze({
-       //Enter possible values here which are already displayed as an example
+        id: props.post.id,
+        leadID: props.post.leadID,
+        leadNO: props.post.leadNO,
+        leadStatus: props.post.leadStatus,
+        leadDate: props.post.leadDate,
+        organisationID: props.post.organisationID,
+        countryID: props.post.countryID,
+        channel: props.post.channel,
+        fieldOfInterest: props.post.fieldOfInterest,
+        specificOfInterest: props.post.specificOfInterest,
+        paramOfInterest: props.post.paramOfInterest,
+        diagnosisOfInterest: props.post.diagnosisOfInterest,
+        matrixOfInterest: props.post.matrixOfInterest,
+        quantityOfInterest: props.post.quantityOfInterest
     });
 
     const [formData, setFormData] = useState(initialFormData);
@@ -18,7 +31,7 @@ export default function PostCreateForm(props) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const postToCreate = {
+        const postToUpdate = {
             id: formData.id,
             leadID: formData.leadID,
             leadNO: formData.leadNO,
@@ -35,35 +48,30 @@ export default function PostCreateForm(props) {
             quantityOfInterest: formData.quantityOfInterest
         };
 
-        const url = Constants.API_URL_CREATE_POST;
+        const url = `${Constants.API_URL_LEAD_POSTS}/${props.post.id}`;
 
         fetch(url, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(postToCreate)
+            body: JSON.stringify(postToUpdate)
         })
-            .then(response => response.json())
-            .then(responseFromServer => {
-                console.log(responseFromServer);
-            })
-            .catch((error) => {
-                console.log(error);
-                alert(error);
-            });
+        .then(response => response.json())
+        .then(responseFromServer => {
+            console.log(responseFromServer);
+        })
+        .catch((error) => {
+            console.log(error);
+            alert(error);
+        });
 
-        props.onPostCreated(postToCreate);
+        props.onPostUpdated(postToUpdate);
     };
 
     return (
         <form className="w-100 px-5">
-            <h1 className="mt-5">Create new post</h1>
-
-            <div className="mt-5">
-                <label className="h3 form-label">ID</label>
-                <input value={formData.id} name="id" type="text" className="form-control" onChange={handleChange} />
-            </div>
+            <h1 className="mt-5">Updating the post with id "{props.post.id}".</h1>
 
             <div className="mt-5">
                 <label className="h3 form-label">Post leadID</label>
@@ -131,7 +139,7 @@ export default function PostCreateForm(props) {
             </div>
 
             <button onClick={handleSubmit} className="btn btn-dark btn-lg w-100 mt-5">Submit</button>
-            <button onClick={() => props.onPostCreated(null)} className="btn btn-secondary btn-lg w-100 mt-3">Cancel</button>
+            <button onClick={() => props.onPostUpdated(null)} className="btn btn-secondary btn-lg w-100 mt-3">Cancel</button>
         </form>
     );
 }

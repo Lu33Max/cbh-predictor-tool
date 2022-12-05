@@ -71,14 +71,14 @@ namespace CBHPredictorWebAPI.Controllers
         // PUT: api/BingSearchTerms/5
         // Edits one specific Entry in the BingSearchTerms Table by ID
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSearchTerm([FromRoute]Guid id, BingSearchTerm BingSearchTerm)
+        public async Task<IActionResult> PutSearchTerm([FromRoute]Guid id, BingSearchTerm bingSearchTerm)
         {
-            if (id != BingSearchTerm.id)
+            if (id != bingSearchTerm.id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(BingSearchTerm).State = EntityState.Modified;
+            _context.Entry(bingSearchTerm).State = EntityState.Modified;
 
             try
             {
@@ -96,17 +96,18 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(bingSearchTerm);
         }
 
         // POST: api/BingSearchTerms
         // Adds one Entry to the BingSearchTerms Table
         [HttpPost]
-        public async Task<ActionResult<BingSearchTerm>> PostSearchTerm(BingSearchTerm BingSearchTerm)
+        public async Task<ActionResult<BingSearchTerm>> PostSearchTerm(BingSearchTerm bingSearchTerm)
         {
-            _context.BingSearchTerms.Add(BingSearchTerm);
+            bingSearchTerm.id = new Guid();
+            _context.BingSearchTerms.Add(bingSearchTerm);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetSearchTerm", new { id = BingSearchTerm.id }, BingSearchTerm);
+            return CreatedAtAction("GetSearchTerm", new { id = bingSearchTerm.id }, bingSearchTerm);
         }
 
         // DELETE: api/BingSearchTerms/5
@@ -116,7 +117,7 @@ namespace CBHPredictorWebAPI.Controllers
         {
             await _context.BingSearchTerms.Where(e => e.id == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
-            return "Success";
+            return "{\"success\":1}";
         }
 
         // DELETE: api/LeadEntries
@@ -124,9 +125,9 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpDelete]
         public async Task<String> DeleteSearchTerms()
         {
-            await _context.GoogleSearchTerms.ExecuteDeleteAsync();
+            await _context.BingSearchTerms.ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
-            return "Success";
+            return "{\"success\":1}";
         }
 
         private bool SearchTermExists(Guid id)
