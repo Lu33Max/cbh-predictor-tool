@@ -85,7 +85,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(leadEntry);
         }
 
         // POST: api/LeadEntries

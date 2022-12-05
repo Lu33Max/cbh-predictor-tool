@@ -86,7 +86,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(googleSearchTerm);
         }
 
         // POST: api/GoogleSearchTerms
