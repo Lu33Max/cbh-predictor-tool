@@ -174,7 +174,7 @@ export default function App() {
       <div className="mt-3">
         <button onClick={() => setShowingFileUploadForm(true)} className="btn btn-dark btn-lg w-100 mt-2">Upload Excel File</button>
         <button onClick={() => setShowingCreateNewPostForm(true)} className="btn btn-secondary btn-lg w-100 mt-2">Create new Post</button>
-        <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete all posts from table "${window.$activeTable}"?`)) deleteAllPosts() }} className="btn btn-danger btn-lg w-100 mt-2">Delete All Posts</button>
+        <button onClick={() => { if(window.confirm(`Are you sure you want to delete all posts from table "${window.$activeTable}"?`)) deleteAllPosts() }} className="btn btn-danger btn-lg w-100 mt-2">Delete All Posts</button>
       </div>
     )
   }
