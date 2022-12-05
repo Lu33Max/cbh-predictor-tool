@@ -84,7 +84,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(leadEntry);
         }
 
         // POST: api/LeadEntries
@@ -92,6 +92,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<LeadEntry>> PostLeadEntry(LeadEntry leadEntry)
         {
+            leadEntry.id = Guid.NewGuid();
             await _context.LeadEntries.AddAsync(leadEntry);
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetLeadEntry", new { id = leadEntry.id }, leadEntry);
@@ -104,7 +105,7 @@ namespace CBHPredictorWebAPI.Controllers
         {
             await _context.LeadEntries.Where(e => e.id == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
-            return "Success";
+            return "{\"success\":1}";
         }
 
         // DELETE: api/LeadEntries
@@ -114,7 +115,7 @@ namespace CBHPredictorWebAPI.Controllers
         {
             await _context.LeadEntries.ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
-            return "Success";
+            return "{\"success\":1}";
         }
 
         private bool LeadEntryExists(Guid id)
