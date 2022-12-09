@@ -11,6 +11,7 @@ namespace CBHPredictorWebAPI.Controllers
     public class GoogleSearchTermsController : ControllerBase
     {
         private readonly CBHDBContext _context;
+        public enum GSearchTerms { terms, impressions, clicks, month, year }
 
         public GoogleSearchTermsController(CBHDBContext context)
         {
@@ -42,7 +43,7 @@ namespace CBHPredictorWebAPI.Controllers
 
         // Gets all Entries in BingSearchTerms that meet a specified criterium
         [HttpGet("GetAny/{col}/{value}/{exact}")]
-        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> GetByAny(string col, string value, bool exact)
+        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> GetByAny(GSearchTerms col, string value, bool exact)
         {
             string command;
 
