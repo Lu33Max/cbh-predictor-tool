@@ -4,6 +4,8 @@ using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using Microsoft.Data.SqlClient;
 using static CBHPredictorWebAPI.Controllers.ExcelReadController;
+using System.Drawing;
+using System.Text;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -12,6 +14,10 @@ namespace CBHPredictorWebAPI.Controllers
     public class BingSearchTermsController : ControllerBase
     {
         private readonly CBHDBContext _context;
+
+        private List<string> filterTerms = new List<string>();
+        Sess
+        
 
         public BingSearchTermsController(CBHDBContext context)
         {
@@ -128,6 +134,51 @@ namespace CBHPredictorWebAPI.Controllers
             await _context.BingSearchTerms.ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
             return "{\"success\":1}";
+        }
+
+        //// FILTER ////
+        // Add Filter
+        [HttpPost("SingleFilter/{col}/{value}/{exact}")]
+        public List<string> AddSingleFilter(string col, string value, bool exact)
+        {
+            //string command;
+
+            if (exact)
+            {
+                filterTerms.Add("[" + col + "] LIKE " + value);
+                //command = "[" + col + "] LIKE " + value;
+            }
+            else
+            {
+                filterTerms.Add("[" + col + "] LIKE '%" + value + "%'");
+                //command = "[" + col + "] LIKE '%" + value + "%'";
+            }
+
+            //filterTerms.Add(command);
+            return filterTerms;
+        }
+
+        // Apply Filter
+        [HttpGet("ApplyFilter/{relation}")]
+        //public async Task<ActionResult<IEnumerable<BingSearchTerm>>> ApplyFilter(string relation)
+        public List<string> ApplyFilter(string relation)
+        {
+            var command = new StringBuilder("SELECT * FROM BingSearchTerms WHERE ");
+            string filter;
+
+            if (relation.Equals("AND"))
+            {
+                filter = string.Join(" AND ", filterTerms);
+                command.Append(filter);
+            }
+            else
+            {
+                filter = string.Join(" OR ", filterTerms);
+                command.Append(filter);
+            }
+
+            return filterTerms;
+            //return await _context.BingSearchTerms.FromSqlRaw(command).ToListAsync();
         }
 
         private bool SearchTermExists(Guid id)

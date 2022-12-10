@@ -29,6 +29,15 @@ namespace CBHPredictorWebAPI
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
+            // Session Stuff
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -49,11 +58,15 @@ namespace CBHPredictorWebAPI
                 app.UseSwaggerUI();
             }
 
+            app.UseRouting();
+
             app.UseAuthorization();
 
             app.UseHttpsRedirection();
 
             app.UseCors("CORSPolicy");
+
+            app.UseSession();
 
             app.MapControllers();
 
