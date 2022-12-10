@@ -14,7 +14,6 @@ export default function FileUploadForm(props) {
         setYear(e.target.value);
     }
 
-
 	const changeHandler = (event) => {
 		setSelectedFile(event.target.files[0]);
 		setIsFilePicked(true);

@@ -17,6 +17,11 @@ export default function App() {
   const [showingCreateNewPostForm, setShowingCreateNewPostForm] = useState(false);
   const [postCurrentlyBeingUpdated, setPostCurrentlyBeingUpdated] = useState(null);
   const [showingFileUploadForm, setShowingFileUploadForm] = useState(false);
+  const [filter, setFilter] = useState({
+    col: '',
+    value: '',
+    exact: false
+  });
 
   //// Basic CRUD Operations ////
   // Get all Posts from Server
@@ -126,6 +131,53 @@ export default function App() {
     });
   }
 
+  //// Filter ////
+  // Set Filter Settings
+  const handleFilterChange = (e) => {
+    if(e.target.name !== "exact"){
+      setFilter({...filter, [e.target.name]: e.target.value});
+    }
+    else
+    {
+      setFilter({...filter, [e.target.name]: e.target.checked});
+    }
+  }
+  // Apply Filter
+  function getFilteredPosts(){
+    setPosts([]);
+    var url;
+
+    switch (window.$activeTable) {
+      case 'Bing':
+        url = `${Constants.API_URL_BING_POSTS}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        break;
+      case 'Google':
+        url = `${Constants.API_URL_GOOGLE_POSTS}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        break;
+      case 'Lead':
+        url = `${Constants.API_URL_LEAD_POSTS}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        break;
+      case 'Order':
+        url = `${Constants.API_URL_ORDER_POSTS}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        break;
+      default:
+        alert(`Error: Table with name "${window.$activeTable}" does not exist`)
+        return;
+    }
+
+    fetch(url, {
+      method: 'GET'
+    })
+    .then(response => response.json())
+    .then(postsFromServer => {
+      setPosts(postsFromServer);
+    })
+    .catch((error) => {
+      console.log(error);
+      alert(error);
+    });
+  }
+
   //// Rendered View ////
   return (
     <div className="container-fluid">
@@ -149,9 +201,9 @@ export default function App() {
                   <button onClick={() => getPosts('Order')} className="btn btn-dark btn-lg w-100 h-100">Order Table</button>
                 </div>
               </div>
-              
+
               {(window.$activeTable !== "") && showButtons()}
-              
+              {(window.$activeTable !== "") && showFilter()}
             </div>
           )}
           
@@ -175,6 +227,21 @@ export default function App() {
         <button onClick={() => setShowingFileUploadForm(true)} className="btn btn-dark btn-lg w-100 mt-2">Upload Excel File</button>
         <button onClick={() => setShowingCreateNewPostForm(true)} className="btn btn-secondary btn-lg w-100 mt-2">Create new Post</button>
         <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete all posts from table "${window.$activeTable}"?`)) deleteAllPosts() }} className="btn btn-danger btn-lg w-100 mt-2">Delete All Posts</button>
+      </div>
+    )
+  }
+
+  function showFilter(){
+    return(
+      <div className="mt-3">
+        <div>
+          <label className="h5 form-label">Filter:</label>
+          <input value={filter.col} name="col" type="text" className="form-control" onChange={handleFilterChange} />
+          <input value={filter.value} name="value" type="text" className="form-control" onChange={handleFilterChange} />
+          <input value={filter.exact} name="exact" type="checkbox" onChange={handleFilterChange} />
+        </div>
+        <button onClick={() => getFilteredPosts()} className="btn btn-dark btn-lg w-50 mt-2">Apply</button>
+        <button onClick={() => getPosts(window.$activeTable)} className="btn btn-dark btn-lg w-50 mt-2">Reset Filter</button>
       </div>
     )
   }
@@ -222,8 +289,8 @@ export default function App() {
           <thead>
             <tr>
               <th scope="col">Search Term</th>
-              <th scope="col">Clicks</th>
               <th scope="col">Impressions</th>
+              <th scope="col">Clicks</th>
               <th scope="col">Date</th>
               <th scope="col">CRUD Operations</th>                                        
             </tr>
@@ -258,8 +325,8 @@ export default function App() {
           <thead>
             <tr>
               <th scope="col">Search Term</th>
-              <th scope="col">Clicks</th>
               <th scope="col">Impressions</th>
+              <th scope="col">Clicks</th>
               <th scope="col">CRUD Operations</th>                                        
             </tr>
           </thead>
