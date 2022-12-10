@@ -78,7 +78,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // PUT: api/LeadEntries/5
-        // Edits one specific Entry in the LeadEntries Table by ID
+        // Edits one specific Entry in the LoginEntries Table by ID
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLeadEntry(Guid id, LoginEntry leadEntry)
         {
