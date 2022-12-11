@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using static CBHPredictorWebAPI.Controllers.ExcelReadController;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -31,9 +32,9 @@ namespace CBHPredictorWebAPI.Controllers
         {
             try
             {
-                List<GoogleSearchTerm> employees = await _context.GoogleSearchTerms.ToListAsync();
+                List<GoogleSearchTerm> sheet = await _context.GoogleSearchTerms.ToListAsync();
                 FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument
-                                     (employees, "GoogleSearchTerms.xlsx");
+                                     (sheet, "GoogleSearchTerms.xlsx");
                 return fr;
             }
             catch (Exception ex)

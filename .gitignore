@@ -9,6 +9,5 @@ CBHPredictorWebAPI/CBHPredictorWebAPI/obj/project.nuget.cache
 *.vsidx
 CBHPredictorWebAPI/.vs/CBHPredictorWebAPI/v17/.suo
 *.2
-*.json
 *.props
 *.cache

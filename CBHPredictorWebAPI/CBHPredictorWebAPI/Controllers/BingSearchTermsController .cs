@@ -35,9 +35,9 @@ namespace CBHPredictorWebAPI.Controllers
         {
             try
             {
-                List<BingSearchTerm> employees = await _context.BingSearchTerms.ToListAsync();
+                List<BingSearchTerm> sheet = await _context.BingSearchTerms.ToListAsync();
                 FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument
-                                     (employees, "BingSearchTerms.xlsx");
+                                     (sheet, "BingSearchTerms.xlsx");
                 return fr;
             }
             catch (Exception ex)

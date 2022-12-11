@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -30,9 +31,9 @@ namespace CBHPredictorWebAPI.Controllers
         {
             try
             {
-                List<LeadEntry> employees = await _context.LeadEntries.ToListAsync();
+                List<LeadEntry> sheet = await _context.LeadEntries.ToListAsync();
                 FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument
-                                     (employees, "LeadEntries.xlsx");
+                                     (sheet, "LeadEntries.xlsx");
                 return fr;
             }
             catch (Exception ex)
