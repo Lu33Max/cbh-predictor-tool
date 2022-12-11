@@ -28,13 +28,12 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         [HttpGet("ExportToExcel")]
-        public async Task<IActionResult> ExportBTermsToExcel()
+        public async Task<IActionResult> ExportGTermsToExcel()
         {
             try
             {
                 List<GoogleSearchTerm> sheet = await _context.GoogleSearchTerms.ToListAsync();
-                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument
-                                     (sheet, "GoogleSearchTerms.xlsx");
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "GoogleSearchTerms.xlsx");
                 return fr;
             }
             catch (Exception ex)

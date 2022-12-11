@@ -31,8 +31,7 @@ namespace CBHPredictorWebAPI.Controllers
             try
             {
                 List<OrderEntry> sheet = await _context.OrderEntries.ToListAsync();
-                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument
-                                     (sheet, "OrderEntries.xlsx");
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "OrderEntries.xlsx");
                 return fr;
             }
             catch (Exception ex)

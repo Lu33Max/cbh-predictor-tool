@@ -110,6 +110,7 @@ namespace ExportToExcel
                 }
                 dt.Rows.Add(row);
             }
+            dt.Columns.RemoveAt(0);
             return dt;
         }
         private static Type GetNullableType(Type t)
@@ -441,8 +442,8 @@ namespace ExportToExcel
             writer.WriteStartElement(new Columns());
             foreach (DataColumn dc in dt.Columns)
             {
-                writer.WriteElement(new Column { Min = inx, Max = inx, CustomWidth = true, Width = DEFAULT_COLUMN_WIDTH });
-                inx ++;
+               writer.WriteElement(new Column { Min = inx, Max = inx, CustomWidth = true, Width = DEFAULT_COLUMN_WIDTH });
+               inx++;
             }
             writer.WriteEndElement();
 
