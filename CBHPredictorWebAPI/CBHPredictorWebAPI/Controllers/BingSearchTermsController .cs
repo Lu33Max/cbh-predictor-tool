@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
-using Microsoft.Data.SqlClient;
 using static CBHPredictorWebAPI.Controllers.ExcelReadController;
+using System.Text;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -59,7 +59,7 @@ namespace CBHPredictorWebAPI.Controllers
             return await _context.BingSearchTerms.FromSqlRaw(command, value).ToListAsync();
         }
 
-        //Gets all Entries from the given month and year
+        // Gets all Entries from the given month and year
         [HttpGet("GetMonth/{month}/{year}")]
         public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetByMonth(Month month, int year)
         {
@@ -128,6 +128,79 @@ namespace CBHPredictorWebAPI.Controllers
             await _context.BingSearchTerms.ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
             return "{\"success\":1}";
+        }
+
+        //// FILTER ////
+        // Apply Filter
+        [HttpGet("ApplyFilter/{relation}")]
+        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> ApplyFilter(string relation)
+        {
+            var command = new StringBuilder("SELECT * FROM BingSearchTerms WHERE ");
+            string? filter = HttpContext.Session.GetString("BingFilter");
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                filter = filter.Remove(0,1);
+                string[] filters = filter.Split(";");
+
+                if (relation.Equals("AND"))
+                {
+                    filter = string.Join(" AND ", filters);
+                }
+                else
+                {
+                    filter = string.Join(" OR ", filters);    
+                }
+
+                command.Append(filter);
+                return await _context.BingSearchTerms.FromSqlRaw(command.ToString()).ToListAsync();
+            }
+
+            return BadRequest();
+        }
+
+        // Add Single Filter
+        [HttpPost("AddSingleFilter/{col}/{value}/{exact}")]
+        public string AddSingleFilter(string col, string value, bool exact)
+        {
+            string filter = createSingleFilterString(col, value, exact);
+            HttpContext.Session.SetString("BingFilter", HttpContext.Session.GetString("BingFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
+
+        // Add Range Filter
+
+        // Add Comparing Filter
+
+        // Remove Single Filter
+        [HttpDelete("RemoveSingleFilter/{col}/{value}/{exact}")]
+        public string RemoveSingleFilter(string col, string value, bool exact)
+        {
+            string filter = ";" + createSingleFilterString(col, value, exact);
+            string? allFilters = HttpContext.Session.GetString("BingFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("BingFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
+        
+        // Remove Range Filter
+
+        // Remove Comparing Filter
+
+        // Filter String Creation
+        private string createSingleFilterString(string col, string value, bool exact)
+        {
+            if (exact)
+            {
+                return "[" + col + "] LIKE " + value;
+            }
+            else
+            {
+                return "[" + col + "] LIKE '%" + value + "%'";
+            }
         }
 
         private bool SearchTermExists(Guid id)
