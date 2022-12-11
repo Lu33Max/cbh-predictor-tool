@@ -26,6 +26,22 @@ namespace CBHPredictorWebAPI.Controllers
             return await _context.GoogleSearchTerms.ToListAsync();
         }
 
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportBTermsToExcel()
+        {
+            try
+            {
+                List<GoogleSearchTerm> employees = await _context.GoogleSearchTerms.ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument
+                                     (employees, "GoogleSearchTerms.xlsx");
+                return fr;
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
+        }
+
         // GET: api/GoogleSearchTerms/5
         // Gets one specific Entry in the GoogleSearchTerms Table by ID
         [HttpGet("{id}")]

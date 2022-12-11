@@ -25,6 +25,22 @@ namespace CBHPredictorWebAPI.Controllers
             return await _context.OrderEntries.ToListAsync();
         }
 
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportOrderEntriesToExcel()
+        {
+            try
+            {
+                List<OrderEntry> employees = await _context.OrderEntries.ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument
+                                     (employees, "OrderEntries.xlsx");
+                return fr;
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
+        }
+
         // GET: api/OrderEntries/5
         // Gets one specific Entry in the OrderEntries Table by ID
         [HttpGet("{id}")]

@@ -2,8 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
-using Microsoft.Data.SqlClient;
 using static CBHPredictorWebAPI.Controllers.ExcelReadController;
+using System.IO;
+using System.Data;
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -25,6 +28,22 @@ namespace CBHPredictorWebAPI.Controllers
         public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetSearchTerms()
         {
             return await _context.BingSearchTerms.ToListAsync();
+        }
+
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportBTermsToExcel()
+        {
+            try
+            {
+                List<BingSearchTerm> employees = await _context.BingSearchTerms.ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument
+                                     (employees, "BingSearchTerms.xlsx");
+                return fr;
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
         }
 
         // GET: api/BingSearchTerms/5
