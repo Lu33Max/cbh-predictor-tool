@@ -1158,3 +1158,7 @@ G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\obj\Debug\net6.0\refi
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\obj\Debug\net6.0\CBHPredictorWebAPI.pdb
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\obj\Debug\net6.0\CBHPredictorWebAPI.genruntimeconfig.cache
 G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\obj\Debug\net6.0\ref\CBHPredictorWebAPI.dll
+G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\DocumentFormat.OpenXml.dll
+G:\WW2\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\System.IO.Packaging.dll
+C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\DocumentFormat.OpenXml.dll
+C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\bin\Debug\net6.0\System.IO.Packaging.dll

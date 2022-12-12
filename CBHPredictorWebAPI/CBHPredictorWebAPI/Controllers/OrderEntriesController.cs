@@ -10,6 +10,7 @@ namespace CBHPredictorWebAPI.Controllers
     public class OrderEntriesController : ControllerBase
     {
         private readonly CBHDBContext _context;
+        public enum OrderColumns { customerID, orderID, orderDate, orderPrice, storageTemp, donorID, cbhSampleID, matrix, supplierID, supplierSampleID, productID, countryID, quantity , unit , age , gender , ethnicity , labParameter , resultNumerical , resultUnit , resultInterpretation , testMethod , testKitManufacturer , testSystemManufacturer , diagnosis , icd , histologicalDiagnosis , organ , collectionCountry , collectionDate }
 
         public OrderEntriesController(CBHDBContext context)
         {
@@ -22,6 +23,21 @@ namespace CBHPredictorWebAPI.Controllers
         public async Task<ActionResult<IEnumerable<OrderEntry>>> GetOrderEntries()
         {
             return await _context.OrderEntries.ToListAsync();
+        }
+
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportOrderEntriesToExcel()
+        {
+            try
+            {
+                List<OrderEntry> sheet = await _context.OrderEntries.ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "OrderEntries.xlsx");
+                return fr;
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
         }
 
         // GET: api/OrderEntries/5
@@ -40,7 +56,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         [HttpGet("GetAny/{col}/{value}/{exact}")]
-        public async Task<ActionResult<IEnumerable<OrderEntry>>> GetByAny(string col, string value, bool exact)
+        public async Task<ActionResult<IEnumerable<OrderEntry>>> GetByAny(OrderColumns col, string value, bool exact)
         {
             string command;
 

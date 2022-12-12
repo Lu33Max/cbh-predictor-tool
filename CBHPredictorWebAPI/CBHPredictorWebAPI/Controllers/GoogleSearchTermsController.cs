@@ -11,6 +11,7 @@ namespace CBHPredictorWebAPI.Controllers
     public class GoogleSearchTermsController : ControllerBase
     {
         private readonly CBHDBContext _context;
+        public enum GSearchTerms { terms, impressions, clicks, month, year }
 
         public GoogleSearchTermsController(CBHDBContext context)
         {
@@ -23,6 +24,21 @@ namespace CBHPredictorWebAPI.Controllers
         public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> GetSearchTerms()
         {
             return await _context.GoogleSearchTerms.ToListAsync();
+        }
+
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportGTermsToExcel()
+        {
+            try
+            {
+                List<GoogleSearchTerm> sheet = await _context.GoogleSearchTerms.ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "GoogleSearchTerms.xlsx");
+                return fr;
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
         }
 
         // GET: api/GoogleSearchTerms/5
@@ -42,7 +58,7 @@ namespace CBHPredictorWebAPI.Controllers
 
         // Gets all Entries in BingSearchTerms that meet a specified criterium
         [HttpGet("GetAny/{col}/{value}/{exact}")]
-        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> GetByAny(string col, string value, bool exact)
+        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> GetByAny(GSearchTerms col, string value, bool exact)
         {
             string command;
 

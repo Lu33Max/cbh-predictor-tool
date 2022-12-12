@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "TdZVneBCOIejXJeFc+uXWd1bnolB+bNaChRzQF1fKAvIcJcOxsDvVS8QEJF4p5vmsbEH1tTi/jSK1bvcO0oXLQ==",
+  "dgSpecHash": "Fb0MGce2MeTxjSbStv3jy8j2XmkJPPd2bYFtpr1G/umkmKqqGev/suUy5lhGVQRoz+8Bk9P5UQxaKmkGfbXLaA==",
   "success": true,
   "projectFilePath": "C:\\Users\\lucas\\Desktop\\Personal\\Studium\\3.Semester\\WW2\\CBHPredictorTool\\cbh-predictor\\CBHPredictorWebAPI\\CBHPredictorWebAPI\\CBHPredictorWebAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lucas\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\lucas\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
+    "C:\\Users\\lucas\\.nuget\\packages\\documentformat.openxml\\2.16.0\\documentformat.openxml.2.16.0.nupkg.sha512",
     "C:\\Users\\lucas\\.nuget\\packages\\exceldatareader\\3.6.0\\exceldatareader.3.6.0.nupkg.sha512",
     "C:\\Users\\lucas\\.nuget\\packages\\exceldatareader.dataset\\3.6.0\\exceldatareader.dataset.3.6.0.nupkg.sha512",
     "C:\\Users\\lucas\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
@@ -145,6 +146,7 @@
     "C:\\Users\\lucas\\.nuget\\packages\\system.io.compression.zipfile\\4.3.0\\system.io.compression.zipfile.4.3.0.nupkg.sha512",
     "C:\\Users\\lucas\\.nuget\\packages\\system.io.filesystem\\4.3.0\\system.io.filesystem.4.3.0.nupkg.sha512",
     "C:\\Users\\lucas\\.nuget\\packages\\system.io.filesystem.primitives\\4.3.0\\system.io.filesystem.primitives.4.3.0.nupkg.sha512",
+    "C:\\Users\\lucas\\.nuget\\packages\\system.io.packaging\\4.7.0\\system.io.packaging.4.7.0.nupkg.sha512",
     "C:\\Users\\lucas\\.nuget\\packages\\system.io.pipelines\\5.0.1\\system.io.pipelines.5.0.1.nupkg.sha512",
     "C:\\Users\\lucas\\.nuget\\packages\\system.linq\\4.3.0\\system.linq.4.3.0.nupkg.sha512",
     "C:\\Users\\lucas\\.nuget\\packages\\system.linq.expressions\\4.3.0\\system.linq.expressions.4.3.0.nupkg.sha512",

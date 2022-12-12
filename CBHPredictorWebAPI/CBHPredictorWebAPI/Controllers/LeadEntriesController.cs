@@ -10,6 +10,7 @@ namespace CBHPredictorWebAPI.Controllers
     public class LeadEntriesController : ControllerBase
     {
         private readonly CBHDBContext _context;
+        public enum LeadColumns { leadID, leadNo, leadStatus, leadDate, organisationID, countryID, channel, fieldOfInterest, specificOfInterest, paramOfInterest, diagnosisOfInterest, matrixOfInterest, quantityOfInterest }
 
         public LeadEntriesController(CBHDBContext context)
         {
@@ -22,6 +23,21 @@ namespace CBHPredictorWebAPI.Controllers
         public async Task<ActionResult<IEnumerable<LeadEntry>>> GetLeadEntries()
         {
             return await _context.LeadEntries.ToListAsync();
+        }
+
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportLeadEntriesToExcel()
+        {
+            try
+            {
+                List<LeadEntry> sheet = await _context.LeadEntries.ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "LeadEntries.xlsx");
+                return fr;
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
         }
 
         // GET: api/LeadEntries/5
@@ -40,7 +56,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         [HttpGet("GetAny/{col}/{value}/{exact}")]
-        public async Task<ActionResult<IEnumerable<LeadEntry>>> GetByAny(string col, string value, bool exact)
+        public async Task<ActionResult<IEnumerable<LeadEntry>>> GetByAny(LeadColumns col, string value, bool exact)
         {
             string command;
 
