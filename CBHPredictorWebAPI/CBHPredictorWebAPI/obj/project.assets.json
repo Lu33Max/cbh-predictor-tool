@@ -10983,19 +10983,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\lucas\\.nuget\\packages\\": {}
+    "C:\\Users\\Jonas Arnold\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lucas\\Desktop\\Personal\\Studium\\3.Semester\\WW2\\CBHPredictorTool\\cbh-predictor\\CBHPredictorWebAPI\\CBHPredictorWebAPI\\CBHPredictorWebAPI.csproj",
+      "projectUniqueName": "C:\\Users\\Jonas Arnold\\source\\repos\\cbh-predictor\\CBHPredictorWebAPI\\CBHPredictorWebAPI\\CBHPredictorWebAPI.csproj",
       "projectName": "CBHPredictorWebAPI",
-      "projectPath": "C:\\Users\\lucas\\Desktop\\Personal\\Studium\\3.Semester\\WW2\\CBHPredictorTool\\cbh-predictor\\CBHPredictorWebAPI\\CBHPredictorWebAPI\\CBHPredictorWebAPI.csproj",
-      "packagesPath": "C:\\Users\\lucas\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\lucas\\Desktop\\Personal\\Studium\\3.Semester\\WW2\\CBHPredictorTool\\cbh-predictor\\CBHPredictorWebAPI\\CBHPredictorWebAPI\\obj\\",
+      "projectPath": "C:\\Users\\Jonas Arnold\\source\\repos\\cbh-predictor\\CBHPredictorWebAPI\\CBHPredictorWebAPI\\CBHPredictorWebAPI.csproj",
+      "packagesPath": "C:\\Users\\Jonas Arnold\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Jonas Arnold\\source\\repos\\cbh-predictor\\CBHPredictorWebAPI\\CBHPredictorWebAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\lucas\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Jonas Arnold\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
