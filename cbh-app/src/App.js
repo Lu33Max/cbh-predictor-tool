@@ -234,13 +234,16 @@ export default function App() {
   function showFilter(){
     return(
       <div className="mt-3">
-        <div>
-          <label className="h5 form-label">Filter:</label>
+        <div style={{border: '1px solid' , padding: '20px'}}>
+          <label className="h3 form-label">Filter:</label><br></br>
+          <label className="h5 form-label">Col:</label>
           <input value={filter.col} name="col" type="text" className="form-control" onChange={handleFilterChange} />
+          <label className="h5 form-label">Value:</label>
           <input value={filter.value} name="value" type="text" className="form-control" onChange={handleFilterChange} />
-          <input value={filter.exact} name="exact" type="checkbox" onChange={handleFilterChange} />
+          <label className="h5 form-label">Exact?  </label>
+          <input className="mx-3" value={filter.exact} name="exact" type="checkbox" onChange={handleFilterChange} />
         </div>
-        <button onClick={() => getFilteredPosts()} className="btn btn-dark btn-lg w-50 mt-2">Apply</button>
+        <button onClick={() => getFilteredPosts()} className="btn btn-success btn-lg w-50 mt-2">Apply</button>
         <button onClick={() => getPosts(window.$activeTable)} className="btn btn-dark btn-lg w-50 mt-2">Reset Filter</button>
       </div>
     )
@@ -327,6 +330,7 @@ export default function App() {
               <th scope="col">Search Term</th>
               <th scope="col">Impressions</th>
               <th scope="col">Clicks</th>
+              <th scope="col">Date</th>
               <th scope="col">CRUD Operations</th>                                        
             </tr>
           </thead>
