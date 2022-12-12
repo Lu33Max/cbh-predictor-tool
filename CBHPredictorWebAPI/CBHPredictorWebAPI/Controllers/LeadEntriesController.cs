@@ -10,6 +10,7 @@ namespace CBHPredictorWebAPI.Controllers
     public class LeadEntriesController : ControllerBase
     {
         private readonly CBHDBContext _context;
+        public enum LeadColumns { leadID, leadNo, leadStatus, leadDate, organisationID, countryID, channel, fieldOfInterest, specificOfInterest, paramOfInterest, diagnosisOfInterest, matrixOfInterest, quantityOfInterest }
 
         public LeadEntriesController(CBHDBContext context)
         {
@@ -40,7 +41,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         [HttpGet("GetAny/{col}/{value}/{exact}")]
-        public async Task<ActionResult<IEnumerable<LeadEntry>>> GetByAny(string col, string value, bool exact)
+        public async Task<ActionResult<IEnumerable<LeadEntry>>> GetByAny(LeadColumns col, string value, bool exact)
         {
             string command;
 

@@ -10,6 +10,7 @@ namespace CBHPredictorWebAPI.Controllers
     public class OrderEntriesController : ControllerBase
     {
         private readonly CBHDBContext _context;
+        public enum OrderColumns { customerID, orderID, orderDate, orderPrice, storageTemp, donorID, cbhSampleID, matrix, supplierID, supplierSampleID, productID, countryID, quantity , unit , age , gender , ethnicity , labParameter , resultNumerical , resultUnit , resultInterpretation , testMethod , testKitManufacturer , testSystemManufacturer , diagnosis , icd , histologicalDiagnosis , organ , collectionCountry , collectionDate }
 
         public OrderEntriesController(CBHDBContext context)
         {
@@ -40,7 +41,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         [HttpGet("GetAny/{col}/{value}/{exact}")]
-        public async Task<ActionResult<IEnumerable<OrderEntry>>> GetByAny(string col, string value, bool exact)
+        public async Task<ActionResult<IEnumerable<OrderEntry>>> GetByAny(OrderColumns col, string value, bool exact)
         {
             string command;
 
