@@ -124,6 +124,25 @@ namespace CBHPredictorWebAPI.Migrations
                     b.ToTable("LeadEntries");
                 });
 
+            modelBuilder.Entity("CBHPredictorWebAPI.Models.LoginEntry", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("LoginEntries");
+                });
+
             modelBuilder.Entity("CBHPredictorWebAPI.Models.OrderEntry", b =>
                 {
                     b.Property<Guid>("id")
