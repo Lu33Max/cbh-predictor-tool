@@ -68,6 +68,19 @@ namespace CBHPredictorWebAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LoginEntries",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LoginEntries", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderEntries",
                 columns: table => new
                 {
@@ -120,6 +133,9 @@ namespace CBHPredictorWebAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "LeadEntries");
+
+            migrationBuilder.DropTable(
+                name: "LoginEntries");
 
             migrationBuilder.DropTable(
                 name: "OrderEntries");

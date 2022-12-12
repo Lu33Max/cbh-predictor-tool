@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CBHPredictorWebAPI.Migrations
 {
     [DbContext(typeof(CBHDBContext))]
-    [Migration("20221205114411_CBHDB")]
+    [Migration("20221209141259_CBHDB")]
     partial class CBHDB
     {
         /// <inheritdoc />
@@ -125,6 +125,25 @@ namespace CBHPredictorWebAPI.Migrations
                     b.HasKey("id");
 
                     b.ToTable("LeadEntries");
+                });
+
+            modelBuilder.Entity("CBHPredictorWebAPI.Models.LoginEntry", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("LoginEntries");
                 });
 
             modelBuilder.Entity("CBHPredictorWebAPI.Models.OrderEntry", b =>

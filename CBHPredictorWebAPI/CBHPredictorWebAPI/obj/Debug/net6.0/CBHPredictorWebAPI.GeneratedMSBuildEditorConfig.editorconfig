@@ -10,6 +10,7 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = CBHPredictorWebAPI
 build_property.RootNamespace = CBHPredictorWebAPI
 <<<<<<< HEAD
+<<<<<<< HEAD
 build_property.ProjectDir = C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
@@ -30,4 +31,11 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\Jonas Arnold\source\repos\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI
 >>>>>>> 60570dbce483f54208247d0006262e5d8114e0fa
 >>>>>>> interface
+=======
+build_property.ProjectDir = C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\lucas\Desktop\Personal\Studium\3.Semester\WW2\CBHPredictorTool\cbh-predictor\CBHPredictorWebAPI\CBHPredictorWebAPI
+>>>>>>> login
 build_property._RazorSourceGeneratorDebug = 

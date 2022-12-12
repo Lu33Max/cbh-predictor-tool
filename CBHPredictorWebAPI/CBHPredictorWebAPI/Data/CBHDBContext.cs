@@ -11,5 +11,6 @@ namespace CBHPredictorWebAPI.Data
         public DbSet<LeadEntry> LeadEntries { get; set; }
         public DbSet<GoogleSearchTerm> GoogleSearchTerms { get; set; }
         public DbSet<BingSearchTerm> BingSearchTerms { get; set; }
+        public DbSet<LoginEntry> LoginEntries { get; set; }
     }
 }
