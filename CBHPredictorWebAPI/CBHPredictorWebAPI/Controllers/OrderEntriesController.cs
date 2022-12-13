@@ -94,10 +94,18 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderEntry>> PostOrderEntry(OrderEntry orderEntry)
         {
-            orderEntry.lastEdited = DateTime.Now;
-            await _context.OrderEntries.AddAsync(orderEntry);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("GetOrderEntry", new { id = orderEntry.id }, orderEntry);
+            if (!_context.OrderEntries.Any(e => e.cbhSampleID == orderEntry.cbhSampleID))
+            {
+                orderEntry.id = Guid.NewGuid();
+                orderEntry.lastEdited = DateTime.Now;
+                await _context.OrderEntries.AddAsync(orderEntry);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetLeadEntry", new { id = orderEntry.id }, orderEntry);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // DELETE: api/OrderEntries/5

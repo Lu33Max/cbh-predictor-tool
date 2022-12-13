@@ -38,27 +38,31 @@ namespace CBHPredictorWebAPI.Controllers
                     });
 
                     foreach (DataRow row in result.Tables[0].Rows) {
-                        LeadEntry lead = new LeadEntry()
-                        {
-                            id = Guid.NewGuid(),
-                            leadID = ConvertToInt(row["leadid"]),
-                            leadNo = ConvertToString(row["Lead_No"]),
-                            leadStatus = ConvertToString(row["Lead_Status"]),
-                            leadDate = ConvertToDate(row["Lead_Date"]),
-                            organisationID = ConvertToInt(row["Organisation Id"]),
-                            countryID = ConvertToInt(row["Countryid"]),
-                            channel = ConvertToInt(row["Channel"]),
-                            fieldOfInterest = ConvertToString(row["Field_of_interest"]),
-                            specificOfInterest = ConvertToString(row["Specifications_of_interest"]),
-                            paramOfInterest = ConvertToString(row["Parameter_of_interest"]),
-                            diagnosisOfInterest = ConvertToString(row["Diagnosis_of_interest"]),
-                            matrixOfInterest = ConvertToString(row["Matrix_of_interest"]),
-                            quantityOfInterest = ConvertToString(row["Quantity_of_interest"]),
-                            lastEdited = DateTime.Now
-                        };
 
-                        list.Add(lead);
-                        _context.Add(lead);
+                        if (!_context.LeadEntries.Any(e => e.leadID == ConvertToInt(row["leadid"])))
+                        {
+                            LeadEntry lead = new LeadEntry()
+                            {
+                                id = Guid.NewGuid(),
+                                leadID = ConvertToInt(row["leadid"]),
+                                leadNo = ConvertToString(row["Lead_No"]),
+                                leadStatus = ConvertToString(row["Lead_Status"]),
+                                leadDate = ConvertToDate(row["Lead_Date"]),
+                                organisationID = ConvertToInt(row["Organisation Id"]),
+                                countryID = ConvertToInt(row["Countryid"]),
+                                channel = ConvertToInt(row["Channel"]),
+                                fieldOfInterest = ConvertToString(row["Field_of_interest"]),
+                                specificOfInterest = ConvertToString(row["Specifications_of_interest"]),
+                                paramOfInterest = ConvertToString(row["Parameter_of_interest"]),
+                                diagnosisOfInterest = ConvertToString(row["Diagnosis_of_interest"]),
+                                matrixOfInterest = ConvertToString(row["Matrix_of_interest"]),
+                                quantityOfInterest = ConvertToString(row["Quantity_of_interest"]),
+                                lastEdited = DateTime.Now
+                            };
+
+                            list.Add(lead);
+                            _context.Add(lead);
+                        }
                     }
                 }
             }
@@ -86,44 +90,48 @@ namespace CBHPredictorWebAPI.Controllers
                     });
 
                     foreach (DataRow row in result.Tables[0].Rows) {
-                        OrderEntry order = new OrderEntry()
-                        {
-                            id = Guid.NewGuid(),
-                            customerID = ConvertToInt(row["customerid"]),
-                            orderID = ConvertToInt(row["Orderid"]),
-                            orderDate = ConvertToDate(row["OrderDate"]),
-                            orderPrice = ConvertToInt(row["price_CBH"]),
-                            storageTemp = ConvertToString(row["Storage_Temperature"]),
-                            donorID = ConvertToString(row["CBH_Donor_ID"]),
-                            cbhSampleID = ConvertToString(row["CBH_sample_id"]),
-                            matrix = ConvertToString(row["Matrix"]),
-                            supplierID = ConvertToInt(row["Supplierid"]),
-                            supplierSampleID = ConvertToString(row["Supplier_Sample_ID"]),
-                            productID = ConvertToInt(row["pid"]),
-                            countryID = ConvertToInt(row["country"]),
-                            quantity = ConvertToFloat(row["Quantity"]),
-                            unit = ConvertToString(row["Unit"]),
-                            age = ConvertToInt(row["Age"]),
-                            gender = ConvertToString(row["Gender"]),
-                            ethnicity = ConvertToString(row["Ethnicity"]),
-                            labParameter = ConvertToString(row["Lab_Parameter"]),
-                            resultNumerical = ConvertToDecimal(row["Result_Numerical"]),
-                            resultUnit = ConvertToString(row["Result_Unit"]),
-                            resultInterpretation = ConvertToString(row["Result_Interpretation"]),
-                            testMethod = ConvertToString(row["Test_Method"]),
-                            testKitManufacturer = ConvertToString(row["Test_Kit_Manufacturer"]),
-                            testSystemManufacturer = ConvertToString(row["Test_System_Manufacturer"]),
-                            diagnosis = ConvertToString(row["Diagnosis"]),
-                            icd = ConvertToString(row["ICD_Code"]),
-                            histologicalDiagnosis = ConvertToString(row["Histological_Diagnosis"]),
-                            organ = ConvertToString(row["Organ"]),
-                            collectionCountry = ConvertToString(row["Country_of_Collection"]),
-                            collectionDate = ConvertToDate(row["Date_of_Collection"]),
-                            lastEdited = DateTime.Now
-                        };
 
-                        list.Add(order);
-                        _context.Add(order);
+                        if (!_context.OrderEntries.Any(e => e.cbhSampleID == ConvertToString(row["CBH_sample_id"])))
+                        {
+                            OrderEntry order = new OrderEntry()
+                            {
+                                id = Guid.NewGuid(),
+                                customerID = ConvertToInt(row["customerid"]),
+                                orderID = ConvertToInt(row["Orderid"]),
+                                orderDate = ConvertToDate(row["OrderDate"]),
+                                orderPrice = ConvertToInt(row["price_CBH"]),
+                                storageTemp = ConvertToString(row["Storage_Temperature"]),
+                                donorID = ConvertToString(row["CBH_Donor_ID"]),
+                                cbhSampleID = ConvertToString(row["CBH_sample_id"]),
+                                matrix = ConvertToString(row["Matrix"]),
+                                supplierID = ConvertToInt(row["Supplierid"]),
+                                supplierSampleID = ConvertToString(row["Supplier_Sample_ID"]),
+                                productID = ConvertToInt(row["pid"]),
+                                countryID = ConvertToInt(row["country"]),
+                                quantity = ConvertToFloat(row["Quantity"]),
+                                unit = ConvertToString(row["Unit"]),
+                                age = ConvertToInt(row["Age"]),
+                                gender = ConvertToString(row["Gender"]),
+                                ethnicity = ConvertToString(row["Ethnicity"]),
+                                labParameter = ConvertToString(row["Lab_Parameter"]),
+                                resultNumerical = ConvertToDecimal(row["Result_Numerical"]),
+                                resultUnit = ConvertToString(row["Result_Unit"]),
+                                resultInterpretation = ConvertToString(row["Result_Interpretation"]),
+                                testMethod = ConvertToString(row["Test_Method"]),
+                                testKitManufacturer = ConvertToString(row["Test_Kit_Manufacturer"]),
+                                testSystemManufacturer = ConvertToString(row["Test_System_Manufacturer"]),
+                                diagnosis = ConvertToString(row["Diagnosis"]),
+                                icd = ConvertToString(row["ICD_Code"]),
+                                histologicalDiagnosis = ConvertToString(row["Histological_Diagnosis"]),
+                                organ = ConvertToString(row["Organ"]),
+                                collectionCountry = ConvertToString(row["Country_of_Collection"]),
+                                collectionDate = ConvertToDate(row["Date_of_Collection"]),
+                                lastEdited = DateTime.Now
+                            };
+
+                            list.Add(order);
+                            _context.Add(order);
+                        }
                     }
                 }
             }
