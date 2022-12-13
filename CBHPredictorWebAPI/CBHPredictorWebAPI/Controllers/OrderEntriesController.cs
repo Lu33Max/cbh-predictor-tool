@@ -67,6 +67,7 @@ namespace CBHPredictorWebAPI.Controllers
                 return BadRequest();
             }
 
+            orderEntry.lastEdited = DateTime.Now;
             _context.Entry(orderEntry).State = EntityState.Modified;
 
             try
@@ -93,6 +94,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderEntry>> PostOrderEntry(OrderEntry orderEntry)
         {
+            orderEntry.lastEdited = DateTime.Now;
             await _context.OrderEntries.AddAsync(orderEntry);
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetOrderEntry", new { id = orderEntry.id }, orderEntry);

@@ -53,7 +53,8 @@ namespace CBHPredictorWebAPI.Controllers
                             paramOfInterest = ConvertToString(row["Parameter_of_interest"]),
                             diagnosisOfInterest = ConvertToString(row["Diagnosis_of_interest"]),
                             matrixOfInterest = ConvertToString(row["Matrix_of_interest"]),
-                            quantityOfInterest = ConvertToString(row["Quantity_of_interest"])
+                            quantityOfInterest = ConvertToString(row["Quantity_of_interest"]),
+                            lastEdited = DateTime.Now
                         };
 
                         list.Add(lead);
@@ -117,7 +118,8 @@ namespace CBHPredictorWebAPI.Controllers
                             histologicalDiagnosis = ConvertToString(row["Histological_Diagnosis"]),
                             organ = ConvertToString(row["Organ"]),
                             collectionCountry = ConvertToString(row["Country_of_Collection"]),
-                            collectionDate = ConvertToDate(row["Date_of_Collection"])
+                            collectionDate = ConvertToDate(row["Date_of_Collection"]),
+                            lastEdited = DateTime.Now
                         };
 
                         list.Add(order);

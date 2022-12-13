@@ -67,6 +67,7 @@ namespace CBHPredictorWebAPI.Controllers
                 return BadRequest();
             }
 
+            leadEntry.lastEdited = DateTime.Now;
             _context.Entry(leadEntry).State = EntityState.Modified;
 
             try
@@ -93,6 +94,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<LeadEntry>> PostLeadEntry(LeadEntry leadEntry)
         {
+            leadEntry.lastEdited = DateTime.Now;
             await _context.LeadEntries.AddAsync(leadEntry);
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetLeadEntry", new { id = leadEntry.id }, leadEntry);
