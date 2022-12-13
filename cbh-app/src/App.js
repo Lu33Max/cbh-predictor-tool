@@ -8,7 +8,8 @@ import LeadCreateForm from "./components/LeadCreateForm"
 import LeadUpdateForm from "./components/LeadUpdateForm"
 import OrderCreateForm from "./components/OrderCreateForm"
 import OrderUpdateForm from "./components/OrderUpdateForm"
-import FileUploadForm from "./components/FileUploadForm";
+import FileUploadForm from "./components/FileUploadForm"
+import LogInForm from "./components/LogInForm"
 
 window.$activeTable = "";
 
@@ -22,6 +23,7 @@ export default function App() {
     value: '',
     exact: false
   });
+  const [showingLogInForm, setShowingLogInForm] = useState(false);
 
   //// Basic CRUD Operations ////
   // Get all entries from Server
@@ -199,6 +201,9 @@ export default function App() {
                 </div>
                 <div className="col-sm">
                   <button onClick={() => getentries('Order')} className="btn btn-dark btn-lg w-100 h-100">Order Table</button>
+                </div>
+                <div className="col-sm">
+                  <button className="btn btn-dark btn-lg w-100 h-100">Log in</button>
                 </div>
               </div>
 
