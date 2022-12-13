@@ -2,6 +2,9 @@
 using CBHPredictorWebAPI.Models;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json.Linq;
 using System.Data;
 
 namespace CBHPredictorWebAPI.Controllers
@@ -159,18 +162,35 @@ namespace CBHPredictorWebAPI.Controllers
 
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
-                        GoogleSearchTerm order = new GoogleSearchTerm()
+                        if (_context.GoogleSearchTerms.Any(e => e.terms == ConvertToString(row["Terms"])))
                         {
-                            id = Guid.NewGuid(),
-                            terms = ConvertToString(row["Terms"]),
-                            impressions = ConvertToInt(row["Impressions"]),
-                            clicks = ConvertToInt(row["Clicks"]),
-                            month = _month.ToString(),
-                            year = _year
-                        };
+                            string command = "SELECT * FROM GoogleSearchTerms WHERE terms = {0} AND month = {1} AND year = {2}";
+                            GoogleSearchTerm tempTerm = _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _month.ToString(), _year).FirstOrDefault();
+                            _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _month.ToString(), _year).ExecuteDelete();
 
-                        list.Add(order);
-                        _context.Add(order);
+                            tempTerm.impressions += ConvertToInt(row["Impressions"]);
+                            tempTerm.clicks += ConvertToInt(row["Clicks"]);
+                            // Datum aktualisieren
+
+                            _context.Add(tempTerm);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            GoogleSearchTerm term = new GoogleSearchTerm()
+                            {
+                                id = Guid.NewGuid(),
+                                terms = ConvertToString(row["Terms"]),
+                                impressions = ConvertToInt(row["Impressions"]),
+                                clicks = ConvertToInt(row["Clicks"]),
+                                month = _month.ToString(),
+                                year = _year
+                            };
+
+                            list.Add(term);
+                            _context.Add(term);
+                            await _context.SaveChangesAsync();
+                        }
                     }
                 }
             }
@@ -198,18 +218,35 @@ namespace CBHPredictorWebAPI.Controllers
 
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
-                        BingSearchTerm order = new BingSearchTerm()
+                        if (_context.BingSearchTerms.Any(e => e.terms == ConvertToString(row["Search term"])))
                         {
-                            id = Guid.NewGuid(),
-                            terms = ConvertToString(row["Search term"]),
-                            impressions = ConvertToInt(row["Impr."]),
-                            clicks = ConvertToInt(row["Clicks"]),
-                            month = _month.ToString(),
-                            year = _year
-                        };
+                            string command = "SELECT * FROM BingSearchTerms WHERE terms = {0} AND month = {1} AND year = {2}";
+                            BingSearchTerm tempTerm = _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _month.ToString(), _year).FirstOrDefault();
+                            _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _month.ToString(), _year).ExecuteDelete();
 
-                        list.Add(order);
-                        _context.Add(order);
+                            tempTerm.impressions += ConvertToInt(row["Impr."]);
+                            tempTerm.clicks += ConvertToInt(row["Clicks"]);
+                            // Datum aktualisieren
+
+                            _context.Add(tempTerm);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            BingSearchTerm term = new BingSearchTerm()
+                            {
+                                id = Guid.NewGuid(),
+                                terms = ConvertToString(row["Search term"]),
+                                impressions = ConvertToInt(row["Impr."]),
+                                clicks = ConvertToInt(row["Clicks"]),
+                                month = _month.ToString(),
+                                year = _year
+                            };
+
+                            list.Add(term);
+                            _context.Add(term);
+                            await _context.SaveChangesAsync();
+                        }
                     }
                 }
             }
