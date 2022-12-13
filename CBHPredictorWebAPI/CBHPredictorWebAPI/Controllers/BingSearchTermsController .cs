@@ -169,8 +169,22 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // Add Range Filter
+        [HttpPost("AddRangeFilter/{col}/{fromVal}/{toVal}")]
+        public string AddRangeFilter(string col, string fromVal, string toVal) 
+        {
+            string filter = createRangeFilterString(col, fromVal, toVal);
+            HttpContext.Session.SetString("BingFilter", HttpContext.Session.GetString("BingFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
 
         // Add Comparing Filter
+        [HttpPost("AddCompareFilter/{col}/{value}/{before}")]
+        public string AddCompareFilter(string col, string value, bool before)
+        {
+            string filter = createCompareFilterString(col, value, before);
+            HttpContext.Session.SetString("BingFilter", HttpContext.Session.GetString("BingFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
 
         // Remove Single Filter
         [HttpDelete("RemoveSingleFilter/{col}/{value}/{exact}")]
@@ -185,10 +199,34 @@ namespace CBHPredictorWebAPI.Controllers
 
             return "{\"success\":1}";
         }
-        
+
         // Remove Range Filter
+        [HttpDelete("RemoveRangeFilter/{col}/{fromVal}/{toVal}")]
+        public string RemoveRangeFilter(string col, string fromVal, string toVal)
+        {
+            string filter = ";" + createRangeFilterString(col, fromVal, toVal);
+            string? allFilters = HttpContext.Session.GetString("BingFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("BingFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
 
         // Remove Comparing Filter
+        [HttpDelete("RemoveCompareFilter/{col}/{fromVal}/{toVal}")]
+        public string RemoveCompareFilter(string col, string value, bool before)
+        {
+            string filter = ";" + createCompareFilterString(col, value, before);
+            string? allFilters = HttpContext.Session.GetString("BingFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("BingFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
 
         // Filter String Creation
         private string createSingleFilterString(string col, string value, bool exact)
@@ -200,6 +238,21 @@ namespace CBHPredictorWebAPI.Controllers
             else
             {
                 return "[" + col + "] LIKE '%" + value + "%'";
+            }
+        }
+        private string createRangeFilterString(string col, string fromVal, string toVal)
+        {
+            return "[" + col + "] BETWEEN '" + fromVal + "' AND '" + toVal + "'";
+        }
+        private string createCompareFilterString(string col, string value, bool before)
+        {
+            if(before)
+            {
+                return "[" + col + "] < '" + value + "'";
+            }
+            else
+            {
+                return "[" + col + "] > '" + value + "'";
             }
         }
 
