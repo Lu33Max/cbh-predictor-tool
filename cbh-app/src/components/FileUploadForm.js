@@ -47,7 +47,7 @@ export default function FileUploadForm(props) {
 		fetch(
 			url,
 			{
-				method: 'POST',
+				method: 'entry',
 				body: formData,
 			}
 		)
@@ -79,12 +79,12 @@ export default function FileUploadForm(props) {
         return(
             <div>
                 <div className="mt-4">
-                    <label className="h3 form-label">Post month</label>
+                    <label className="h3 form-label">entry month</label>
                     <input value={month} name="month" type="text" className="form-control" onChange={handleMonthChange} />
                 </div>
                 
                 <div className="mt-4">
-                    <label className="h3 form-label">Post year</label>
+                    <label className="h3 form-label">entry year</label>
                     <input value={year} name="year" type="text" className="form-control" onChange={handleYearChange} />
                 </div>
             </div>

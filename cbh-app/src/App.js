@@ -13,9 +13,9 @@ import FileUploadForm from "./components/FileUploadForm";
 window.$activeTable = "";
 
 export default function App() {
-  const [posts, setPosts] = useState([]);
-  const [showingCreateNewPostForm, setShowingCreateNewPostForm] = useState(false);
-  const [postCurrentlyBeingUpdated, setPostCurrentlyBeingUpdated] = useState(null);
+  const [entries, setentries] = useState([]);
+  const [showingCreateNewentryForm, setShowingCreateNewentryForm] = useState(false);
+  const [entryCurrentlyBeingUpdated, setentryCurrentlyBeingUpdated] = useState(null);
   const [showingFileUploadForm, setShowingFileUploadForm] = useState(false);
   const [filter, setFilter] = useState({
     col: '',
@@ -24,24 +24,24 @@ export default function App() {
   });
 
   //// Basic CRUD Operations ////
-  // Get all Posts from Server
-  function getPosts(table){
-    setPosts([]);
+  // Get all entries from Server
+  function getentries(table){
+    setentries([]);
     window.$activeTable = table;
     var url;
 
     switch (table) {
       case 'Bing':
-        url = Constants.API_URL_BING_POSTS;
+        url = Constants.API_URL_BING_entries;
         break;
       case 'Google':
-        url = Constants.API_URL_GOOGLE_POSTS;
+        url = Constants.API_URL_GOOGLE_entries;
         break;
       case 'Lead':
-        url = Constants.API_URL_LEAD_POSTS;
+        url = Constants.API_URL_LEAD_entries;
         break;
       case 'Order':
-        url = Constants.API_URL_ORDER_POSTS;
+        url = Constants.API_URL_ORDER_entries;
         break;
       default:
         alert(`Error: Table with name "${table}" does not exist`)
@@ -52,30 +52,30 @@ export default function App() {
       method: 'GET'
     })
     .then(response => response.json())
-    .then(postsFromServer => {
-      setPosts(postsFromServer);
+    .then(entriesFromServer => {
+      setentries(entriesFromServer);
     })
     .catch((error) => {
       console.log(error);
       alert(error);
     });
   }
-  // Delete Post by ID
-  function deletePost(id){
+  // Delete entry by ID
+  function deleteentry(id){
     var url;
 
     switch (window.$activeTable) {
       case 'Bing':
-        url = `${Constants.API_URL_BING_POSTS}/${id}`;
+        url = `${Constants.API_URL_BING_entries}/${id}`;
         break;
       case 'Google':
-        url = `${Constants.API_URL_GOOGLE_POSTS}/${id}`;
+        url = `${Constants.API_URL_GOOGLE_entries}/${id}`;
         break;
       case 'Lead':
-        url = `${Constants.API_URL_LEAD_POSTS}/${id}`;
+        url = `${Constants.API_URL_LEAD_entries}/${id}`;
         break;
       case 'Order':
-        url = `${Constants.API_URL_ORDER_POSTS}/${id}`;
+        url = `${Constants.API_URL_ORDER_entries}/${id}`;
         break;
       default:
         alert(`Error: Table with name "${window.$activeTable}" does not exist`)
@@ -88,29 +88,29 @@ export default function App() {
     .then(response => response.json())
     .then(responseFromServer => {
       console.log(responseFromServer);
-      onPostDeleted(id);
+      onentryDeleted(id);
     })
     .catch((error) => {
       console.log(error);
       alert(error);
     });
   }
-  // Delete all Posts from Table
-  function deleteAllPosts(){
+  // Delete all entries from Table
+  function deleteAllentries(){
     var url;
 
     switch (window.$activeTable) {
       case 'Bing':
-        url = Constants.API_URL_BING_POSTS;
+        url = Constants.API_URL_BING_entries;
         break;
       case 'Google':
-        url = Constants.API_URL_GOOGLE_POSTS;
+        url = Constants.API_URL_GOOGLE_entries;
         break;
       case 'Lead':
-        url = Constants.API_URL_LEAD_POSTS;
+        url = Constants.API_URL_LEAD_entries;
         break;
       case 'Order':
-        url = Constants.API_URL_ORDER_POSTS;
+        url = Constants.API_URL_ORDER_entries;
         break;
       default:
         alert(`Error: Table with name "${window.$activeTable}" does not exist`)
@@ -123,7 +123,7 @@ export default function App() {
     .then(response => response.json())
     .then(responseFromServer => {
       console.log(responseFromServer);
-      onPostsDeleted();
+      onentriesDeleted();
     })
     .catch((error) => {
       console.log(error);
@@ -143,22 +143,22 @@ export default function App() {
     }
   }
   // Apply Filter
-  function getFilteredPosts(){
-    setPosts([]);
+  function getFilteredentries(){
+    setentries([]);
     var url;
 
     switch (window.$activeTable) {
       case 'Bing':
-        url = `${Constants.API_URL_BING_POSTS}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        url = `${Constants.API_URL_BING_entries}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
         break;
       case 'Google':
-        url = `${Constants.API_URL_GOOGLE_POSTS}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        url = `${Constants.API_URL_GOOGLE_entries}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
         break;
       case 'Lead':
-        url = `${Constants.API_URL_LEAD_POSTS}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        url = `${Constants.API_URL_LEAD_entries}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
         break;
       case 'Order':
-        url = `${Constants.API_URL_ORDER_POSTS}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        url = `${Constants.API_URL_ORDER_entries}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
         break;
       default:
         alert(`Error: Table with name "${window.$activeTable}" does not exist`)
@@ -169,8 +169,8 @@ export default function App() {
       method: 'GET'
     })
     .then(response => response.json())
-    .then(postsFromServer => {
-      setPosts(postsFromServer);
+    .then(entriesFromServer => {
+      setentries(entriesFromServer);
     })
     .catch((error) => {
       console.log(error);
@@ -183,22 +183,22 @@ export default function App() {
     <div className="container-fluid">
       <div className="row min-vh-100">
         <div className="col d-flex flex-column justify-content-center align-items-center">
-          {(showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false) && (
+          {(showingCreateNewentryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false) && (
             <div>
               <h1 className="mt-3">CBH Predictor Tool</h1>
               
               <div className="row mt-5">
                 <div className="col-sm">
-                  <button onClick={() => getPosts('Bing')} className="btn btn-dark btn-lg w-100 h-100">Bing Table</button>
+                  <button onClick={() => getentries('Bing')} className="btn btn-dark btn-lg w-100 h-100">Bing Table</button>
                 </div>
                 <div className="col-sm">
-                  <button onClick={() => getPosts('Google')} className="btn btn-dark btn-lg w-100 h-100">Google Table</button>
+                  <button onClick={() => getentries('Google')} className="btn btn-dark btn-lg w-100 h-100">Google Table</button>
                 </div>
                 <div className="col-sm">
-                  <button onClick={() => getPosts('Lead')} className="btn btn-dark btn-lg w-100 h-100">Lead Table</button>
+                  <button onClick={() => getentries('Lead')} className="btn btn-dark btn-lg w-100 h-100">Lead Table</button>
                 </div>
                 <div className="col-sm">
-                  <button onClick={() => getPosts('Order')} className="btn btn-dark btn-lg w-100 h-100">Order Table</button>
+                  <button onClick={() => getentries('Order')} className="btn btn-dark btn-lg w-100 h-100">Order Table</button>
                 </div>
               </div>
 
@@ -207,14 +207,14 @@ export default function App() {
             </div>
           )}
           
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Bing") && renderBingTable()}
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Google") && renderGoogleTable()}
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Lead") && renderLeadTable()}
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Order") && renderOrderTable()}
+          {(entries.length > 0 && showingCreateNewentryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Bing") && renderBingTable()}
+          {(entries.length > 0 && showingCreateNewentryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Google") && renderGoogleTable()}
+          {(entries.length > 0 && showingCreateNewentryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Lead") && renderLeadTable()}
+          {(entries.length > 0 && showingCreateNewentryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Order") && renderOrderTable()}
 
           {showingFileUploadForm && showUploadForm()}
-          {showingCreateNewPostForm && showCreateForm()}
-          {postCurrentlyBeingUpdated !== null && showUpdateForm()}
+          {showingCreateNewentryForm && showCreateForm()}
+          {entryCurrentlyBeingUpdated !== null && showUpdateForm()}
         </div>
       </div>
     </div>
@@ -225,8 +225,8 @@ export default function App() {
     return(
       <div className="mt-3">
         <button onClick={() => setShowingFileUploadForm(true)} className="btn btn-dark btn-lg w-100 mt-2">Upload Excel File</button>
-        <button onClick={() => setShowingCreateNewPostForm(true)} className="btn btn-secondary btn-lg w-100 mt-2">Create new Post</button>
-        <button onClick={() => { if(window.confirm(`Are you sure you want to delete all posts from table "${window.$activeTable}"?`)) deleteAllPosts() }} className="btn btn-danger btn-lg w-100 mt-2">Delete All Posts</button>
+        <button onClick={() => setShowingCreateNewentryForm(true)} className="btn btn-secondary btn-lg w-100 mt-2">Create new entry</button>
+        <button onClick={() => { if(window.confirm(`Are you sure you want to delete all entries from table "${window.$activeTable}"?`)) deleteAllentries() }} className="btn btn-danger btn-lg w-100 mt-2">Delete All entries</button>
       </div>
     )
   }
@@ -243,8 +243,8 @@ export default function App() {
           <label className="h5 form-label">Exact?  </label>
           <input className="mx-3" value={filter.exact} name="exact" type="checkbox" onChange={handleFilterChange} />
         </div>
-        <button onClick={() => getFilteredPosts()} className="btn btn-success btn-lg w-50 mt-2">Apply</button>
-        <button onClick={() => getPosts(window.$activeTable)} className="btn btn-dark btn-lg w-50 mt-2">Reset Filter</button>
+        <button onClick={() => getFilteredentries()} className="btn btn-success btn-lg w-50 mt-2">Apply</button>
+        <button onClick={() => getentries(window.$activeTable)} className="btn btn-dark btn-lg w-50 mt-2">Reset Filter</button>
       </div>
     )
   }
@@ -256,13 +256,13 @@ export default function App() {
   function showCreateForm(){
     switch (window.$activeTable) {
       case 'Bing':
-        return <BingCreateForm onPostCreated={onPostCreated} />
+        return <BingCreateForm onentryCreated={onentryCreated} />
       case 'Google':
-        return <GoogleCreateForm onPostCreated={onPostCreated} />
+        return <GoogleCreateForm onentryCreated={onentryCreated} />
       case 'Lead':
-        return <LeadCreateForm onPostCreated={onPostCreated} />
+        return <LeadCreateForm onentryCreated={onentryCreated} />
       case 'Order':
-        return <OrderCreateForm onPostCreated={onPostCreated} />
+        return <OrderCreateForm onentryCreated={onentryCreated} />
       default:
         alert(`Error: Table with name "${window.$activeTable}" does not exist`)
         return;
@@ -271,13 +271,13 @@ export default function App() {
   function showUpdateForm(){
     switch (window.$activeTable) {
       case 'Bing':
-        return <BingUpdateForm post={postCurrentlyBeingUpdated} onPostUpdated={onPostUpdated} />
+        return <BingUpdateForm entry={entryCurrentlyBeingUpdated} onentryUpdated={onentryUpdated} />
       case 'Google':
-        return <GoogleUpdateForm post={postCurrentlyBeingUpdated} onPostUpdated={onPostUpdated} />
+        return <GoogleUpdateForm entry={entryCurrentlyBeingUpdated} onentryUpdated={onentryUpdated} />
       case 'Lead':
-        return <LeadUpdateForm post={postCurrentlyBeingUpdated} onPostUpdated={onPostUpdated} />
+        return <LeadUpdateForm entry={entryCurrentlyBeingUpdated} onentryUpdated={onentryUpdated} />
       case 'Order':
-        return <OrderUpdateForm post={postCurrentlyBeingUpdated} onPostUpdated={onPostUpdated} />
+        return <OrderUpdateForm entry={entryCurrentlyBeingUpdated} onentryUpdated={onentryUpdated} />
       default:
         alert(`Error: Table with name "${window.$activeTable}" does not exist`)
         return;
@@ -299,25 +299,25 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-           {posts.map((post) => (
-             <tr key={post.id}>
-                <td>{post.terms}</td>
-                <td>{post.impressions}</td>
-                <td>{post.clicks}</td>
+           {entries.map((entry) => (
+             <tr key={entry.id}>
+                <td>{entry.terms}</td>
+                <td>{entry.impressions}</td>
+                <td>{entry.clicks}</td>
                 <td>
-                  {post.month}<br/>
-                  {post.year}
+                  {entry.month}<br/>
+                  {entry.year}
                 </td>                     
                 <td>
-                  <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                  <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
+                  <button onClick={() => setentryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                  <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${entry.id}"?`)) deleteentry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
                 </td>
              </tr>
            ))}
           </tbody>
         </table>
 
-        <button onClick={() => setPosts([])} className="btn btn-dark btn-lg w-100 mb-4">Close Table</button>
+        <button onClick={() => setentries([])} className="btn btn-dark btn-lg w-100 mb-4">Close Table</button>
       </div>
     );
   }
@@ -335,25 +335,25 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-            {posts.map((post) => (
-              <tr  key={post.id}>
-                <td>{post.terms}</td>
-                <td>{post.impressions}</td>
-                <td>{post.clicks}</td>  
+            {entries.map((entry) => (
+              <tr  key={entry.id}>
+                <td>{entry.terms}</td>
+                <td>{entry.impressions}</td>
+                <td>{entry.clicks}</td>  
                 <td>
-                  {post.month}<br/>
-                  {post.year}
+                  {entry.month}<br/>
+                  {entry.year}
                 </td>                     
                 <td>
-                 <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                 <button onClick={() => { if(window.confirm(`Are you sure you want to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
+                 <button onClick={() => setentryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                 <button onClick={() => { if(window.confirm(`Are you sure you want to delete the entry with ID "${entry.id}"?`)) deleteentry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <button onClick={() => setPosts([])} className="btn btn-dark btn-lg w-100 mb-4">Close Table</button>
+        <button onClick={() => setentries([])} className="btn btn-dark btn-lg w-100 mb-4">Close Table</button>
       </div>
     );
   }
@@ -380,31 +380,31 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-           {posts.map((post) => (
-             <tr  key={post.id}>
-               <td>{post.leadID}</td>
-               <td>{post.leadNo}</td>
-               <td>{post.leadStatus}</td>
-               <td>{post.leadDate}</td>
-               <td>{post.organisationID}</td>
-               <td>{post.countryID}</td>
-               <td>{post.channel}</td>
-               <td>{post.fieldOfInterest}</td>
-               <td>{post.specificOfInterest}</td>
-               <td>{post.paramOfInterest}</td>
-               <td>{post.diagnosisOfInterest}</td>        
-               <td>{post.matrixOfInterest}</td>               
-               <td>{post.quantityOfInterest}</td>                      
+           {entries.map((entry) => (
+             <tr  key={entry.id}>
+               <td>{entry.leadID}</td>
+               <td>{entry.leadNo}</td>
+               <td>{entry.leadStatus}</td>
+               <td>{entry.leadDate}</td>
+               <td>{entry.organisationID}</td>
+               <td>{entry.countryID}</td>
+               <td>{entry.channel}</td>
+               <td>{entry.fieldOfInterest}</td>
+               <td>{entry.specificOfInterest}</td>
+               <td>{entry.paramOfInterest}</td>
+               <td>{entry.diagnosisOfInterest}</td>        
+               <td>{entry.matrixOfInterest}</td>               
+               <td>{entry.quantityOfInterest}</td>                      
               <td>
-                 <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
+                 <button onClick={() => setentryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${entry.id}"?`)) deleteentry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
               </td>
              </tr>
            ))}
           </tbody>
         </table>
 
-        <button onClick={() => setPosts([])} className="btn btn-dark btn-lg w-100 mb-4">close table</button>
+        <button onClick={() => setentries([])} className="btn btn-dark btn-lg w-100 mb-4">close table</button>
       </div>
     );
   }
@@ -448,48 +448,48 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-           {posts.map((post) => (
-             <tr  key={post.id}>
-               <td>{post.customerID}</td>
-               <td>{post.orderID}</td>
-               <td>{post.orderDate}</td>
-               <td>{post.orderPrice}</td>
-               <td>{post.storageTemp}</td>
-               <td>{post.donorID}</td>
-               <td>{post.cbhSampleID}</td>
-               <td>{post.matrix}</td>
-               <td>{post.supplierID}</td>
-               <td>{post.supplierSampleID}</td>
-               <td>{post.productID}</td>
-               <td>{post.countryID}</td>        
-               <td>{post.quantity}</td>               
-               <td>{post.unit}</td>
-               <td>{post.age}</td> 
-               <td>{post.gender}</td> 
-               <td>{post.ethnicity}</td> 
-               <td>{post.labParameter}</td> 
-               <td>{post.resultNumerical}</td> 
-               <td>{post.resultUnit}</td> 
-               <td>{post.resultInterpretation}</td> 
-               <td>{post.testMethod}</td> 
-               <td>{post.testKitManufacturer}</td> 
-               <td>{post.testSystemManufacturer}</td> 
-               <td>{post.diagnosis}</td>
-               <td>{post.icd}</td> 
-               <td>{post.histologicalDiagnosis}</td> 
-               <td>{post.organ}</td> 
-               <td>{post.collectionCountry}</td> 
-               <td>{post.collectionDate}</td>                       
+           {entries.map((entry) => (
+             <tr  key={entry.id}>
+               <td>{entry.customerID}</td>
+               <td>{entry.orderID}</td>
+               <td>{entry.orderDate}</td>
+               <td>{entry.orderPrice}</td>
+               <td>{entry.storageTemp}</td>
+               <td>{entry.donorID}</td>
+               <td>{entry.cbhSampleID}</td>
+               <td>{entry.matrix}</td>
+               <td>{entry.supplierID}</td>
+               <td>{entry.supplierSampleID}</td>
+               <td>{entry.productID}</td>
+               <td>{entry.countryID}</td>        
+               <td>{entry.quantity}</td>               
+               <td>{entry.unit}</td>
+               <td>{entry.age}</td> 
+               <td>{entry.gender}</td> 
+               <td>{entry.ethnicity}</td> 
+               <td>{entry.labParameter}</td> 
+               <td>{entry.resultNumerical}</td> 
+               <td>{entry.resultUnit}</td> 
+               <td>{entry.resultInterpretation}</td> 
+               <td>{entry.testMethod}</td> 
+               <td>{entry.testKitManufacturer}</td> 
+               <td>{entry.testSystemManufacturer}</td> 
+               <td>{entry.diagnosis}</td>
+               <td>{entry.icd}</td> 
+               <td>{entry.histologicalDiagnosis}</td> 
+               <td>{entry.organ}</td> 
+               <td>{entry.collectionCountry}</td> 
+               <td>{entry.collectionDate}</td>                       
               <td>
-                 <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
+                 <button onClick={() => setentryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${entry.id}"?`)) deleteentry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
               </td>
              </tr>
            ))}
           </tbody>
         </table>
 
-        <button onClick={() => setPosts([])} className="btn btn-dark btn-lg w-100 mb-4">close table</button>
+        <button onClick={() => setentries([])} className="btn btn-dark btn-lg w-100 mb-4">close table</button>
       </div>
     );
   }
@@ -499,62 +499,62 @@ export default function App() {
     setShowingFileUploadForm(false);
 
     if(created) alert(`Sucessfully uploaded the file contents to "${window.$activeTable}" Table.`);
-    getPosts(window.$activeTable);
+    getentries(window.$activeTable);
   }
-  function onPostCreated(createdPost){
-    setShowingCreateNewPostForm(false);
+  function onentryCreated(createdentry){
+    setShowingCreateNewentryForm(false);
 
-    if (createdPost === null) {
+    if (createdentry === null) {
       return;
     }
 
-    alert(`Post succesfully created. After clicking OK, your new post will show up in the table below.`);
-    getPosts(window.$activeTable);
+    alert(`entry succesfully created. After clicking OK, your new entry will show up in the table below.`);
+    getentries(window.$activeTable);
   }
-  function onPostUpdated(updatedPost){
-    setPostCurrentlyBeingUpdated(null);
+  function onentryUpdated(updatedentry){
+    setentryCurrentlyBeingUpdated(null);
 
-    if (updatedPost === null) {
+    if (updatedentry === null) {
       return;
     }
 
-    let postsCopy = [...posts];
+    let entriesCopy = [...entries];
 
-    const index = postsCopy.findIndex((postsCopyPost, currentIndex) => {
-      if (postsCopyPost.id === updatedPost) {
+    const index = entriesCopy.findIndex((entriesCopyentry, currentIndex) => {
+      if (entriesCopyentry.id === updatedentry) {
         return true;
       }
     });
 
     if (index !== -1) {
-      postsCopy[index] = updatedPost.id;
+      entriesCopy[index] = updatedentry.id;
       
     }
 
-    setPosts(postsCopy);
-    alert(`Post successfully updated. After clicking OK, look for the post in the table below to see the updates.`);
-    getPosts(window.$activeTable);
+    setentries(entriesCopy);
+    alert(`entry successfully updated. After clicking OK, look for the entry in the table below to see the updates.`);
+    getentries(window.$activeTable);
   }
-  function onPostDeleted(deletedPostID){
-    let postsCopy = [...posts];
+  function onentryDeleted(deletedentryID){
+    let entriesCopy = [...entries];
 
-    const index = postsCopy.findIndex((postsCopyPost, currentIndex) => {
-      if (postsCopyPost.id === deletedPostID) {
+    const index = entriesCopy.findIndex((entriesCopyentry, currentIndex) => {
+      if (entriesCopyentry.id === deletedentryID) {
         return true;
       }
     });
 
     if (index !== -1) {
-      postsCopy.splice(index, 1);
+      entriesCopy.splice(index, 1);
     }
 
-    setPosts(postsCopy);
-    alert('Post successfully deleted. After clicking OK, look at the table below to see your post disappear.');
-    getPosts(window.$activeTable);
+    setentries(entriesCopy);
+    alert('entry successfully deleted. After clicking OK, look at the table below to see your entry disappear.');
+    getentries(window.$activeTable);
   } 
-  function onPostsDeleted(){
-    setPosts([]);
-    alert(`Sucessfully deleted posts from "${window.$activeTable}" Table.`);
-    getPosts(window.$activeTable);
+  function onentriesDeleted(){
+    setentries([]);
+    alert(`Sucessfully deleted entries from "${window.$activeTable}" Table.`);
+    getentries(window.$activeTable);
   }
 }
