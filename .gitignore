@@ -45,6 +45,8 @@ sketch
 *.user
 *.userosscache
 *.sln.docstates
+*.assets.json
+*.csproj.nuget.g.props
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
