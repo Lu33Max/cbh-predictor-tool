@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -82,6 +83,7 @@ namespace CBHPredictorWebAPI.Controllers
                 return BadRequest();
             }
 
+            leadEntry.lastEdited = DateTime.Now;
             _context.Entry(leadEntry).State = EntityState.Modified;
 
             try
@@ -108,10 +110,24 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<LeadEntry>> PostLeadEntry(LeadEntry leadEntry)
         {
+<<<<<<< HEAD
             leadEntry.id = Guid.NewGuid();
             await _context.LeadEntries.AddAsync(leadEntry);
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetLeadEntry", new { id = leadEntry.id }, leadEntry);
+=======
+            if (!_context.LeadEntries.Any(e => e.leadID == leadEntry.leadID))
+            {
+                leadEntry.id = Guid.NewGuid();
+                leadEntry.lastEdited = DateTime.Now;
+                await _context.LeadEntries.AddAsync(leadEntry);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetLeadEntry", new { id = leadEntry.id }, leadEntry);
+            } else
+            {
+                return BadRequest();
+            }
+>>>>>>> 1dfec67d1dcdf59b5f823a546cb0c877700d4969
         }
 
         // DELETE: api/LeadEntries/5

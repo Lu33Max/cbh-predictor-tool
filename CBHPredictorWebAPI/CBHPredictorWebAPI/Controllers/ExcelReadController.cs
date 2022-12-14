@@ -2,6 +2,9 @@
 using CBHPredictorWebAPI.Models;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json.Linq;
 using System.Data;
 
 namespace CBHPredictorWebAPI.Controllers
@@ -38,26 +41,31 @@ namespace CBHPredictorWebAPI.Controllers
                     });
 
                     foreach (DataRow row in result.Tables[0].Rows) {
-                        LeadEntry lead = new LeadEntry()
-                        {
-                            id = Guid.NewGuid(),
-                            leadID = ConvertToInt(row["leadid"]),
-                            leadNo = ConvertToString(row["Lead_No"]),
-                            leadStatus = ConvertToString(row["Lead_Status"]),
-                            leadDate = ConvertToDate(row["Lead_Date"]),
-                            organisationID = ConvertToInt(row["Organisation Id"]),
-                            countryID = ConvertToInt(row["Countryid"]),
-                            channel = ConvertToInt(row["Channel"]),
-                            fieldOfInterest = ConvertToString(row["Field_of_interest"]),
-                            specificOfInterest = ConvertToString(row["Specifications_of_interest"]),
-                            paramOfInterest = ConvertToString(row["Parameter_of_interest"]),
-                            diagnosisOfInterest = ConvertToString(row["Diagnosis_of_interest"]),
-                            matrixOfInterest = ConvertToString(row["Matrix_of_interest"]),
-                            quantityOfInterest = ConvertToString(row["Quantity_of_interest"])
-                        };
 
-                        list.Add(lead);
-                        _context.Add(lead);
+                        if (!_context.LeadEntries.Any(e => e.leadID == ConvertToInt(row["leadid"])))
+                        {
+                            LeadEntry lead = new LeadEntry()
+                            {
+                                id = Guid.NewGuid(),
+                                leadID = ConvertToInt(row["leadid"]),
+                                leadNo = ConvertToString(row["Lead_No"]),
+                                leadStatus = ConvertToString(row["Lead_Status"]),
+                                leadDate = ConvertToDate(row["Lead_Date"]),
+                                organisationID = ConvertToInt(row["Organisation Id"]),
+                                countryID = ConvertToInt(row["Countryid"]),
+                                channel = ConvertToInt(row["Channel"]),
+                                fieldOfInterest = ConvertToString(row["Field_of_interest"]),
+                                specificOfInterest = ConvertToString(row["Specifications_of_interest"]),
+                                paramOfInterest = ConvertToString(row["Parameter_of_interest"]),
+                                diagnosisOfInterest = ConvertToString(row["Diagnosis_of_interest"]),
+                                matrixOfInterest = ConvertToString(row["Matrix_of_interest"]),
+                                quantityOfInterest = ConvertToString(row["Quantity_of_interest"]),
+                                lastEdited = DateTime.Now
+                            };
+
+                            list.Add(lead);
+                            _context.Add(lead);
+                        }
                     }
                 }
             }
@@ -85,43 +93,48 @@ namespace CBHPredictorWebAPI.Controllers
                     });
 
                     foreach (DataRow row in result.Tables[0].Rows) {
-                        OrderEntry order = new OrderEntry()
-                        {
-                            id = Guid.NewGuid(),
-                            customerID = ConvertToInt(row["customerid"]),
-                            orderID = ConvertToInt(row["Orderid"]),
-                            orderDate = ConvertToDate(row["OrderDate"]),
-                            orderPrice = ConvertToInt(row["price_CBH"]),
-                            storageTemp = ConvertToString(row["Storage_Temperature"]),
-                            donorID = ConvertToString(row["CBH_Donor_ID"]),
-                            cbhSampleID = ConvertToString(row["CBH_sample_id"]),
-                            matrix = ConvertToString(row["Matrix"]),
-                            supplierID = ConvertToInt(row["Supplierid"]),
-                            supplierSampleID = ConvertToString(row["Supplier_Sample_ID"]),
-                            productID = ConvertToInt(row["pid"]),
-                            countryID = ConvertToInt(row["country"]),
-                            quantity = ConvertToFloat(row["Quantity"]),
-                            unit = ConvertToString(row["Unit"]),
-                            age = ConvertToInt(row["Age"]),
-                            gender = ConvertToString(row["Gender"]),
-                            ethnicity = ConvertToString(row["Ethnicity"]),
-                            labParameter = ConvertToString(row["Lab_Parameter"]),
-                            resultNumerical = ConvertToDecimal(row["Result_Numerical"]),
-                            resultUnit = ConvertToString(row["Result_Unit"]),
-                            resultInterpretation = ConvertToString(row["Result_Interpretation"]),
-                            testMethod = ConvertToString(row["Test_Method"]),
-                            testKitManufacturer = ConvertToString(row["Test_Kit_Manufacturer"]),
-                            testSystemManufacturer = ConvertToString(row["Test_System_Manufacturer"]),
-                            diagnosis = ConvertToString(row["Diagnosis"]),
-                            icd = ConvertToString(row["ICD_Code"]),
-                            histologicalDiagnosis = ConvertToString(row["Histological_Diagnosis"]),
-                            organ = ConvertToString(row["Organ"]),
-                            collectionCountry = ConvertToString(row["Country_of_Collection"]),
-                            collectionDate = ConvertToDate(row["Date_of_Collection"])
-                        };
 
-                        list.Add(order);
-                        _context.Add(order);
+                        if (!_context.OrderEntries.Any(e => e.cbhSampleID == ConvertToString(row["CBH_sample_id"])))
+                        {
+                            OrderEntry order = new OrderEntry()
+                            {
+                                id = Guid.NewGuid(),
+                                customerID = ConvertToInt(row["customerid"]),
+                                orderID = ConvertToInt(row["Orderid"]),
+                                orderDate = ConvertToDate(row["OrderDate"]),
+                                orderPrice = ConvertToInt(row["price_CBH"]),
+                                storageTemp = ConvertToString(row["Storage_Temperature"]),
+                                donorID = ConvertToString(row["CBH_Donor_ID"]),
+                                cbhSampleID = ConvertToString(row["CBH_sample_id"]),
+                                matrix = ConvertToString(row["Matrix"]),
+                                supplierID = ConvertToInt(row["Supplierid"]),
+                                supplierSampleID = ConvertToString(row["Supplier_Sample_ID"]),
+                                productID = ConvertToInt(row["pid"]),
+                                countryID = ConvertToInt(row["country"]),
+                                quantity = ConvertToFloat(row["Quantity"]),
+                                unit = ConvertToString(row["Unit"]),
+                                age = ConvertToInt(row["Age"]),
+                                gender = ConvertToString(row["Gender"]),
+                                ethnicity = ConvertToString(row["Ethnicity"]),
+                                labParameter = ConvertToString(row["Lab_Parameter"]),
+                                resultNumerical = ConvertToDecimal(row["Result_Numerical"]),
+                                resultUnit = ConvertToString(row["Result_Unit"]),
+                                resultInterpretation = ConvertToString(row["Result_Interpretation"]),
+                                testMethod = ConvertToString(row["Test_Method"]),
+                                testKitManufacturer = ConvertToString(row["Test_Kit_Manufacturer"]),
+                                testSystemManufacturer = ConvertToString(row["Test_System_Manufacturer"]),
+                                diagnosis = ConvertToString(row["Diagnosis"]),
+                                icd = ConvertToString(row["ICD_Code"]),
+                                histologicalDiagnosis = ConvertToString(row["Histological_Diagnosis"]),
+                                organ = ConvertToString(row["Organ"]),
+                                collectionCountry = ConvertToString(row["Country_of_Collection"]),
+                                collectionDate = ConvertToDate(row["Date_of_Collection"]),
+                                lastEdited = DateTime.Now
+                            };
+
+                            list.Add(order);
+                            _context.Add(order);
+                        }
                     }
                 }
             }
@@ -149,18 +162,35 @@ namespace CBHPredictorWebAPI.Controllers
 
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
-                        GoogleSearchTerm order = new GoogleSearchTerm()
+                        if (_context.GoogleSearchTerms.Any(e => e.terms == ConvertToString(row["Terms"])))
                         {
-                            id = Guid.NewGuid(),
-                            terms = ConvertToString(row["Terms"]),
-                            impressions = ConvertToInt(row["Impressions"]),
-                            clicks = ConvertToInt(row["Clicks"]),
-                            month = _month.ToString(),
-                            year = _year
-                        };
+                            string command = "SELECT * FROM GoogleSearchTerms WHERE terms = {0} AND month = {1} AND year = {2}";
+                            GoogleSearchTerm tempTerm = _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _month.ToString(), _year).FirstOrDefault();
+                            _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _month.ToString(), _year).ExecuteDelete();
 
-                        list.Add(order);
-                        _context.Add(order);
+                            tempTerm.impressions += ConvertToInt(row["Impressions"]);
+                            tempTerm.clicks += ConvertToInt(row["Clicks"]);
+                            // Datum aktualisieren
+
+                            _context.Add(tempTerm);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            GoogleSearchTerm term = new GoogleSearchTerm()
+                            {
+                                id = Guid.NewGuid(),
+                                terms = ConvertToString(row["Terms"]),
+                                impressions = ConvertToInt(row["Impressions"]),
+                                clicks = ConvertToInt(row["Clicks"]),
+                                month = _month.ToString(),
+                                year = _year
+                            };
+
+                            list.Add(term);
+                            _context.Add(term);
+                            await _context.SaveChangesAsync();
+                        }
                     }
                 }
             }
@@ -188,18 +218,35 @@ namespace CBHPredictorWebAPI.Controllers
 
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
-                        BingSearchTerm order = new BingSearchTerm()
+                        if (_context.BingSearchTerms.Any(e => e.terms == ConvertToString(row["Search term"])))
                         {
-                            id = Guid.NewGuid(),
-                            terms = ConvertToString(row["Search term"]),
-                            impressions = ConvertToInt(row["Impr."]),
-                            clicks = ConvertToInt(row["Clicks"]),
-                            month = _month.ToString(),
-                            year = _year
-                        };
+                            string command = "SELECT * FROM BingSearchTerms WHERE terms = {0} AND month = {1} AND year = {2}";
+                            BingSearchTerm tempTerm = _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _month.ToString(), _year).FirstOrDefault();
+                            _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _month.ToString(), _year).ExecuteDelete();
 
-                        list.Add(order);
-                        _context.Add(order);
+                            tempTerm.impressions += ConvertToInt(row["Impr."]);
+                            tempTerm.clicks += ConvertToInt(row["Clicks"]);
+                            // Datum aktualisieren
+
+                            _context.Add(tempTerm);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            BingSearchTerm term = new BingSearchTerm()
+                            {
+                                id = Guid.NewGuid(),
+                                terms = ConvertToString(row["Search term"]),
+                                impressions = ConvertToInt(row["Impr."]),
+                                clicks = ConvertToInt(row["Clicks"]),
+                                month = _month.ToString(),
+                                year = _year
+                            };
+
+                            list.Add(term);
+                            _context.Add(term);
+                            await _context.SaveChangesAsync();
+                        }
                     }
                 }
             }

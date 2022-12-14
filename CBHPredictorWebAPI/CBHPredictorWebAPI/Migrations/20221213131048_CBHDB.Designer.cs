@@ -12,7 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CBHPredictorWebAPI.Migrations
 {
     [DbContext(typeof(CBHDBContext))]
+<<<<<<<< HEAD:CBHPredictorWebAPI/CBHPredictorWebAPI/Migrations/20221213131048_CBHDB.Designer.cs
     [Migration("20221213131048_CBHDB")]
+========
+    [Migration("20221213121725_CBHDB")]
+>>>>>>>> 1dfec67d1dcdf59b5f823a546cb0c877700d4969:CBHPredictorWebAPI/CBHPredictorWebAPI/Migrations/20221213121725_CBHDB.Designer.cs
     partial class CBHDB
     {
         /// <inheritdoc />
@@ -94,6 +98,9 @@ namespace CBHPredictorWebAPI.Migrations
 
                     b.Property<string>("fieldOfInterest")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("lastEdited")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("leadDate")
                         .HasColumnType("datetime2");
@@ -190,6 +197,9 @@ namespace CBHPredictorWebAPI.Migrations
 
                     b.Property<string>("labParameter")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("lastEdited")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("matrix")
                         .HasColumnType("nvarchar(max)");

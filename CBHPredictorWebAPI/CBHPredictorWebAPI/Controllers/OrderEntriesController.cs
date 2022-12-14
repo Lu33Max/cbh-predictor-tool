@@ -82,6 +82,7 @@ namespace CBHPredictorWebAPI.Controllers
                 return BadRequest();
             }
 
+            orderEntry.lastEdited = DateTime.Now;
             _context.Entry(orderEntry).State = EntityState.Modified;
 
             try
@@ -108,10 +109,25 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderEntry>> PostOrderEntry(OrderEntry orderEntry)
         {
+<<<<<<< HEAD
             orderEntry.id = Guid.NewGuid();
             await _context.OrderEntries.AddAsync(orderEntry);
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetOrderEntry", new { id = orderEntry.id }, orderEntry);
+=======
+            if (!_context.OrderEntries.Any(e => e.cbhSampleID == orderEntry.cbhSampleID))
+            {
+                orderEntry.id = Guid.NewGuid();
+                orderEntry.lastEdited = DateTime.Now;
+                await _context.OrderEntries.AddAsync(orderEntry);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetLeadEntry", new { id = orderEntry.id }, orderEntry);
+            }
+            else
+            {
+                return BadRequest();
+            }
+>>>>>>> 1dfec67d1dcdf59b5f823a546cb0c877700d4969
         }
 
         // DELETE: api/OrderEntries/5
