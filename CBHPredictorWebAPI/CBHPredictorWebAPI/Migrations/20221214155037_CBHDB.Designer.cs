@@ -12,11 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CBHPredictorWebAPI.Migrations
 {
     [DbContext(typeof(CBHDBContext))]
-<<<<<<<< HEAD:CBHPredictorWebAPI/CBHPredictorWebAPI/Migrations/20221213131048_CBHDB.Designer.cs
-    [Migration("20221213131048_CBHDB")]
-========
-    [Migration("20221213121725_CBHDB")]
->>>>>>>> 1dfec67d1dcdf59b5f823a546cb0c877700d4969:CBHPredictorWebAPI/CBHPredictorWebAPI/Migrations/20221213121725_CBHDB.Designer.cs
+    [Migration("20221214155037_CBHDB")]
     partial class CBHDB
     {
         /// <inheritdoc />

@@ -26,8 +26,6 @@ namespace CBHPredictorWebAPI.Controllers
         [Route("/LeadTable")]
         public async Task<String> LeadImport(IFormFile file)
         {
-            var list = new List<LeadEntry>();
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
             {
@@ -63,7 +61,6 @@ namespace CBHPredictorWebAPI.Controllers
                                 lastEdited = DateTime.Now
                             };
 
-                            list.Add(lead);
                             _context.Add(lead);
                         }
                     }
@@ -78,8 +75,6 @@ namespace CBHPredictorWebAPI.Controllers
         [Route("/OrderTable")]
         public async Task<String> OrderImport(IFormFile file)
         {
-            var list = new List<OrderEntry>();
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
             {
@@ -132,7 +127,6 @@ namespace CBHPredictorWebAPI.Controllers
                                 lastEdited = DateTime.Now
                             };
 
-                            list.Add(order);
                             _context.Add(order);
                         }
                     }
@@ -146,8 +140,6 @@ namespace CBHPredictorWebAPI.Controllers
         [Route("/GoogleTable/{_month}/{_year}")]
         public async Task<String> GoogleSearchTermsImport(IFormFile file, Month _month, int _year)
         {
-            var list = new List<GoogleSearchTerm>();
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
             {
@@ -170,7 +162,6 @@ namespace CBHPredictorWebAPI.Controllers
 
                             tempTerm.impressions += ConvertToInt(row["Impressions"]);
                             tempTerm.clicks += ConvertToInt(row["Clicks"]);
-                            // Datum aktualisieren
 
                             _context.Add(tempTerm);
                             await _context.SaveChangesAsync();
@@ -187,7 +178,6 @@ namespace CBHPredictorWebAPI.Controllers
                                 year = _year
                             };
 
-                            list.Add(term);
                             _context.Add(term);
                             await _context.SaveChangesAsync();
                         }
@@ -202,8 +192,6 @@ namespace CBHPredictorWebAPI.Controllers
         [Route("/BingTable/{_month}/{_year}")]
         public async Task<String> BingSearchTermsImport(IFormFile file, Month _month, int _year)
         {
-            var list = new List<BingSearchTerm>();
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
             {
@@ -226,7 +214,6 @@ namespace CBHPredictorWebAPI.Controllers
 
                             tempTerm.impressions += ConvertToInt(row["Impr."]);
                             tempTerm.clicks += ConvertToInt(row["Clicks"]);
-                            // Datum aktualisieren
 
                             _context.Add(tempTerm);
                             await _context.SaveChangesAsync();
@@ -243,7 +230,6 @@ namespace CBHPredictorWebAPI.Controllers
                                 year = _year
                             };
 
-                            list.Add(term);
                             _context.Add(term);
                             await _context.SaveChangesAsync();
                         }

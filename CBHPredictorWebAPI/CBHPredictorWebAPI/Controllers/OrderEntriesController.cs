@@ -109,12 +109,6 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderEntry>> PostOrderEntry(OrderEntry orderEntry)
         {
-<<<<<<< HEAD
-            orderEntry.id = Guid.NewGuid();
-            await _context.OrderEntries.AddAsync(orderEntry);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("GetOrderEntry", new { id = orderEntry.id }, orderEntry);
-=======
             if (!_context.OrderEntries.Any(e => e.cbhSampleID == orderEntry.cbhSampleID))
             {
                 orderEntry.id = Guid.NewGuid();
@@ -127,7 +121,6 @@ namespace CBHPredictorWebAPI.Controllers
             {
                 return BadRequest();
             }
->>>>>>> 1dfec67d1dcdf59b5f823a546cb0c877700d4969
         }
 
         // DELETE: api/OrderEntries/5
