@@ -1,8 +1,19 @@
 ﻿# Central BioHub Predictor Tool
 
-## Quickfixes
+## Getting Started
 
-#### Aka. "Ich hab gepullt und nichts funktioniert mehr"
+#### Starten der Entwicklungsumgebung
+
+1. CBHPredictorWebAPI > CBHPredictorWebAPI.sln öffnen > mit Klick auf den Playbutton starten
+	- Swagger Website kann geschlossen werden
+	- Terminal *muss* geöffnet bleiben
+2. cbh-app > Dateipfad im Explorer anklicken > *cmd* eintippen
+	1. *code .* eingeben > Ordner öffnet sich in VS Code
+	2. *npm start* eingeben > Website öffnet sich im Browser
+		- Terminal *muss* geöffnet bleiben
+		- Website sollte geöffnet bleiben > Änderungen im Code werden in Echtzeit ausgeführt
+
+## Quickfixes Aka. "Ich hab gepullt und nichts funktioniert mehr"
 
 Grundsätzlich gibt es zwei Arten von potenziellen Fehlern:
 
