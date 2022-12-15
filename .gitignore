@@ -7,6 +7,7 @@ logs
 
 node_modules
 bower_components
+cbh-app/node_modules/
 
 *.sublime*
 
@@ -45,6 +46,8 @@ sketch
 *.user
 *.userosscache
 *.sln.docstates
+*.assets.json
+*.csproj.nuget.g.props
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -71,6 +74,8 @@ bld/
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 CBHPredictorWebAPI/.vs/CBHPredictorWebAPI/v17/.suo
+CBHPredictorWebAPI/.vs/
+*.suo
 
 # Uncomment if you have tasks that create the project's static files in wwwroot
 #wwwroot/
