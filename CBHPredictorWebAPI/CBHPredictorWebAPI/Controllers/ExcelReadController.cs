@@ -3,6 +3,7 @@ using CBHPredictorWebAPI.Models;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using static CBHPredictorWebAPI.Controllers.ExcelReadController;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -18,13 +19,18 @@ namespace CBHPredictorWebAPI.Controllers
             _context = context;
         }
 
+        [HttpGet("{_month}")]
+        public int ConvertEnum(Month _month)
+        {
+            int month = Array.IndexOf(Enum.GetValues(_month.GetType()), _month);
+            return month;
+        }
+
         // Reads all Data from the Input Table and writes it to the LeadEntries Table
         [HttpPost]
         [Route("/LeadTable")]
         public async Task<String> LeadImport(IFormFile file)
         {
-            var list = new List<LeadEntry>();
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
             {
@@ -56,7 +62,6 @@ namespace CBHPredictorWebAPI.Controllers
                             quantityOfInterest = ConvertToString(row["Quantity_of_interest"])
                         };
 
-                        list.Add(lead);
                         _context.Add(lead);
                     }
                 }
@@ -70,8 +75,6 @@ namespace CBHPredictorWebAPI.Controllers
         [Route("/OrderTable")]
         public async Task<String> OrderImport(IFormFile file)
         {
-            var list = new List<OrderEntry>();
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
             {
@@ -120,7 +123,6 @@ namespace CBHPredictorWebAPI.Controllers
                             collectionDate = ConvertToDate(row["Date_of_Collection"])
                         };
 
-                        list.Add(order);
                         _context.Add(order);
                     }
                 }
@@ -133,8 +135,6 @@ namespace CBHPredictorWebAPI.Controllers
         [Route("/GoogleTable/{_month}/{_year}")]
         public async Task<String> GoogleSearchTermsImport(IFormFile file, Month _month, int _year)
         {
-            var list = new List<GoogleSearchTerm>();
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
             {
@@ -149,17 +149,18 @@ namespace CBHPredictorWebAPI.Controllers
 
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
+                        int month = Array.IndexOf(Enum.GetValues(_month.GetType()), _month);
+                        string _date = _year.ToString() + "-" + month + "-01";
+
                         GoogleSearchTerm order = new GoogleSearchTerm()
                         {
                             id = Guid.NewGuid(),
                             terms = ConvertToString(row["Terms"]),
                             impressions = ConvertToInt(row["Impressions"]),
                             clicks = ConvertToInt(row["Clicks"]),
-                            month = _month.ToString(),
-                            year = _year
+                            date = ConvertToDate(_date)
                         };
 
-                        list.Add(order);
                         _context.Add(order);
                     }
                 }
@@ -172,8 +173,6 @@ namespace CBHPredictorWebAPI.Controllers
         [Route("/BingTable/{_month}/{_year}")]
         public async Task<String> BingSearchTermsImport(IFormFile file, Month _month, int _year)
         {
-            var list = new List<BingSearchTerm>();
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
             {
@@ -188,17 +187,18 @@ namespace CBHPredictorWebAPI.Controllers
 
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
+                        int month = Array.IndexOf(Enum.GetValues(_month.GetType()), _month);
+                        string _date = _year.ToString() + "-" + month + "-01";
+
                         BingSearchTerm order = new BingSearchTerm()
                         {
                             id = Guid.NewGuid(),
                             terms = ConvertToString(row["Search term"]),
                             impressions = ConvertToInt(row["Impr."]),
                             clicks = ConvertToInt(row["Clicks"]),
-                            month = _month.ToString(),
-                            year = _year
+                            date = ConvertToDate(_date)
                         };
 
-                        list.Add(order);
                         _context.Add(order);
                     }
                 }
@@ -265,6 +265,7 @@ namespace CBHPredictorWebAPI.Controllers
             {
                 return temp;
             }
+
             return null;
         }
     }

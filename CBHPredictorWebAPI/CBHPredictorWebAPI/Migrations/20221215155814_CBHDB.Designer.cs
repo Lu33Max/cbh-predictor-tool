@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CBHPredictorWebAPI.Migrations
 {
     [DbContext(typeof(CBHDBContext))]
-    [Migration("20221205114411_CBHDB")]
+    [Migration("20221215155814_CBHDB")]
     partial class CBHDB
     {
         /// <inheritdoc />
@@ -34,17 +34,14 @@ namespace CBHPredictorWebAPI.Migrations
                     b.Property<int?>("clicks")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("date")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("impressions")
                         .HasColumnType("int");
 
-                    b.Property<string>("month")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("terms")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("year")
-                        .HasColumnType("int");
 
                     b.HasKey("id");
 
@@ -60,17 +57,14 @@ namespace CBHPredictorWebAPI.Migrations
                     b.Property<int?>("clicks")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("date")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("impressions")
                         .HasColumnType("int");
 
-                    b.Property<string>("month")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("terms")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("year")
-                        .HasColumnType("int");
 
                     b.HasKey("id");
 

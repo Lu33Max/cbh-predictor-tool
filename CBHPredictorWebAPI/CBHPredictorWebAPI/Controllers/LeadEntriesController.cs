@@ -40,23 +40,6 @@ namespace CBHPredictorWebAPI.Controllers
             return leadEntry;
         }
 
-        [HttpGet("GetAny/{col}/{value}/{exact}")]
-        public async Task<ActionResult<IEnumerable<LeadEntry>>> GetByAny(string col, string value, bool exact)
-        {
-            string command;
-
-            if (exact)
-            {
-                command = "SELECT * FROM LeadEntries WHERE [" + col + "] LIKE {0}";
-            }
-            else
-            {
-                command = "SELECT * FROM LeadEntries WHERE [" + col + "] LIKE '%' + {0} + '%'";
-            }
-
-            return await _context.LeadEntries.FromSqlRaw(command, value).ToListAsync();
-        }
-
         // PUT: api/LeadEntries/5
         // Edits one specific Entry in the LeadEntries Table by ID
         [HttpPut("{id}")]

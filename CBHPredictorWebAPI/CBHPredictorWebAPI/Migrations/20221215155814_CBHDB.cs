@@ -19,8 +19,7 @@ namespace CBHPredictorWebAPI.Migrations
                     terms = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     impressions = table.Column<int>(type: "int", nullable: true),
                     clicks = table.Column<int>(type: "int", nullable: true),
-                    month = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    year = table.Column<int>(type: "int", nullable: true)
+                    date = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -35,8 +34,7 @@ namespace CBHPredictorWebAPI.Migrations
                     terms = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     impressions = table.Column<int>(type: "int", nullable: true),
                     clicks = table.Column<int>(type: "int", nullable: true),
-                    month = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    year = table.Column<int>(type: "int", nullable: true)
+                    date = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {

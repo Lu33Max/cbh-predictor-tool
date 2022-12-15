@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
-using static CBHPredictorWebAPI.Controllers.ExcelReadController;
 using System.Text;
 
 namespace CBHPredictorWebAPI.Controllers
@@ -39,33 +38,6 @@ namespace CBHPredictorWebAPI.Controllers
             }
 
             return searchTerm;
-        }
-
-        // Gets all Entries in BingSearchTerms that meet a specified criterium
-        [HttpGet("GetAny/{col}/{value}/{exact}")]
-        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetByAny(string col, string value, bool exact)
-        {
-            string command;
-
-            if (exact)
-            {
-                command = "SELECT * FROM BingSearchTerms WHERE [" + col + "] LIKE {0}";
-            } 
-            else
-            {
-                command = "SELECT * FROM BingSearchTerms WHERE [" + col + "] LIKE '%' + {0} + '%'";
-            }
-            
-            return await _context.BingSearchTerms.FromSqlRaw(command, value).ToListAsync();
-        }
-
-        // Gets all Entries from the given month and year
-        [HttpGet("GetMonth/{month}/{year}")]
-        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetByMonth(Month month, int year)
-        {
-            string command = "SELECT * from BingSearchTerms WHERE month = {0} AND year = {1}";
-
-            return await _context.BingSearchTerms.FromSqlRaw(command, month.ToString(), year).ToListAsync();
         }
 
         // PUT: api/BingSearchTerms/5
