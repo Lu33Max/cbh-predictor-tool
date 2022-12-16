@@ -3,7 +3,6 @@ using CBHPredictorWebAPI.Models;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
-using static CBHPredictorWebAPI.Controllers.ExcelReadController;
 
 namespace CBHPredictorWebAPI.Controllers
 {

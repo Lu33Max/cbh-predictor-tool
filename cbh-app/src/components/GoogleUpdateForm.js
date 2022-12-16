@@ -3,12 +3,12 @@ import Constants from '../utilities/Constants'
 
 export default function GoogleUpdateForm(props) {
     const initialFormData = Object.freeze({
-        id: props.post.id,
-        terms: props.post.terms,
-        impressions: props.post.impressions,
-        clicks: props.post.clicks,
-        month: props.post.month,
-        year: props.post.year
+        id: props.entry.id,
+        terms: props.entry.terms,
+        impressions: props.entry.impressions,
+        clicks: props.entry.clicks,
+        month: props.entry.month,
+        year: props.entry.year
     });
 
     const [formData, setFormData] = useState(initialFormData);
@@ -23,7 +23,7 @@ export default function GoogleUpdateForm(props) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const postToUpdate = {
+        const entryToUpdate = {
             id: formData.id,
             terms: formData.terms,
             impressions: formData.impressions,
@@ -32,14 +32,14 @@ export default function GoogleUpdateForm(props) {
             year: formData.year
         };
 
-        const url = `${Constants.API_URL_GOOGLE_POSTS}/${props.post.id}`;
+        const url = `${Constants.API_URL_GOOGLE_ENTRIES}/${props.entry.id}`;
 
         fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(postToUpdate)
+            body: JSON.stringify(entryToUpdate)
         })
         .then(response => response.json())
         .then(responseFromServer => {
@@ -50,40 +50,40 @@ export default function GoogleUpdateForm(props) {
             alert(error);
         });
 
-        props.onPostUpdated(postToUpdate);
+        props.onEntryUpdated(entryToUpdate);
     };
 
     return (
         <form className="w-100 px-5">
-            <h1 className="mt-5">Updating the post with id "{props.post.id}".</h1>
+            <h1 className="mt-5">Updating the Entry with id "{props.entry.id}".</h1>
 
             <div className="mt-5">
-                <label className="h3 form-label">Post terms</label>
+                <label className="h3 form-label">Entry terms</label>
                 <input value={formData.terms} name="terms" type="text" className="form-control" onChange={handleChange} />
             </div>
 
             <div className="mt-4">
-                <label className="h3 form-label">Post impressions</label>
+                <label className="h3 form-label">Entry impressions</label>
                 <input value={formData.impressions} name="impressions" type="text" className="form-control" onChange={handleChange} />
             </div>
 
             <div className="mt-4">
-                <label className="h3 form-label">Post clicks</label>
+                <label className="h3 form-label">Entry clicks</label>
                 <input value={formData.clicks} name="clicks" type="text" className="form-control" onChange={handleChange} />
             </div>
 
             <div className="mt-4">
-                <label className="h3 form-label">Post month</label>
+                <label className="h3 form-label">Entry month</label>
                 <input value={formData.month} name="month" type="text" className="form-control" onChange={handleChange} />
             </div>
             
             <div className="mt-4">
-                <label className="h3 form-label">Post year</label>
+                <label className="h3 form-label">Entry year</label>
                 <input value={formData.year} name="year" type="text" className="form-control" onChange={handleChange} />
             </div>
 
             <button onClick={handleSubmit} className="btn btn-dark btn-lg w-100 mt-5">Submit</button>
-            <button onClick={() => props.onPostUpdated(null)} className="btn btn-secondary btn-lg w-100 mt-3">Cancel</button>
+            <button onClick={() => props.onEntryUpdated(null)} className="btn btn-secondary btn-lg w-100 mt-3">Cancel</button>
         </form>
     );
 }    

@@ -215,7 +215,7 @@ namespace CBHPredictorWebAPI.Controllers
         {
             if (exact)
             {
-                return "[" + col + "] LIKE " + value;
+                return "[" + col + "] LIKE '" + value + "'";
             }
             else
             {

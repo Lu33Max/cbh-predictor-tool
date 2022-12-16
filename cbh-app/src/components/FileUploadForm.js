@@ -14,7 +14,6 @@ export default function FileUploadForm(props) {
         setYear(e.target.value);
     }
 
-
 	const changeHandler = (event) => {
 		setSelectedFile(event.target.files[0]);
 		setIsFilePicked(true);
@@ -80,12 +79,12 @@ export default function FileUploadForm(props) {
         return(
             <div>
                 <div className="mt-4">
-                    <label className="h3 form-label">Post month</label>
+                    <label className="h3 form-label">Entry month</label>
                     <input value={month} name="month" type="text" className="form-control" onChange={handleMonthChange} />
                 </div>
                 
                 <div className="mt-4">
-                    <label className="h3 form-label">Post year</label>
+                    <label className="h3 form-label">Entry year</label>
                     <input value={year} name="year" type="text" className="form-control" onChange={handleYearChange} />
                 </div>
             </div>

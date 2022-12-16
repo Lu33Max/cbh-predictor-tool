@@ -8,35 +8,42 @@ import LeadCreateForm from "./components/LeadCreateForm"
 import LeadUpdateForm from "./components/LeadUpdateForm"
 import OrderCreateForm from "./components/OrderCreateForm"
 import OrderUpdateForm from "./components/OrderUpdateForm"
-import FileUploadForm from "./components/FileUploadForm";
+import FileUploadForm from "./components/FileUploadForm"
+import LogInForm from "./components/LogInForm"
 
 window.$activeTable = "";
 
 export default function App() {
-  const [posts, setPosts] = useState([]);
-  const [showingCreateNewPostForm, setShowingCreateNewPostForm] = useState(false);
-  const [postCurrentlyBeingUpdated, setPostCurrentlyBeingUpdated] = useState(null);
+  const [entries, setEntries] = useState([]);
+  const [showingCreateNewEntryForm, setShowingCreateNewEntryForm] = useState(false);
+  const [entryCurrentlyBeingUpdated, setEntryCurrentlyBeingUpdated] = useState(null);
   const [showingFileUploadForm, setShowingFileUploadForm] = useState(false);
+  const [filter, setFilter] = useState({
+    col: '',
+    value: '',
+    exact: false
+  });
+  const [showingLogInForm, setShowingLogInForm] = useState(true);
 
   //// Basic CRUD Operations ////
-  // Get all Posts from Server
-  function getPosts(table){
-    setPosts([]);
+  // Get all entries from Server
+  function getEntries(table){
+    setEntries([]);
     window.$activeTable = table;
     var url;
 
     switch (table) {
       case 'Bing':
-        url = Constants.API_URL_BING_POSTS;
+        url = Constants.API_URL_BING_ENTRIES;
         break;
       case 'Google':
-        url = Constants.API_URL_GOOGLE_POSTS;
+        url = Constants.API_URL_GOOGLE_ENTRIES;
         break;
       case 'Lead':
-        url = Constants.API_URL_LEAD_POSTS;
+        url = Constants.API_URL_LEAD_ENTRIES;
         break;
       case 'Order':
-        url = Constants.API_URL_ORDER_POSTS;
+        url = Constants.API_URL_ORDER_ENTRIES;
         break;
       default:
         alert(`Error: Table with name "${table}" does not exist`)
@@ -47,30 +54,30 @@ export default function App() {
       method: 'GET'
     })
     .then(response => response.json())
-    .then(postsFromServer => {
-      setPosts(postsFromServer);
+    .then(entriesFromServer => {
+      setEntries(entriesFromServer);
     })
     .catch((error) => {
       console.log(error);
       alert(error);
     });
   }
-  // Delete Post by ID
-  function deletePost(id){
+  // Delete entry by ID
+  function deleteEntry(id){
     var url;
 
     switch (window.$activeTable) {
       case 'Bing':
-        url = `${Constants.API_URL_BING_POSTS}/${id}`;
+        url = `${Constants.API_URL_BING_ENTRIES}/${id}`;
         break;
       case 'Google':
-        url = `${Constants.API_URL_GOOGLE_POSTS}/${id}`;
+        url = `${Constants.API_URL_GOOGLE_ENTRIES}/${id}`;
         break;
       case 'Lead':
-        url = `${Constants.API_URL_LEAD_POSTS}/${id}`;
+        url = `${Constants.API_URL_LEAD_ENTRIES}/${id}`;
         break;
       case 'Order':
-        url = `${Constants.API_URL_ORDER_POSTS}/${id}`;
+        url = `${Constants.API_URL_ORDER_ENTRIES}/${id}`;
         break;
       default:
         alert(`Error: Table with name "${window.$activeTable}" does not exist`)
@@ -83,29 +90,29 @@ export default function App() {
     .then(response => response.json())
     .then(responseFromServer => {
       console.log(responseFromServer);
-      onPostDeleted(id);
+      onEntryDeleted(id);
     })
     .catch((error) => {
       console.log(error);
       alert(error);
     });
   }
-  // Delete all Posts from Table
-  function deleteAllPosts(){
+  // Delete all entries from Table
+  function deleteAllEntries(){
     var url;
 
     switch (window.$activeTable) {
       case 'Bing':
-        url = Constants.API_URL_BING_POSTS;
+        url = Constants.API_URL_BING_ENTRIES;
         break;
       case 'Google':
-        url = Constants.API_URL_GOOGLE_POSTS;
+        url = Constants.API_URL_GOOGLE_ENTRIES;
         break;
       case 'Lead':
-        url = Constants.API_URL_LEAD_POSTS;
+        url = Constants.API_URL_LEAD_ENTRIES;
         break;
       case 'Order':
-        url = Constants.API_URL_ORDER_POSTS;
+        url = Constants.API_URL_ORDER_ENTRIES;
         break;
       default:
         alert(`Error: Table with name "${window.$activeTable}" does not exist`)
@@ -118,7 +125,54 @@ export default function App() {
     .then(response => response.json())
     .then(responseFromServer => {
       console.log(responseFromServer);
-      onPostsDeleted();
+      onEntriesDeleted();
+    })
+    .catch((error) => {
+      console.log(error);
+      alert(error);
+    });
+  }
+
+  //// Filter ////
+  // Set Filter Settings
+  const handleFilterChange = (e) => {
+    if(e.target.name !== "exact"){
+      setFilter({...filter, [e.target.name]: e.target.value});
+    }
+    else
+    {
+      setFilter({...filter, [e.target.name]: e.target.checked});
+    }
+  }
+  // Apply Filter
+  function getFilteredEntries(){
+    setEntries([]);
+    var url;
+
+    switch (window.$activeTable) {
+      case 'Bing':
+        url = `${Constants.API_URL_BING_ENTRIES}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        break;
+      case 'Google':
+        url = `${Constants.API_URL_GOOGLE_ENTRIES}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        break;
+      case 'Lead':
+        url = `${Constants.API_URL_LEAD_ENTRIES}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        break;
+      case 'Order':
+        url = `${Constants.API_URL_ORDER_ENTRIES}/GetAny/${filter.col}/${filter.value}/${filter.exact}`;
+        break;
+      default:
+        alert(`Error: Table with name "${window.$activeTable}" does not exist`)
+        return;
+    }
+
+    fetch(url, {
+      method: 'GET'
+    })
+    .then(response => response.json())
+    .then(entriesFromServer => {
+      setEntries(entriesFromServer);
     })
     .catch((error) => {
       console.log(error);
@@ -131,38 +185,39 @@ export default function App() {
     <div className="container-fluid">
       <div className="row min-vh-100">
         <div className="col d-flex flex-column justify-content-center align-items-center">
-          {(showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false) && (
+          {(showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false) && (
             <div>
               <h1 className="mt-3">CBH Predictor Tool</h1>
               
               <div className="row mt-5">
                 <div className="col-sm">
-                  <button onClick={() => getPosts('Bing')} className="btn btn-dark btn-lg w-100 h-100">Bing Table</button>
+                  <button onClick={() => getEntries('Bing')} className="btn btn-dark btn-lg w-100 h-100">Bing Table</button>
                 </div>
                 <div className="col-sm">
-                  <button onClick={() => getPosts('Google')} className="btn btn-dark btn-lg w-100 h-100">Google Table</button>
+                  <button onClick={() => getEntries('Google')} className="btn btn-dark btn-lg w-100 h-100">Google Table</button>
                 </div>
                 <div className="col-sm">
-                  <button onClick={() => getPosts('Lead')} className="btn btn-dark btn-lg w-100 h-100">Lead Table</button>
+                  <button onClick={() => getEntries('Lead')} className="btn btn-dark btn-lg w-100 h-100">Lead Table</button>
                 </div>
                 <div className="col-sm">
-                  <button onClick={() => getPosts('Order')} className="btn btn-dark btn-lg w-100 h-100">Order Table</button>
-                </div>
+                  <button onClick={() => getEntries('Order')} className="btn btn-dark btn-lg w-100 h-100">Order Table</button>
+                </div>               
               </div>
-              
+
               {(window.$activeTable !== "") && showButtons()}
-              
+              {(window.$activeTable !== "") && showFilter()}
             </div>
           )}
           
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Bing") && renderBingTable()}
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Google") && renderGoogleTable()}
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Lead") && renderLeadTable()}
-          {(posts.length > 0 && showingCreateNewPostForm === false && postCurrentlyBeingUpdated === null && showingFileUploadForm === false && window.$activeTable === "Order") && renderOrderTable()}
+          {(entries.length > 0 && showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false && window.$activeTable === "Bing") && renderBingTable()}
+          {(entries.length > 0 && showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false && window.$activeTable === "Google") && renderGoogleTable()}
+          {(entries.length > 0 && showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false && window.$activeTable === "Lead") && renderLeadTable()}
+          {(entries.length > 0 && showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false && window.$activeTable === "Order") && renderOrderTable()}
 
           {showingFileUploadForm && showUploadForm()}
-          {showingCreateNewPostForm && showCreateForm()}
-          {postCurrentlyBeingUpdated !== null && showUpdateForm()}
+          {showingCreateNewEntryForm && showCreateForm()}
+          {entryCurrentlyBeingUpdated !== null && showUpdateForm()}
+          {showingLogInForm && showLogInForm()}
         </div>
       </div>
     </div>
@@ -173,8 +228,26 @@ export default function App() {
     return(
       <div className="mt-3">
         <button onClick={() => setShowingFileUploadForm(true)} className="btn btn-dark btn-lg w-100 mt-2">Upload Excel File</button>
-        <button onClick={() => setShowingCreateNewPostForm(true)} className="btn btn-secondary btn-lg w-100 mt-2">Create new Post</button>
-        <button onClick={() => { if(window.confirm(`Are you sure you want to delete all posts from table "${window.$activeTable}"?`)) deleteAllPosts() }} className="btn btn-danger btn-lg w-100 mt-2">Delete All Posts</button>
+        <button onClick={() => setShowingCreateNewEntryForm(true)} className="btn btn-secondary btn-lg w-100 mt-2">Create new Entry</button>
+        <button onClick={() => { if(window.confirm(`Are you sure you want to delete all entries from table "${window.$activeTable}"?`)) deleteAllEntries() }} className="btn btn-danger btn-lg w-100 mt-2">Delete All Entries</button>
+      </div>
+    )
+  }
+
+  function showFilter(){
+    return(
+      <div className="mt-3">
+        <div style={{border: '1px solid' , padding: '20px'}}>
+          <label className="h3 form-label">Filter:</label><br></br>
+          <label className="h5 form-label">Col:</label>
+          <input value={filter.col} name="col" type="text" className="form-control" onChange={handleFilterChange} />
+          <label className="h5 form-label">Value:</label>
+          <input value={filter.value} name="value" type="text" className="form-control" onChange={handleFilterChange} />
+          <label className="h5 form-label">Exact?  </label>
+          <input className="mx-3" value={filter.exact} name="exact" type="checkbox" onChange={handleFilterChange} />
+        </div>
+        <button onClick={() => getFilteredEntries()} className="btn btn-success btn-lg w-50 mt-2">Apply</button>
+        <button onClick={() => getEntries(window.$activeTable)} className="btn btn-dark btn-lg w-50 mt-2">Reset Filter</button>
       </div>
     )
   }
@@ -186,13 +259,13 @@ export default function App() {
   function showCreateForm(){
     switch (window.$activeTable) {
       case 'Bing':
-        return <BingCreateForm onPostCreated={onPostCreated} />
+        return <BingCreateForm onEntryCreated={onEntryCreated} />
       case 'Google':
-        return <GoogleCreateForm onPostCreated={onPostCreated} />
+        return <GoogleCreateForm onEntryCreated={onEntryCreated} />
       case 'Lead':
-        return <LeadCreateForm onPostCreated={onPostCreated} />
+        return <LeadCreateForm onEntryCreated={onEntryCreated} />
       case 'Order':
-        return <OrderCreateForm onPostCreated={onPostCreated} />
+        return <OrderCreateForm onEntryCreated={onEntryCreated} />
       default:
         alert(`Error: Table with name "${window.$activeTable}" does not exist`)
         return;
@@ -201,17 +274,20 @@ export default function App() {
   function showUpdateForm(){
     switch (window.$activeTable) {
       case 'Bing':
-        return <BingUpdateForm post={postCurrentlyBeingUpdated} onPostUpdated={onPostUpdated} />
+        return <BingUpdateForm entry={entryCurrentlyBeingUpdated} onEntryUpdated={onEntryUpdated} />
       case 'Google':
-        return <GoogleUpdateForm post={postCurrentlyBeingUpdated} onPostUpdated={onPostUpdated} />
+        return <GoogleUpdateForm entry={entryCurrentlyBeingUpdated} onEntryUpdated={onEntryUpdated} />
       case 'Lead':
-        return <LeadUpdateForm post={postCurrentlyBeingUpdated} onPostUpdated={onPostUpdated} />
+        return <LeadUpdateForm entry={entryCurrentlyBeingUpdated} onEntryUpdated={onEntryUpdated} />
       case 'Order':
-        return <OrderUpdateForm post={postCurrentlyBeingUpdated} onPostUpdated={onPostUpdated} />
+        return <OrderUpdateForm entry={entryCurrentlyBeingUpdated} onEntryUpdated={onEntryUpdated} />
       default:
         alert(`Error: Table with name "${window.$activeTable}" does not exist`)
         return;
     }
+  }
+  function showLogInForm(){
+    return <LogInForm onLogIn={onLogIn}/>
   }
 
   //// Show currently selected table ////
@@ -222,32 +298,32 @@ export default function App() {
           <thead>
             <tr>
               <th scope="col">Search Term</th>
-              <th scope="col">Clicks</th>
               <th scope="col">Impressions</th>
+              <th scope="col">Clicks</th>
               <th scope="col">Date</th>
               <th scope="col">CRUD Operations</th>                                        
             </tr>
           </thead>
           <tbody>
-           {posts.map((post) => (
-             <tr key={post.id}>
-                <td>{post.terms}</td>
-                <td>{post.impressions}</td>
-                <td>{post.clicks}</td>
+           {entries.map((entry) => (
+             <tr key={entry.id}>
+                <td>{entry.terms}</td>
+                <td>{entry.impressions}</td>
+                <td>{entry.clicks}</td>
                 <td>
-                  {post.month}<br/>
-                  {post.year}
+                  {entry.month}<br/>
+                  {entry.year}
                 </td>                     
                 <td>
-                  <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                  <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
+                  <button onClick={() => setEntryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                  <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${entry.id}"?`)) deleteEntry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
                 </td>
              </tr>
            ))}
           </tbody>
         </table>
 
-        <button onClick={() => setPosts([])} className="btn btn-dark btn-lg w-100 mb-4">Close Table</button>
+        <button onClick={() => setEntries([])} className="btn btn-dark btn-lg w-100 mb-4">Close Table</button>
       </div>
     );
   }
@@ -258,31 +334,32 @@ export default function App() {
           <thead>
             <tr>
               <th scope="col">Search Term</th>
-              <th scope="col">Clicks</th>
               <th scope="col">Impressions</th>
+              <th scope="col">Clicks</th>
+              <th scope="col">Date</th>
               <th scope="col">CRUD Operations</th>                                        
             </tr>
           </thead>
           <tbody>
-            {posts.map((post) => (
-              <tr  key={post.id}>
-                <td>{post.terms}</td>
-                <td>{post.impressions}</td>
-                <td>{post.clicks}</td>  
+            {entries.map((entry) => (
+              <tr  key={entry.id}>
+                <td>{entry.terms}</td>
+                <td>{entry.impressions}</td>
+                <td>{entry.clicks}</td>  
                 <td>
-                  {post.month}<br/>
-                  {post.year}
+                  {entry.month}<br/>
+                  {entry.year}
                 </td>                     
                 <td>
-                 <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
+                 <button onClick={() => setEntryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                 <button onClick={() => { if(window.confirm(`Are you sure you want to delete the entry with ID "${entry.id}"?`)) deleteEntry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <button onClick={() => setPosts([])} className="btn btn-dark btn-lg w-100 mb-4">Close Table</button>
+        <button onClick={() => setEntries([])} className="btn btn-dark btn-lg w-100 mb-4">Close Table</button>
       </div>
     );
   }
@@ -309,31 +386,31 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-           {posts.map((post) => (
-             <tr  key={post.id}>
-               <td>{post.leadID}</td>
-               <td>{post.leadNo}</td>
-               <td>{post.leadStatus}</td>
-               <td>{post.leadDate}</td>
-               <td>{post.organisationID}</td>
-               <td>{post.countryID}</td>
-               <td>{post.channel}</td>
-               <td>{post.fieldOfInterest}</td>
-               <td>{post.specificOfInterest}</td>
-               <td>{post.paramOfInterest}</td>
-               <td>{post.diagnosisOfInterest}</td>        
-               <td>{post.matrixOfInterest}</td>               
-               <td>{post.quantityOfInterest}</td>                      
+           {entries.map((entry) => (
+             <tr  key={entry.id}>
+               <td>{entry.leadID}</td>
+               <td>{entry.leadNo}</td>
+               <td>{entry.leadStatus}</td>
+               <td>{entry.leadDate}</td>
+               <td>{entry.organisationID}</td>
+               <td>{entry.countryID}</td>
+               <td>{entry.channel}</td>
+               <td>{entry.fieldOfInterest}</td>
+               <td>{entry.specificOfInterest}</td>
+               <td>{entry.paramOfInterest}</td>
+               <td>{entry.diagnosisOfInterest}</td>        
+               <td>{entry.matrixOfInterest}</td>               
+               <td>{entry.quantityOfInterest}</td>                      
               <td>
-                 <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
+                 <button onClick={() => setEntryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${entry.id}"?`)) deleteEntry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
               </td>
              </tr>
            ))}
           </tbody>
         </table>
 
-        <button onClick={() => setPosts([])} className="btn btn-dark btn-lg w-100 mb-4">close table</button>
+        <button onClick={() => setEntries([])} className="btn btn-dark btn-lg w-100 mb-4">close table</button>
       </div>
     );
   }
@@ -377,48 +454,48 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-           {posts.map((post) => (
-             <tr  key={post.id}>
-               <td>{post.customerID}</td>
-               <td>{post.orderID}</td>
-               <td>{post.orderDate}</td>
-               <td>{post.orderPrice}</td>
-               <td>{post.storageTemp}</td>
-               <td>{post.donorID}</td>
-               <td>{post.cbhSampleID}</td>
-               <td>{post.matrix}</td>
-               <td>{post.supplierID}</td>
-               <td>{post.supplierSampleID}</td>
-               <td>{post.productID}</td>
-               <td>{post.countryID}</td>        
-               <td>{post.quantity}</td>               
-               <td>{post.unit}</td>
-               <td>{post.age}</td> 
-               <td>{post.gender}</td> 
-               <td>{post.ethnicity}</td> 
-               <td>{post.labParameter}</td> 
-               <td>{post.resultNumerical}</td> 
-               <td>{post.resultUnit}</td> 
-               <td>{post.resultInterpretation}</td> 
-               <td>{post.testMethod}</td> 
-               <td>{post.testKitManufacturer}</td> 
-               <td>{post.testSystemManufacturer}</td> 
-               <td>{post.diagnosis}</td>
-               <td>{post.icd}</td> 
-               <td>{post.histologicalDiagnosis}</td> 
-               <td>{post.organ}</td> 
-               <td>{post.collectionCountry}</td> 
-               <td>{post.collectionDate}</td>                       
+           {entries.map((entry) => (
+             <tr  key={entry.id}>
+               <td>{entry.customerID}</td>
+               <td>{entry.orderID}</td>
+               <td>{entry.orderDate}</td>
+               <td>{entry.orderPrice}</td>
+               <td>{entry.storageTemp}</td>
+               <td>{entry.donorID}</td>
+               <td>{entry.cbhSampleID}</td>
+               <td>{entry.matrix}</td>
+               <td>{entry.supplierID}</td>
+               <td>{entry.supplierSampleID}</td>
+               <td>{entry.productID}</td>
+               <td>{entry.countryID}</td>        
+               <td>{entry.quantity}</td>               
+               <td>{entry.unit}</td>
+               <td>{entry.age}</td> 
+               <td>{entry.gender}</td> 
+               <td>{entry.ethnicity}</td> 
+               <td>{entry.labParameter}</td> 
+               <td>{entry.resultNumerical}</td> 
+               <td>{entry.resultUnit}</td> 
+               <td>{entry.resultInterpretation}</td> 
+               <td>{entry.testMethod}</td> 
+               <td>{entry.testKitManufacturer}</td> 
+               <td>{entry.testSystemManufacturer}</td> 
+               <td>{entry.diagnosis}</td>
+               <td>{entry.icd}</td> 
+               <td>{entry.histologicalDiagnosis}</td> 
+               <td>{entry.organ}</td> 
+               <td>{entry.collectionCountry}</td> 
+               <td>{entry.collectionDate}</td>                       
               <td>
-                 <button onClick={() => setPostCurrentlyBeingUpdated(post)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the post with ID "${post.id}"?`)) deletePost(post.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
+                 <button onClick={() => setEntryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${entry.id}"?`)) deleteEntry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
               </td>
              </tr>
            ))}
           </tbody>
         </table>
 
-        <button onClick={() => setPosts([])} className="btn btn-dark btn-lg w-100 mb-4">close table</button>
+        <button onClick={() => setEntries([])} className="btn btn-dark btn-lg w-100 mb-4">close table</button>
       </div>
     );
   }
@@ -428,62 +505,70 @@ export default function App() {
     setShowingFileUploadForm(false);
 
     if(created) alert(`Sucessfully uploaded the file contents to "${window.$activeTable}" Table.`);
-    getPosts(window.$activeTable);
+    getEntries(window.$activeTable);
   }
-  function onPostCreated(createdPost){
-    setShowingCreateNewPostForm(false);
+  function onEntryCreated(createdentry){
+    setShowingCreateNewEntryForm(false);
 
-    if (createdPost === null) {
+    if (createdentry === null) {
       return;
     }
 
-    alert(`Post succesfully created. After clicking OK, your new post will show up in the table below.`);
-    getPosts(window.$activeTable);
+    alert(`Entry succesfully created. After clicking OK, your new Entry will show up in the table below.`);
+    getEntries(window.$activeTable);
   }
-  function onPostUpdated(updatedPost){
-    setPostCurrentlyBeingUpdated(null);
+  function onEntryUpdated(updatedEntry){
+    setEntryCurrentlyBeingUpdated(null);
 
-    if (updatedPost === null) {
+    if (updatedEntry === null) {
       return;
     }
 
-    let postsCopy = [...posts];
+    let entriesCopy = [...entries];
 
-    const index = postsCopy.findIndex((postsCopyPost, currentIndex) => {
-      if (postsCopyPost.id === updatedPost) {
+    const index = entriesCopy.findIndex((entriesCopyEntry, currentIndex) => {
+      if (entriesCopyEntry.id === updatedEntry) {
         return true;
       }
     });
 
     if (index !== -1) {
-      postsCopy[index] = updatedPost.id;
+      entriesCopy[index] = updatedEntry.id;
       
     }
 
-    setPosts(postsCopy);
-    alert(`Post successfully updated. After clicking OK, look for the post in the table below to see the updates.`);
-    getPosts(window.$activeTable);
+    setEntries(entriesCopy);
+    alert(`Entry successfully updated. After clicking OK, look for the Entry in the table below to see the updates.`);
+    getEntries(window.$activeTable);
   }
-  function onPostDeleted(deletedPostID){
-    let postsCopy = [...posts];
+  function onEntryDeleted(deletedEntryID){
+    let entriesCopy = [...entries];
 
-    const index = postsCopy.findIndex((postsCopyPost, currentIndex) => {
-      if (postsCopyPost.id === deletedPostID) {
+    const index = entriesCopy.findIndex((entriesCopyEntry, currentIndex) => {
+      if (entriesCopyEntry.id === deletedEntryID) {
         return true;
       }
     });
 
     if (index !== -1) {
-      postsCopy.splice(index, 1);
+      entriesCopy.splice(index, 1);
     }
 
-    setPosts(postsCopy);
-    alert('Post successfully deleted. After clicking OK, look at the table below to see your post disappear.');
-    getPosts(window.$activeTable);
+    setEntries(entriesCopy);
+    alert('Entry successfully deleted. After clicking OK, look at the table below to see your Entry disappear.');
+    getEntries(window.$activeTable);
   } 
-  function onPostsDeleted(){
-    setPosts([]);
-    alert(`Sucessfully deleted posts from "${window.$activeTable}" Table.`);
-    getPosts(window.$activeTable);
+  function onEntriesDeleted(){
+    setEntries([]);
+    alert(`Sucessfully deleted Entries from "${window.$activeTable}" Table.`);
+    getEntries(window.$activeTable);
+  }
+  function onLogIn(login){
+    if (login === true){
+      setShowingLogInForm(false)
+    }else {
+      alert('Wrong Email or password. Try again.')
+    }
+    
   }
 }
