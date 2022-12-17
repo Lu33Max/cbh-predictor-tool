@@ -11,6 +11,9 @@ import OrderUpdateForm from "./components/OrderUpdateForm"
 import FileUploadForm from "./components/FileUploadForm"
 import LogInForm from "./components/LogInForm"
 
+import styles from "./App.module.css";
+import Table from "./components/Table";
+
 window.$activeTable = "";
 
 export default function App() {
@@ -24,6 +27,12 @@ export default function App() {
     exact: false
   });
   const [showingLogInForm, setShowingLogInForm] = useState(true);
+  const [rows, setRows] = useState(100);
+
+  const handleRowChange = (e) => {
+    setRows(e.target.value)
+    getEntries(window.$activeTable)
+};
 
   //// Basic CRUD Operations ////
   // Get all entries from Server
@@ -182,45 +191,52 @@ export default function App() {
 
   //// Rendered View ////
   return (
-    <div className="container-fluid">
-      <div className="row min-vh-100">
-        <div className="col d-flex flex-column justify-content-center align-items-center">
-          {(showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false) && (
-            <div>
-              <h1 className="mt-3">CBH Predictor Tool</h1>
-              
-              <div className="row mt-5">
-                <div className="col-sm">
-                  <button onClick={() => getEntries('Bing')} className="btn btn-dark btn-lg w-100 h-100">Bing Table</button>
+    <main>
+      <div className="container-fluid">
+        <div className="row min-vh-100">
+          <div className="col d-flex flex-column justify-content-center align-items-center">
+            {(showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false) && (
+              <div>
+                <h1 className="mt-3">CBH Predictor Tool</h1>
+                
+                <div className="row mt-5">
+                  <div className="col-sm">
+                    <button onClick={() => getEntries('Bing')} className="btn btn-dark btn-lg w-100 h-100">Bing Table</button>
+                  </div>
+                  <div className="col-sm">
+                    <button onClick={() => getEntries('Google')} className="btn btn-dark btn-lg w-100 h-100">Google Table</button>
+                  </div>
+                  <div className="col-sm">
+                    <button onClick={() => getEntries('Lead')} className="btn btn-dark btn-lg w-100 h-100">Lead Table</button>
+                  </div>
+                  <div className="col-sm">
+                    <button onClick={() => getEntries('Order')} className="btn btn-dark btn-lg w-100 h-100">Order Table</button>
+                  </div>
                 </div>
-                <div className="col-sm">
-                  <button onClick={() => getEntries('Google')} className="btn btn-dark btn-lg w-100 h-100">Google Table</button>
-                </div>
-                <div className="col-sm">
-                  <button onClick={() => getEntries('Lead')} className="btn btn-dark btn-lg w-100 h-100">Lead Table</button>
-                </div>
-                <div className="col-sm">
-                  <button onClick={() => getEntries('Order')} className="btn btn-dark btn-lg w-100 h-100">Order Table</button>
-                </div>               
+
+                {(window.$activeTable !== "") && showButtons()}
+                {(window.$activeTable !== "") && showFilter()}
               </div>
+            )}
 
-              {(window.$activeTable !== "") && showButtons()}
-              {(window.$activeTable !== "") && showFilter()}
-            </div>
-          )}
-          
-          {(entries.length > 0 && showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false && window.$activeTable === "Bing") && renderBingTable()}
-          {(entries.length > 0 && showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false && window.$activeTable === "Google") && renderGoogleTable()}
-          {(entries.length > 0 && showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false && window.$activeTable === "Lead") && renderLeadTable()}
-          {(entries.length > 0 && showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false && window.$activeTable === "Order") && renderOrderTable()}
-
-          {showingFileUploadForm && showUploadForm()}
-          {showingCreateNewEntryForm && showCreateForm()}
-          {entryCurrentlyBeingUpdated !== null && showUpdateForm()}
-          {showingLogInForm && showLogInForm()}
+            {showingFileUploadForm && showUploadForm()}
+            {showingCreateNewEntryForm && showCreateForm()}
+            {entryCurrentlyBeingUpdated !== null && showUpdateForm()}
+            {showingLogInForm && showLogInForm()}
+          </div>
         </div>
       </div>
-    </div>
+      {(window.$activeTable !== "") && (
+        <div className={styles.container}>
+          <div>
+            <input value={rows} name="rows" type="text" className="form-control" onChange={handleRowChange} />
+          </div>
+          <div className={styles.wrapper}>
+            <Table data={entries} rowsPerPage={rows} />
+          </div>
+        </div>
+      )}
+    </main>
   );
 
   //// Show Buttons ////
@@ -288,216 +304,6 @@ export default function App() {
   }
   function showLogInForm(){
     return <LogInForm onLogIn={onLogIn}/>
-  }
-
-  //// Show currently selected table ////
-  function renderBingTable(){
-    return(
-      <div className="table-responsive mt-5">
-        <table className="table table-bordered border-dark">
-          <thead>
-            <tr>
-              <th scope="col">Search Term</th>
-              <th scope="col">Impressions</th>
-              <th scope="col">Clicks</th>
-              <th scope="col">Date</th>
-              <th scope="col">CRUD Operations</th>                                        
-            </tr>
-          </thead>
-          <tbody>
-           {entries.map((entry) => (
-             <tr key={entry.id}>
-                <td>{entry.terms}</td>
-                <td>{entry.impressions}</td>
-                <td>{entry.clicks}</td>
-                <td>
-                  {entry.month}<br/>
-                  {entry.year}
-                </td>                     
-                <td>
-                  <button onClick={() => setEntryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                  <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${entry.id}"?`)) deleteEntry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
-                </td>
-             </tr>
-           ))}
-          </tbody>
-        </table>
-
-        <button onClick={() => setEntries([])} className="btn btn-dark btn-lg w-100 mb-4">Close Table</button>
-      </div>
-    );
-  }
-  function renderGoogleTable(){
-    return(
-      <div className="table-responsive mt-5">
-        <table className="table table-bordered border-dark">
-          <thead>
-            <tr>
-              <th scope="col">Search Term</th>
-              <th scope="col">Impressions</th>
-              <th scope="col">Clicks</th>
-              <th scope="col">Date</th>
-              <th scope="col">CRUD Operations</th>                                        
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry) => (
-              <tr  key={entry.id}>
-                <td>{entry.terms}</td>
-                <td>{entry.impressions}</td>
-                <td>{entry.clicks}</td>  
-                <td>
-                  {entry.month}<br/>
-                  {entry.year}
-                </td>                     
-                <td>
-                 <button onClick={() => setEntryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                 <button onClick={() => { if(window.confirm(`Are you sure you want to delete the entry with ID "${entry.id}"?`)) deleteEntry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <button onClick={() => setEntries([])} className="btn btn-dark btn-lg w-100 mb-4">Close Table</button>
-      </div>
-    );
-  }
-  function renderLeadTable(){
-    return(
-      <div className="table-responsive mt-5">
-        <table className="table table-bordered border-dark">
-          <thead>
-            <tr>
-              <th scope="col">leadID</th>
-              <th scope="col">leadNo</th>
-              <th scope="col">leadStatus</th>
-              <th scope="col">leadDate</th>
-              <th scope="col">organisationID</th>
-              <th scope="col">countryID</th>
-              <th scope="col">channel</th>
-              <th scope="col">fieldOfInterest</th>
-              <th scope="col">specificOfInterest</th>
-              <th scope="col">paramOfInterest</th>
-              <th scope="col">diagnosisOfInterest</th>     
-              <th scope="col">matrixOfInterest</th>              
-              <th scope="col">quantityOfInterest</th>   
-              <th scope="col">CRUD Operations</th>                                           
-            </tr>
-          </thead>
-          <tbody>
-           {entries.map((entry) => (
-             <tr  key={entry.id}>
-               <td>{entry.leadID}</td>
-               <td>{entry.leadNo}</td>
-               <td>{entry.leadStatus}</td>
-               <td>{entry.leadDate}</td>
-               <td>{entry.organisationID}</td>
-               <td>{entry.countryID}</td>
-               <td>{entry.channel}</td>
-               <td>{entry.fieldOfInterest}</td>
-               <td>{entry.specificOfInterest}</td>
-               <td>{entry.paramOfInterest}</td>
-               <td>{entry.diagnosisOfInterest}</td>        
-               <td>{entry.matrixOfInterest}</td>               
-               <td>{entry.quantityOfInterest}</td>                      
-              <td>
-                 <button onClick={() => setEntryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${entry.id}"?`)) deleteEntry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
-              </td>
-             </tr>
-           ))}
-          </tbody>
-        </table>
-
-        <button onClick={() => setEntries([])} className="btn btn-dark btn-lg w-100 mb-4">close table</button>
-      </div>
-    );
-  }
-  function renderOrderTable(){
-    return(
-      <div className="table-responsive mt-5">
-        <table className="table table-bordered border-dark">
-          <thead>
-            <tr>
-              <th scope="col">customerID</th>
-              <th scope="col">orderID</th>
-              <th scope="col">orderDate</th>
-              <th scope="col">orderPrice</th>
-              <th scope="col">storageTemp</th>
-              <th scope="col">donorID</th>
-              <th scope="col">cbhSampleID</th>
-              <th scope="col">matrix</th>
-              <th scope="col">supplierID</th>
-              <th scope="col">supplierSampleID</th>
-              <th scope="col">productID</th>     
-              <th scope="col">countryID</th>              
-              <th scope="col">quantity</th>
-              <th scope="col">unit</th>
-              <th scope="col">age</th> 
-              <th scope="col">gender</th> 
-              <th scope="col">ethnicity</th> 
-              <th scope="col">labParameter</th> 
-              <th scope="col">resultNumerical</th> 
-              <th scope="col">resultUnit</th> 
-              <th scope="col">resultInterpretation</th>
-              <th scope="col">testMethod</th> 
-              <th scope="col">testKitManufacturer</th> 
-              <th scope="col">testSystemManufacturer</th> 
-              <th scope="col">diagnosis</th> 
-              <th scope="col">icd</th> 
-              <th scope="col">histologicalDiagnosis</th> 
-              <th scope="col">organ</th>
-              <th scope="col">collectionCountry</th>
-              <th scope="col">collectionDate</th>         
-              <th scope="col">CRUD Operations</th>                                           
-            </tr>
-          </thead>
-          <tbody>
-           {entries.map((entry) => (
-             <tr  key={entry.id}>
-               <td>{entry.customerID}</td>
-               <td>{entry.orderID}</td>
-               <td>{entry.orderDate}</td>
-               <td>{entry.orderPrice}</td>
-               <td>{entry.storageTemp}</td>
-               <td>{entry.donorID}</td>
-               <td>{entry.cbhSampleID}</td>
-               <td>{entry.matrix}</td>
-               <td>{entry.supplierID}</td>
-               <td>{entry.supplierSampleID}</td>
-               <td>{entry.productID}</td>
-               <td>{entry.countryID}</td>        
-               <td>{entry.quantity}</td>               
-               <td>{entry.unit}</td>
-               <td>{entry.age}</td> 
-               <td>{entry.gender}</td> 
-               <td>{entry.ethnicity}</td> 
-               <td>{entry.labParameter}</td> 
-               <td>{entry.resultNumerical}</td> 
-               <td>{entry.resultUnit}</td> 
-               <td>{entry.resultInterpretation}</td> 
-               <td>{entry.testMethod}</td> 
-               <td>{entry.testKitManufacturer}</td> 
-               <td>{entry.testSystemManufacturer}</td> 
-               <td>{entry.diagnosis}</td>
-               <td>{entry.icd}</td> 
-               <td>{entry.histologicalDiagnosis}</td> 
-               <td>{entry.organ}</td> 
-               <td>{entry.collectionCountry}</td> 
-               <td>{entry.collectionDate}</td>                       
-              <td>
-                 <button onClick={() => setEntryCurrentlyBeingUpdated(entry)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${entry.id}"?`)) deleteEntry(entry.id) }} className="btn btn-secondary btn-lg mx-3 my-3">Delete</button>
-              </td>
-             </tr>
-           ))}
-          </tbody>
-        </table>
-
-        <button onClick={() => setEntries([])} className="btn btn-dark btn-lg w-100 mb-4">close table</button>
-      </div>
-    );
   }
 
   //// Reset and Alert after each CRUD Operation ////

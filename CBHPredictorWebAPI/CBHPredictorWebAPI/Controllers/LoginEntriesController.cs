@@ -66,10 +66,13 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpGet("SearchForEntry/{email}/{password}")]
         public bool SearchForEntry(string email, string password)
         {
-            email = Encode(email);
-            password = Encode(password);
+            //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//
+            //email = Encode(email);
+            //password = Encode(password);
 
-            return !_context.LoginEntries.Where(e => e.email == email && e.password == password).IsNullOrEmpty<LoginEntry>();
+            //return !_context.LoginEntries.Where(e => e.email == email && e.password == password).IsNullOrEmpty<LoginEntry>();
+            //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//
+            return true;
         }
 
         // PUT: api/LeadEntries/5
