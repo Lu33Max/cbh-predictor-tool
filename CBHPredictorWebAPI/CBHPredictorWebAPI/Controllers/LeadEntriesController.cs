@@ -40,6 +40,21 @@ namespace CBHPredictorWebAPI.Controllers
             return leadEntry;
         }
 
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportLeadEntriesToExcel()
+        {
+            try
+            {
+                List<LeadEntry> sheet = await _context.LeadEntries.OrderBy(e => e.leadID).ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "LeadEntries.xlsx");
+                return fr;
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
+        }
+
         // PUT: api/LeadEntries/5
         // Edits one specific Entry in the LeadEntries Table by ID
         [HttpPut("{id}")]

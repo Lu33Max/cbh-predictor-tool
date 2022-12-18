@@ -148,7 +148,7 @@ namespace CBHPredictorWebAPI.Controllers
 
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
-                        int month = Array.IndexOf(Enum.GetValues(_month.GetType()), _month);
+                        int month = Array.IndexOf(Enum.GetValues(_month.GetType()), _month) + 1;
                         string _date = _year.ToString() + "-" + month + "-01";
 
                         GoogleSearchTerm order = new GoogleSearchTerm()
@@ -186,7 +186,7 @@ namespace CBHPredictorWebAPI.Controllers
 
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
-                        int month = Array.IndexOf(Enum.GetValues(_month.GetType()), _month);
+                        int month = Array.IndexOf(Enum.GetValues(_month.GetType()), _month) + 1;
                         string _date = _year.ToString() + "-" + month + "-01";
 
                         BingSearchTerm order = new BingSearchTerm()

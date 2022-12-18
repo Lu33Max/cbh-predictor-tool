@@ -106,7 +106,7 @@ function renderOrderTable(slice){
     <table className={styles.table}>
       <thead className={styles.tableRowHeader}>
         <tr>
-          <th className={styles.tableHeader}><PopoverButton text="customerID"/></th>
+          <th className={styles.tableHeader}>customerID</th>
           <th className={styles.tableHeader}>orderID</th>
           <th className={styles.tableHeader}>orderDate</th>
           <th className={styles.tableHeader}>orderPrice</th>

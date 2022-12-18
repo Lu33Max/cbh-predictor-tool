@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import Constants from "./utilities/Constants"
 import BingCreateForm from "./components/BingCreateForm"
 import BingUpdateForm from "./components/BingUpdateForm"
@@ -32,15 +33,16 @@ export default function App() {
   const handleRowChange = (e) => {
     setRows(e.target.value)
     getEntries(window.$activeTable)
-};
+  };
 
   //// Basic CRUD Operations ////
   // Get all entries from Server
   function getEntries(table){
     setEntries([]);
+    
     window.$activeTable = table;
     var url;
-
+  
     switch (table) {
       case 'Bing':
         url = Constants.API_URL_BING_ENTRIES;
@@ -58,7 +60,7 @@ export default function App() {
         alert(`Error: Table with name "${table}" does not exist`)
         return;
     }
-
+  
     fetch(url, {
       method: 'GET'
     })
@@ -71,6 +73,7 @@ export default function App() {
       alert(error);
     });
   }
+  
   // Delete entry by ID
   function deleteEntry(id){
     var url;
@@ -226,13 +229,15 @@ export default function App() {
           </div>
         </div>
       </div>
-      {(window.$activeTable !== "") && (
-        <div className={styles.container}>
-          <div>
-            <input value={rows} name="rows" type="text" className="form-control" onChange={handleRowChange} />
-          </div>
-          <div className={styles.wrapper}>
-            <Table data={entries} rowsPerPage={rows} />
+      {(window.$activeTable !== "" && showingCreateNewEntryForm === false && entryCurrentlyBeingUpdated === null && showingFileUploadForm === false && showingLogInForm === false && Object.keys(entries).length !== 0) && (
+        <div className={styles.main}>
+          <input value={rows} name="rows" type="text" className={styles.rowInput} onChange={handleRowChange}/> Rows
+          <div className={styles.container}>
+            <div className={styles.wrapper}>
+              <div className={styles.tablewrapper}>
+                <Table data={entries} rowsPerPage={rows}/>
+              </div>
+            </div>
           </div>
         </div>
       )}

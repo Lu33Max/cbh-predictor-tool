@@ -22,7 +22,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetSearchTerms()
         {
-            return await _context.BingSearchTerms.ToListAsync();
+            return await _context.BingSearchTerms.OrderBy(e => e.terms).ToListAsync();
         }
 
         // GET: api/BingSearchTerms/5
@@ -38,6 +38,21 @@ namespace CBHPredictorWebAPI.Controllers
             }
 
             return searchTerm;
+        }
+
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportBTermsToExcel()
+        {
+            try
+            {
+                List<BingSearchTerm> sheet = await _context.BingSearchTerms.OrderBy(e => e.terms).ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "BingSearchTerms.xlsx");
+                return fr;
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
         }
 
         // PUT: api/BingSearchTerms/5
