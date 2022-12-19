@@ -1,0 +1,107 @@
+.body {
+  width: 100%;
+  height: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-top: 2%;
+  font-size: 25px;
+  font-weight: 200;
+}
+
+.table {
+  margin-top: 1%;
+}
+
+.text {
+  font-size: 20px;
+}
+
+.tableview {
+  padding-top: 10%;
+}
+
+.rowInput {
+  width: 10%;
+  border: 2px solid;
+  text-align: center;
+  margin-bottom: 1%;
+}
+
+.container {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-height: 75vh;
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: scroll;
+}
+
+button {
+  border: 1px solid white;
+  padding: 5px;
+  font-size: 20px;
+  color: white;
+  text-align: center;
+  transition-duration: 0.4s;
+  display: inline-block;
+}
+
+.button_green {
+  width: 100%;
+  background-color: rgb(107, 178, 56);
+}
+
+.button_green:hover {
+  background-color: rgb(137, 208, 86);
+}
+
+.button_black {
+  width: 100%;
+  background-color: rgb(40, 40, 40);
+}
+
+.button_black:hover {
+  background-color: rgb(70, 70, 70);
+}
+
+.button_gray {
+  width: 50%;
+  color: black;
+  background-color: rgb(200, 200, 210);
+}
+
+.button_gray:hover {
+  background-color: rgb(170, 170, 180);
+}
+
+.button_backarrow {
+  width: 5%;
+  background-color: rgb(40, 40, 40);
+}
+
+.button_backarrow:hover {
+  width: 5%;
+  background-color: rgb(70, 70, 70);
+}
+
+.button_newentry {
+  margin-left: 2px;
+  width: 60%;
+  background-color: rgb(107, 178, 56);
+}
+
+.button_newentry:hover {
+  background-color: rgb(137, 208, 86);
+}
+
+.button_deleteentries {
+  margin-left: 2px;
+  width: 34%;
+  color: black;
+  background-color: rgb(200, 200, 210);
+}
+
+.button_deleteentries:hover {
+  background-color: rgb(170, 170, 180);
+}

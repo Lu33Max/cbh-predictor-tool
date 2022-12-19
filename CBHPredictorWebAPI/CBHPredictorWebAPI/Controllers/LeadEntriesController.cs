@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Text;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -26,21 +26,6 @@ namespace CBHPredictorWebAPI.Controllers
             return await _context.LeadEntries.ToListAsync();
         }
 
-        [HttpGet("ExportToExcel")]
-        public async Task<IActionResult> ExportLeadEntriesToExcel()
-        {
-            try
-            {
-                List<LeadEntry> sheet = await _context.LeadEntries.ToListAsync();
-                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "LeadEntries.xlsx");
-                return fr;
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult(ex);
-            }
-        }
-
         // GET: api/LeadEntries/5
         // Gets one specific Entry in the LeadEntries Table by ID
         [HttpGet("{id}")]
@@ -56,21 +41,19 @@ namespace CBHPredictorWebAPI.Controllers
             return leadEntry;
         }
 
-        [HttpGet("GetAny/{col}/{value}/{exact}")]
-        public async Task<ActionResult<IEnumerable<LeadEntry>>> GetByAny(LeadColumns col, string value, bool exact)
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportLeadEntriesToExcel()
         {
-            string command;
-
-            if (exact)
+            try
             {
-                command = "SELECT * FROM LeadEntries WHERE [" + col + "] LIKE {0}";
+                List<LeadEntry> sheet = await _context.LeadEntries.OrderBy(e => e.leadID).ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "LeadEntries.xlsx");
+                return fr;
             }
-            else
+            catch (Exception ex)
             {
-                command = "SELECT * FROM LeadEntries WHERE [" + col + "] LIKE '%' + {0} + '%'";
+                return new BadRequestObjectResult(ex);
             }
-
-            return await _context.LeadEntries.FromSqlRaw(command, value).ToListAsync();
         }
 
         // PUT: api/LeadEntries/5
@@ -110,14 +93,15 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<LeadEntry>> PostLeadEntry(LeadEntry leadEntry)
         {
-            if(!_context.LeadEntries.Any(e => e.leadID == leadEntry.leadID))
+            if (!_context.LeadEntries.Any(e => e.leadID == leadEntry.leadID))
             {
                 leadEntry.id = Guid.NewGuid();
                 leadEntry.lastEdited = DateTime.Now;
                 await _context.LeadEntries.AddAsync(leadEntry);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction("GetLeadEntry", new { id = leadEntry.id }, leadEntry);
-            } else
+            }
+            else
             {
                 return BadRequest();
             }
@@ -143,6 +127,143 @@ namespace CBHPredictorWebAPI.Controllers
             return "{\"success\":1}";
         }
 
+        //-------------------------------------------------------------FILTER----------------------------------------------------------------------//
+        //---- Apply Filter ----//
+        [HttpGet("ApplyFilter/{relation}")]
+        public async Task<ActionResult<IEnumerable<LeadEntry>>> ApplyFilter(string relation)
+        {
+            var command = new StringBuilder("SELECT * FROM LeadEntries WHERE ");
+            string? filter = HttpContext.Session.GetString("LeadFilter");
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                filter = filter.Remove(0, 1);
+                string[] filters = filter.Split(";");
+
+                if (relation.Equals("AND"))
+                {
+                    filter = string.Join(" AND ", filters);
+                }
+                else
+                {
+                    filter = string.Join(" OR ", filters);
+                }
+
+                command.Append(filter);
+                return await _context.LeadEntries.FromSqlRaw(command.ToString()).ToListAsync();
+            }
+
+            return BadRequest();
+        }
+
+        //---- Add new Filter ----//
+        // Add Single Filter
+        [HttpPost("AddSingleFilter/{col}/{value}/{exact}")]
+        public string AddSingleFilter(string col, string value, bool exact)
+        {
+            string filter = CreateSingleFilterString(col, value, exact);
+            HttpContext.Session.SetString("LeadFilter", HttpContext.Session.GetString("LeadFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
+
+        // Add Range Filter
+        [HttpPost("AddRangeFilter/{col}/{fromVal}/{toVal}")]
+        public string AddRangeFilter(string col, string fromVal, string toVal)
+        {
+            string filter = CreateRangeFilterString(col, fromVal, toVal);
+            HttpContext.Session.SetString("LeadFilter", HttpContext.Session.GetString("LeadFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
+
+        // Add Comparing Filter
+        [HttpPost("AddCompareFilter/{col}/{value}/{before}")]
+        public string AddCompareFilter(string col, string value, bool before)
+        {
+            string filter = CreateCompareFilterString(col, value, before);
+            HttpContext.Session.SetString("LeadFilter", HttpContext.Session.GetString("LeadFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
+
+        //---- Remove existing Filter ----//
+        // Remove Single Filter
+        [HttpDelete("RemoveSingleFilter/{col}/{value}/{exact}")]
+        public string RemoveSingleFilter(string col, string value, bool exact)
+        {
+            string filter = ";" + CreateSingleFilterString(col, value, exact);
+            string? allFilters = HttpContext.Session.GetString("LeadFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("LeadFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
+
+        // Remove Range Filter
+        [HttpDelete("RemoveRangeFilter/{col}/{fromVal}/{toVal}")]
+        public string RemoveRangeFilter(string col, string fromVal, string toVal)
+        {
+            string filter = ";" + CreateRangeFilterString(col, fromVal, toVal);
+            string? allFilters = HttpContext.Session.GetString("LeadFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("LeadFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
+
+        // Remove Comparing Filter
+        [HttpDelete("RemoveCompareFilter/{col}/{value}/{before}")]
+        public string RemoveCompareFilter(string col, string value, bool before)
+        {
+            string filter = ";" + CreateCompareFilterString(col, value, before);
+            string? allFilters = HttpContext.Session.GetString("LeadFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("LeadFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
+
+        // Remove all Filter
+        [HttpDelete("RemoveAllFilter")]
+        public string RemoveAllFilter()
+        {
+            HttpContext.Session.SetString("LeadFilter", string.Empty);
+            return "{\"success\":1}";
+        }
+
+        //---- Create Filter Strings ----//
+        private string CreateSingleFilterString(string col, string value, bool exact)
+        {
+            if (exact)
+            {
+                return "[" + col + "] LIKE '" + value + "'";
+            }
+            else
+            {
+                return "[" + col + "] LIKE '%" + value + "%'";
+            }
+        }
+        private string CreateRangeFilterString(string col, string fromVal, string toVal)
+        {
+            return "[" + col + "] BETWEEN '" + fromVal + "' AND '" + toVal + "'";
+        }
+        private string CreateCompareFilterString(string col, string value, bool before)
+        {
+            if (before)
+            {
+                return "[" + col + "] < '" + value + "'";
+            }
+            else
+            {
+                return "[" + col + "] > '" + value + "'";
+            }
+        }
+
+        //-------------------------------------------------------------UTILITY---------------------------------------------------------------------//
         private bool LeadEntryExists(Guid id)
         {
             return _context.LeadEntries.Any(e => e.id == id);

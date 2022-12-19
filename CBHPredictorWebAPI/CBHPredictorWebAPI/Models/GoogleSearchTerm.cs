@@ -6,7 +6,6 @@
         public string? terms { get; set; }
         public int? impressions { get; set; }
         public int? clicks { get; set; }
-        public string? month { get; set; }
-        public int? year { get; set; }
+        public string? date { get; set; }
     }
 }

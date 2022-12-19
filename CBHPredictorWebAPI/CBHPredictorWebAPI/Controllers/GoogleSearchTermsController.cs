@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
-using static CBHPredictorWebAPI.Controllers.ExcelReadController;
+using System.Text;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -26,21 +26,6 @@ namespace CBHPredictorWebAPI.Controllers
             return await _context.GoogleSearchTerms.ToListAsync();
         }
 
-        [HttpGet("ExportToExcel")]
-        public async Task<IActionResult> ExportGTermsToExcel()
-        {
-            try
-            {
-                List<GoogleSearchTerm> sheet = await _context.GoogleSearchTerms.ToListAsync();
-                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "GoogleSearchTerms.xlsx");
-                return fr;
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult(ex);
-            }
-        }
-
         // GET: api/GoogleSearchTerms/5
         // Gets one specific Entry in the GoogleSearchTerms Table by ID
         [HttpGet("{id}")]
@@ -56,31 +41,19 @@ namespace CBHPredictorWebAPI.Controllers
             return searchTerm;
         }
 
-        // Gets all Entries in BingSearchTerms that meet a specified criterium
-        [HttpGet("GetAny/{col}/{value}/{exact}")]
-        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> GetByAny(GSearchTerms col, string value, bool exact)
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportGTermsToExcel()
         {
-            string command;
-
-            if (exact)
+            try
             {
-                command = "SELECT * FROM GoogleSearchTerms WHERE [" + col + "] LIKE {0}";
+                List<GoogleSearchTerm> sheet = await _context.GoogleSearchTerms.OrderBy(e => e.terms).ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "GoogleSearchTerms.xlsx");
+                return fr;
             }
-            else
+            catch (Exception ex)
             {
-                command = "SELECT * FROM GoogleSearchTerms WHERE [" + col + "] LIKE '%' + {0} + '%'";
+                return new BadRequestObjectResult(ex);
             }
-
-            return await _context.GoogleSearchTerms.FromSqlRaw(command, value).ToListAsync();
-        }
-
-        //Gets all Entries from the given month and year
-        [HttpGet("GetMonth/{month}/{year}")]
-        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetByMonth(Month month, int year)
-        {
-            string command = "SELECT * from GoogleSearchTerms WHERE month = {0} AND year = {1}";
-
-            return await _context.BingSearchTerms.FromSqlRaw(command, month.ToString(), year).ToListAsync();
         }
 
         // PUT: api/GoogleSearchTerms/5
@@ -145,6 +118,143 @@ namespace CBHPredictorWebAPI.Controllers
             return "{\"success\":1}";
         }
 
+        //-------------------------------------------------------------FILTER----------------------------------------------------------------------//
+        //---- Apply Filter ----//
+        [HttpGet("ApplyFilter/{relation}")]
+        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> ApplyFilter(string relation)
+        {
+            var command = new StringBuilder("SELECT * FROM GoogleSearchTerms WHERE ");
+            string? filter = HttpContext.Session.GetString("GoogleFilter");
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                filter = filter.Remove(0, 1);
+                string[] filters = filter.Split(";");
+
+                if (relation.Equals("AND"))
+                {
+                    filter = string.Join(" AND ", filters);
+                }
+                else
+                {
+                    filter = string.Join(" OR ", filters);
+                }
+
+                command.Append(filter);
+                return await _context.GoogleSearchTerms.FromSqlRaw(command.ToString()).ToListAsync();
+            }
+
+            return BadRequest();
+        }
+
+        //---- Add new Filter ----//
+        // Add Single Filter
+        [HttpPost("AddSingleFilter/{col}/{value}/{exact}")]
+        public string AddSingleFilter(string col, string value, bool exact)
+        {
+            string filter = CreateSingleFilterString(col, value, exact);
+            HttpContext.Session.SetString("GoogleFilter", HttpContext.Session.GetString("GoogleFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
+
+        // Add Range Filter
+        [HttpPost("AddRangeFilter/{col}/{fromVal}/{toVal}")]
+        public string AddRangeFilter(string col, string fromVal, string toVal)
+        {
+            string filter = CreateRangeFilterString(col, fromVal, toVal);
+            HttpContext.Session.SetString("GoogleFilter", HttpContext.Session.GetString("GoogleFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
+
+        // Add Comparing Filter
+        [HttpPost("AddCompareFilter/{col}/{value}/{before}")]
+        public string AddCompareFilter(string col, string value, bool before)
+        {
+            string filter = CreateCompareFilterString(col, value, before);
+            HttpContext.Session.SetString("GoogleFilter", HttpContext.Session.GetString("GoogleFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
+
+        //---- Remove existing Filter ----//
+        // Remove Single Filter
+        [HttpDelete("RemoveSingleFilter/{col}/{value}/{exact}")]
+        public string RemoveSingleFilter(string col, string value, bool exact)
+        {
+            string filter = ";" + CreateSingleFilterString(col, value, exact);
+            string? allFilters = HttpContext.Session.GetString("GoogleFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("GoogleFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
+
+        // Remove Range Filter
+        [HttpDelete("RemoveRangeFilter/{col}/{fromVal}/{toVal}")]
+        public string RemoveRangeFilter(string col, string fromVal, string toVal)
+        {
+            string filter = ";" + CreateRangeFilterString(col, fromVal, toVal);
+            string? allFilters = HttpContext.Session.GetString("GoogleFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("GoogleFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
+
+        // Remove Comparing Filter
+        [HttpDelete("RemoveCompareFilter/{col}/{value}/{before}")]
+        public string RemoveCompareFilter(string col, string value, bool before)
+        {
+            string filter = ";" + CreateCompareFilterString(col, value, before);
+            string? allFilters = HttpContext.Session.GetString("GoogleFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("GoogleFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
+
+        // Remove all Filter
+        [HttpDelete("RemoveAllFilter")]
+        public string RemoveAllFilter()
+        {
+            HttpContext.Session.SetString("LeadFilter", string.Empty);
+            return "{\"success\":1}";
+        }
+
+        //---- Create Filter Strings ----//
+        private string CreateSingleFilterString(string col, string value, bool exact)
+        {
+            if (exact)
+            {
+                return "[" + col + "] LIKE '" + value + "'";
+            }
+            else
+            {
+                return "[" + col + "] LIKE '%" + value + "%'";
+            }
+        }
+        private string CreateRangeFilterString(string col, string fromVal, string toVal)
+        {
+            return "[" + col + "] BETWEEN '" + fromVal + "' AND '" + toVal + "'";
+        }
+        private string CreateCompareFilterString(string col, string value, bool before)
+        {
+            if (before)
+            {
+                return "[" + col + "] < '" + value + "'";
+            }
+            else
+            {
+                return "[" + col + "] > '" + value + "'";
+            }
+        }
+
+        //-------------------------------------------------------------UTILITY---------------------------------------------------------------------//
         private bool SearchTermExists(Guid id)
         {
             return _context.GoogleSearchTerms.Any(e => e.id == id);

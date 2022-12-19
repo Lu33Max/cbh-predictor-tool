@@ -1,0 +1,113 @@
+table thead {
+  inset-block-start: 0;
+}
+table tfoot {
+  inset-block-end: 0;
+}
+table td {
+  max-width: 10%;;
+}
+
+.table {
+  table-layout: auto;
+  border-collapse: collapse;
+  border: none;
+  width: 100%;
+  min-width: max-content;
+  margin: 2rem auto;
+}
+
+.tableRowHeader {
+  transition: all 0.25s ease;
+}
+
+.tableHeader {
+  position: sticky;
+  inset-block-start: 0;
+  background-color: #6cB23B;
+  padding: 12px;
+  font-weight: 500;
+  text-align: left;
+  font-size: 14px;
+  color: #2c3e50;
+  border: 1px solid #aaa;
+  width: 100px;
+  word-wrap: break-word;
+}
+
+.tableFooter {
+  position: sticky;
+  background-color: #6cB23B;
+  padding: 8px 0px;
+  width: 100%;
+  font-weight: 500;
+  text-align: center;
+  font-size: 16px;
+  border: 1px solid #aaa;
+  align-items: center;
+  justify-content: center;
+}
+
+.tableCell {
+  padding: 12px;
+  font-size: 14px;
+  color: #2c3e50;
+  border: 1px solid #aaa;
+  background-color: #dddddd;
+}
+
+.crudCell {
+  padding: 12px;
+  text-align: center;
+  color: #2c3e50;
+  border: 1px solid #aaa;
+  background-color: #dddddd;
+}
+
+.button {
+  position: sticky;
+  border: none;
+  padding: 7px 14px;
+  cursor: pointer;
+  margin-right: 4px;
+  margin-left: 4px;
+}
+
+button {
+  padding: 5px;
+  font-size: 20px;
+  color: white;
+  text-align: center;
+  transition-duration: 0.4s;
+  display: inline-block;
+}
+
+.activeButton {
+  color: white;
+  background: black;
+}
+
+.inactiveButton {
+  color: #2c3e50;
+  background: #f9f9f9;
+}
+
+.button_black {
+  padding: 5px 10px 5px 10px;
+  margin-right: 10px;
+  background-color: rgb(40, 40, 40);
+}
+
+.button_black:hover {
+  background-color: rgb(70, 70, 70);
+}
+
+.button_gray {
+  padding: 5px 10px 5px 10px;
+  color: black;
+  background-color: rgb(200, 200, 210);
+}
+
+.button_gray:hover {
+  background-color: rgb(170, 170, 180);
+}

@@ -3,8 +3,6 @@ using CBHPredictorWebAPI.Models;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json.Linq;
 using System.Data;
 
 namespace CBHPredictorWebAPI.Controllers
@@ -19,6 +17,12 @@ namespace CBHPredictorWebAPI.Controllers
         public ExcelReadController(CBHDBContext context)
         {
             _context = context;
+        }
+
+        private int ConvertEnum(Month _month)
+        {
+            int month = Array.IndexOf(Enum.GetValues(_month.GetType()), _month) + 1;
+            return month;
         }
 
         // Reads all Data from the Input Table and writes it to the LeadEntries Table
@@ -39,7 +43,6 @@ namespace CBHPredictorWebAPI.Controllers
                     });
 
                     foreach (DataRow row in result.Tables[0].Rows) {
-
                         if (!_context.LeadEntries.Any(e => e.leadID == ConvertToInt(row["leadid"])))
                         {
                             LeadEntry lead = new LeadEntry()
@@ -57,8 +60,7 @@ namespace CBHPredictorWebAPI.Controllers
                                 paramOfInterest = ConvertToString(row["Parameter_of_interest"]),
                                 diagnosisOfInterest = ConvertToString(row["Diagnosis_of_interest"]),
                                 matrixOfInterest = ConvertToString(row["Matrix_of_interest"]),
-                                quantityOfInterest = ConvertToString(row["Quantity_of_interest"]),
-                                lastEdited = DateTime.Now
+                                quantityOfInterest = ConvertToString(row["Quantity_of_interest"])
                             };
 
                             _context.Add(lead);
@@ -123,8 +125,7 @@ namespace CBHPredictorWebAPI.Controllers
                                 histologicalDiagnosis = ConvertToString(row["Histological_Diagnosis"]),
                                 organ = ConvertToString(row["Organ"]),
                                 collectionCountry = ConvertToString(row["Country_of_Collection"]),
-                                collectionDate = ConvertToDate(row["Date_of_Collection"]),
-                                lastEdited = DateTime.Now
+                                collectionDate = ConvertToDate(row["Date_of_Collection"])
                             };
 
                             _context.Add(order);
@@ -154,11 +155,14 @@ namespace CBHPredictorWebAPI.Controllers
 
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
-                        if (_context.GoogleSearchTerms.Any(e => e.terms == ConvertToString(row["Terms"])))
+                        int month = ConvertEnum(_month);
+                        string _date = _year.ToString() + "-" + month;
+
+                        if (_context.GoogleSearchTerms.Where(e => (e.terms == ConvertToString(row["Terms"])) && (e.date == _date)).Any())
                         {
-                            string command = "SELECT * FROM GoogleSearchTerms WHERE terms = {0} AND month = {1} AND year = {2}";
-                            GoogleSearchTerm tempTerm = _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _month.ToString(), _year).FirstOrDefault();
-                            _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _month.ToString(), _year).ExecuteDelete();
+                            string command = "SELECT * FROM GoogleSearchTerms WHERE terms = {0} AND date = {1}";
+                            GoogleSearchTerm tempTerm = _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _date).FirstOrDefault();
+                            _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _date).ExecuteDelete();
 
                             tempTerm.impressions += ConvertToInt(row["Impressions"]);
                             tempTerm.clicks += ConvertToInt(row["Clicks"]);
@@ -168,23 +172,21 @@ namespace CBHPredictorWebAPI.Controllers
                         }
                         else
                         {
-                            GoogleSearchTerm term = new GoogleSearchTerm()
+                            GoogleSearchTerm order = new GoogleSearchTerm()
                             {
                                 id = Guid.NewGuid(),
                                 terms = ConvertToString(row["Terms"]),
                                 impressions = ConvertToInt(row["Impressions"]),
                                 clicks = ConvertToInt(row["Clicks"]),
-                                month = _month.ToString(),
-                                year = _year
+                                date = _date
                             };
 
-                            _context.Add(term);
+                            _context.Add(order);
                             await _context.SaveChangesAsync();
                         }
                     }
                 }
             }
-            await _context.SaveChangesAsync();
             return "{\"success\":1}";
         }
 
@@ -206,11 +208,14 @@ namespace CBHPredictorWebAPI.Controllers
 
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
-                        if (_context.BingSearchTerms.Any(e => e.terms == ConvertToString(row["Search term"])))
+                        int month = ConvertEnum(_month);
+                        string _date = _year.ToString() + "-" + month;
+
+                        if (_context.BingSearchTerms.Where(e => (e.terms == ConvertToString(row["Search term"])) && (e.date == _date)).Any())
                         {
-                            string command = "SELECT * FROM BingSearchTerms WHERE terms = {0} AND month = {1} AND year = {2}";
-                            BingSearchTerm tempTerm = _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _month.ToString(), _year).FirstOrDefault();
-                            _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _month.ToString(), _year).ExecuteDelete();
+                            string command = "SELECT * FROM BingSearchTerms WHERE terms = {0} AND date = {1}";
+                            BingSearchTerm tempTerm = _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _date).FirstOrDefault();
+                            _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _date).ExecuteDelete();
 
                             tempTerm.impressions += ConvertToInt(row["Impr."]);
                             tempTerm.clicks += ConvertToInt(row["Clicks"]);
@@ -220,17 +225,16 @@ namespace CBHPredictorWebAPI.Controllers
                         }
                         else
                         {
-                            BingSearchTerm term = new BingSearchTerm()
+                            BingSearchTerm searchTerm = new BingSearchTerm()
                             {
                                 id = Guid.NewGuid(),
                                 terms = ConvertToString(row["Search term"]),
                                 impressions = ConvertToInt(row["Impr."]),
                                 clicks = ConvertToInt(row["Clicks"]),
-                                month = _month.ToString(),
-                                year = _year
+                                date = _date
                             };
 
-                            _context.Add(term);
+                            _context.Add(searchTerm);
                             await _context.SaveChangesAsync();
                         }
                     }
@@ -298,6 +302,7 @@ namespace CBHPredictorWebAPI.Controllers
             {
                 return temp;
             }
+
             return null;
         }
     }

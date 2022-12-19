@@ -29,11 +29,11 @@ namespace CBHPredictorWebAPI
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-            // Session Stuff
+            // Session Management
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.IdleTimeout = TimeSpan.FromMinutes(10);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
@@ -49,7 +49,7 @@ namespace CBHPredictorWebAPI
 
             var app = builder.Build();
 
-            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("Content-Disposition"));
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -57,10 +57,13 @@ namespace CBHPredictorWebAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseRouting();
 
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseHttpsRedirection();
 

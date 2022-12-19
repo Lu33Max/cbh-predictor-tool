@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
-using static CBHPredictorWebAPI.Controllers.ExcelReadController;
+using System.Text;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -23,22 +23,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetSearchTerms()
         {
-            return await _context.BingSearchTerms.ToListAsync();
-        }
-
-        [HttpGet("ExportToExcel")]
-        public async Task<IActionResult> ExportBTermsToExcel()
-        {
-            try
-            {
-                List<BingSearchTerm> sheet = await _context.BingSearchTerms.ToListAsync();
-                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "BingSearchTerms.xlsx");
-                return fr;
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult(ex);
-            }
+            return await _context.BingSearchTerms.OrderBy(e => e.terms).ToListAsync();
         }
 
         // GET: api/BingSearchTerms/5
@@ -56,31 +41,19 @@ namespace CBHPredictorWebAPI.Controllers
             return searchTerm;
         }
 
-        // Gets all Entries in BingSearchTerms that meet a specified criterium
-        [HttpGet("GetAny/{col}/{value}/{exact}")]
-        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetByAny(BSearchTerms col, string value, bool exact)
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportBTermsToExcel()
         {
-            string command;
-
-            if (exact)
+            try
             {
-                command = "SELECT * FROM BingSearchTerms WHERE [" + col + "] LIKE {0}";
-            } 
-            else
-            {
-                command = "SELECT * FROM BingSearchTerms WHERE [" + col + "] LIKE '%' + {0} + '%'";
+                List<BingSearchTerm> sheet = await _context.BingSearchTerms.OrderBy(e => e.terms).ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "BingSearchTerms.xlsx");
+                return fr;
             }
-            
-            return await _context.BingSearchTerms.FromSqlRaw(command, value).ToListAsync();
-        }
-
-        //Gets all Entries from the given month and year
-        [HttpGet("GetMonth/{month}/{year}")]
-        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetByMonth(Month month, int year)
-        {
-            string command = "SELECT * from BingSearchTerms WHERE month = {0} AND year = {1}";
-
-            return await _context.BingSearchTerms.FromSqlRaw(command, month.ToString(), year).ToListAsync();
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
         }
 
         // PUT: api/BingSearchTerms/5
@@ -128,7 +101,7 @@ namespace CBHPredictorWebAPI.Controllers
         // DELETE: api/BingSearchTerms/5
         // Deletes one specific Entry in the BingSearchTerms Table by ID
         [HttpDelete("{id}")]
-        public async Task<String> DeleteSearchTerm(Guid id)
+        public async Task<string> DeleteSearchTerm(Guid id)
         {
             await _context.BingSearchTerms.Where(e => e.id == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
@@ -138,13 +111,150 @@ namespace CBHPredictorWebAPI.Controllers
         // DELETE: api/LeadEntries
         // Deletes all Entries in the BingSearchTerms Table
         [HttpDelete]
-        public async Task<String> DeleteSearchTerms()
+        public async Task<string> DeleteSearchTerms()
         {
             await _context.BingSearchTerms.ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
             return "{\"success\":1}";
         }
 
+        //-------------------------------------------------------------FILTER----------------------------------------------------------------------//
+        //---- Apply Filter ----//
+        [HttpGet("ApplyFilter/{relation}")]
+        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> ApplyFilter(string relation)
+        {
+            var command = new StringBuilder("SELECT * FROM BingSearchTerms WHERE ");
+            string? filter = HttpContext.Session.GetString("BingFilter");
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                filter = filter.Remove(0,1);
+                string[] filters = filter.Split(";");
+
+                if (relation.Equals("AND"))
+                {
+                    filter = string.Join(" AND ", filters);
+                }
+                else
+                {
+                    filter = string.Join(" OR ", filters);    
+                }
+
+                command.Append(filter);
+                return await _context.BingSearchTerms.FromSqlRaw(command.ToString()).ToListAsync();
+            }
+
+            return BadRequest();
+        }
+
+        //---- Add new Filter ----//
+        // Add Single Filter
+        [HttpPost("AddSingleFilter/{col}/{value}/{exact}")]
+        public string AddSingleFilter(string col, string value, bool exact)
+        {
+            string filter = CreateSingleFilterString(col, value, exact);
+            HttpContext.Session.SetString("BingFilter", HttpContext.Session.GetString("BingFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
+
+        // Add Range Filter
+        [HttpPost("AddRangeFilter/{col}/{fromVal}/{toVal}")]
+        public string AddRangeFilter(string col, string fromVal, string toVal) 
+        {
+            string filter = CreateRangeFilterString(col, fromVal, toVal);
+            HttpContext.Session.SetString("BingFilter", HttpContext.Session.GetString("BingFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
+
+        // Add Comparing Filter
+        [HttpPost("AddCompareFilter/{col}/{value}/{before}")]
+        public string AddCompareFilter(string col, string value, bool before)
+        {
+            string filter = CreateCompareFilterString(col, value, before);
+            HttpContext.Session.SetString("BingFilter", HttpContext.Session.GetString("BingFilter") + ";" + filter);
+            return "{\"success\":1}";
+        }
+
+        //---- Remove existing Filter ----//
+        // Remove Single Filter
+        [HttpDelete("RemoveSingleFilter/{col}/{value}/{exact}")]
+        public string RemoveSingleFilter(string col, string value, bool exact)
+        {
+            string filter = ";" + CreateSingleFilterString(col, value, exact);
+            string? allFilters = HttpContext.Session.GetString("BingFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("BingFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
+
+        // Remove Range Filter
+        [HttpDelete("RemoveRangeFilter/{col}/{fromVal}/{toVal}")]
+        public string RemoveRangeFilter(string col, string fromVal, string toVal)
+        {
+            string filter = ";" + CreateRangeFilterString(col, fromVal, toVal);
+            string? allFilters = HttpContext.Session.GetString("BingFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("BingFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
+
+        // Remove Comparing Filter
+        [HttpDelete("RemoveCompareFilter/{col}/{value}/{before}")]
+        public string RemoveCompareFilter(string col, string value, bool before)
+        {
+            string filter = ";" + CreateCompareFilterString(col, value, before);
+            string? allFilters = HttpContext.Session.GetString("BingFilter");
+
+            allFilters = allFilters.Replace(filter, "");
+
+            HttpContext.Session.SetString("BingFilter", allFilters);
+
+            return "{\"success\":1}";
+        }
+
+        // Remove all Filter
+        [HttpDelete("RemoveAllFilter")]
+        public string RemoveAllFilter()
+        {
+            HttpContext.Session.SetString("BingFilter", string.Empty);
+            return "{\"success\":1}";
+        }
+
+        //---- Create Filter Strings ----//
+        private string CreateSingleFilterString(string col, string value, bool exact)
+        {
+            if (exact)
+            {
+                return "[" + col + "] LIKE '" + value + "'";
+            }
+            else
+            {
+                return "[" + col + "] LIKE '%" + value + "%'";
+            }
+        }
+        private string CreateRangeFilterString(string col, string fromVal, string toVal)
+        {
+            return "[" + col + "] BETWEEN '" + fromVal + "' AND '" + toVal + "'";
+        }
+        private string CreateCompareFilterString(string col, string value, bool before)
+        {
+            if(before)
+            {
+                return "[" + col + "] < '" + value + "'";
+            }
+            else
+            {
+                return "[" + col + "] > '" + value + "'";
+            }
+        }
+
+        //-------------------------------------------------------------UTILITY---------------------------------------------------------------------//
         private bool SearchTermExists(Guid id)
         {
             return _context.BingSearchTerms.Any(e => e.id == id);

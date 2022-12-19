@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
@@ -50,14 +45,14 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<LoginEntry>> PostLoginEntry(LoginEntry loginEntry)
         {
-            if(SearchForEntry(loginEntry.name, loginEntry.password))
+            if(SearchForEntry(loginEntry.email, loginEntry.password))
             {
                 return BadRequest();
             }
             else
             {
                 loginEntry.id = Guid.NewGuid();
-                loginEntry.name = Encode(Encode(loginEntry.name));
+                loginEntry.email = Encode(Encode(loginEntry.email));
                 loginEntry.password = Encode(Encode(loginEntry.password));
 
                 await _context.LoginEntries.AddAsync(loginEntry);
@@ -68,13 +63,16 @@ namespace CBHPredictorWebAPI.Controllers
 
         // GET: api/LoginEntries/SearchForEntry/name/password
         // Searches for a specific Entry in the LoginEntries Table by a given name and password
-        [HttpGet("SearchForEntry/{name}/{password}")]
-        public Boolean SearchForEntry(string name, string password)
+        [HttpGet("SearchForEntry/{email}/{password}")]
+        public bool SearchForEntry(string email, string password)
         {
-            name = Encode(name);
-            password = Encode(password);
+            //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//
+            //email = Encode(email);
+            //password = Encode(password);
 
-            return !_context.LoginEntries.Where(e => e.name == name && e.password == password).IsNullOrEmpty<LoginEntry>();
+            //return !_context.LoginEntries.Where(e => e.email == email && e.password == password).IsNullOrEmpty<LoginEntry>();
+            //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//
+            return true;
         }
 
         // PUT: api/LeadEntries/5
