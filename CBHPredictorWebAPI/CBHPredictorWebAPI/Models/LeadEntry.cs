@@ -16,5 +16,6 @@
         public string? diagnosisOfInterest { get; set; }
         public string? matrixOfInterest { get; set; }
         public string? quantityOfInterest { get; set; }
+        public DateTime? lastEdited { get; set; }
     }
 }

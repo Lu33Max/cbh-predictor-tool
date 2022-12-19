@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CBHPredictorWebAPI.Migrations
 {
     [DbContext(typeof(CBHDBContext))]
-    [Migration("20221215193813_CBHDB")]
+    [Migration("20221219203807_CBHDB")]
     partial class CBHDB
     {
         /// <inheritdoc />
@@ -34,8 +34,8 @@ namespace CBHPredictorWebAPI.Migrations
                     b.Property<int?>("clicks")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("date")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("date")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("impressions")
                         .HasColumnType("int");
@@ -57,8 +57,8 @@ namespace CBHPredictorWebAPI.Migrations
                     b.Property<int?>("clicks")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("date")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("date")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("impressions")
                         .HasColumnType("int");
@@ -88,6 +88,9 @@ namespace CBHPredictorWebAPI.Migrations
 
                     b.Property<string>("fieldOfInterest")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("lastEdited")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("leadDate")
                         .HasColumnType("datetime2");
@@ -184,6 +187,9 @@ namespace CBHPredictorWebAPI.Migrations
 
                     b.Property<string>("labParameter")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("lastEdited")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("matrix")
                         .HasColumnType("nvarchar(max)");

@@ -36,5 +36,6 @@ namespace CBHPredictorWebAPI.Models
         public string? organ { get; set; }
         public string? collectionCountry { get; set; }
         public DateTime? collectionDate { get; set; }
+        public DateTime? lastEdited { get; set; }
     }
 }

@@ -49,7 +49,7 @@ namespace CBHPredictorWebAPI
 
             var app = builder.Build();
 
-            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("Content-Disposition"));
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

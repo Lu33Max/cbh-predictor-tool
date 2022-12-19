@@ -19,7 +19,7 @@ namespace CBHPredictorWebAPI.Migrations
                     terms = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     impressions = table.Column<int>(type: "int", nullable: true),
                     clicks = table.Column<int>(type: "int", nullable: true),
-                    date = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    date = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -34,7 +34,7 @@ namespace CBHPredictorWebAPI.Migrations
                     terms = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     impressions = table.Column<int>(type: "int", nullable: true),
                     clicks = table.Column<int>(type: "int", nullable: true),
-                    date = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    date = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -58,7 +58,8 @@ namespace CBHPredictorWebAPI.Migrations
                     paramOfInterest = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     diagnosisOfInterest = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     matrixOfInterest = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    quantityOfInterest = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    quantityOfInterest = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    lastEdited = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -112,7 +113,8 @@ namespace CBHPredictorWebAPI.Migrations
                     histologicalDiagnosis = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     organ = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     collectionCountry = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    collectionDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    collectionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    lastEdited = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {

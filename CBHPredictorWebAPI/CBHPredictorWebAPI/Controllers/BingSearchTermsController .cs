@@ -121,7 +121,6 @@ namespace CBHPredictorWebAPI.Controllers
         //---- Apply Filter ----//
         [HttpGet("ApplyFilter/{relation}")]
         public async Task<ActionResult<IEnumerable<BingSearchTerm>>> ApplyFilter(string relation)
-        //public string ApplyFilter(string relation)
         {
             var command = new StringBuilder("SELECT * FROM BingSearchTerms WHERE ");
             string? filter = HttpContext.Session.GetString("BingFilter");
@@ -142,7 +141,6 @@ namespace CBHPredictorWebAPI.Controllers
 
                 command.Append(filter);
                 return await _context.BingSearchTerms.FromSqlRaw(command.ToString()).ToListAsync();
-                //return command.ToString();
             }
 
             return BadRequest();
