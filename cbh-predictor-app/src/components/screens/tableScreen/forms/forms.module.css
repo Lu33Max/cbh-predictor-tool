@@ -12,21 +12,21 @@ input {
     font-size: 20px;
 }
 
-.button_black {
-    width: 100%;
+.button_green {
     margin-top: 3%;
-    background-color: rgb(40, 40, 40);
+    width: 100%;
+    background-color: rgb(107, 178, 56);
 }
 
-.button_black:hover {
-    background-color: rgb(70, 70, 70);
+.button_green:hover {
+    background-color: rgb(137, 208, 86);
 }
 
 .button_gray {
     width: 100%;
-    background-color: rgb(100, 100, 110);
+    background-color: rgb(200, 200, 210);
 }
 
 .button_gray:hover {
-    background-color: rgb(130, 130, 140);
+    background-color: rgb(170, 170, 180);
 }

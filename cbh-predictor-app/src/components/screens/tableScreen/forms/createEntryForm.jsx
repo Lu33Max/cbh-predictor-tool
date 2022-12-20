@@ -187,7 +187,7 @@ const SearchTermForm = (props) => {
                 <input value={props.formData.year || ''} name="year" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
-            <button onClick={props.handleSubmit} className={styles.button_black}>Submit</button>
+            <button onClick={props.handleSubmit} className={styles.button_green}>Submit</button>
             <button onClick={() => props.props.onEntryCreated(null)} className={styles.button_gray}>Cancel</button>
         </form>
     )
@@ -261,7 +261,7 @@ const LeadEntryForm = (props) => {
                 <input value={props.formData.quantityOfInterest} name="quantityOfInterest" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
-            <button onClick={props.handleSubmit} className={styles.button_black}>Submit</button>
+            <button onClick={props.handleSubmit} className={styles.button_green}>Submit</button>
             <button onClick={() => props.props.onEntryCreated(null)} className={styles.button_gray}>Cancel</button>
         </form>
     );
@@ -420,7 +420,7 @@ const OrderEntryForm = (props) => {
                 <input value={props.formData.collectionDate} name="collectionDate" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
-            <button onClick={props.handleSubmit} className={styles.button_black}>Submit</button>
+            <button onClick={props.handleSubmit} className={styles.button_green}>Submit</button>
             <button onClick={() => props.props.onEntryCreated(null)} className={styles.button_gray}>Cancel</button>
         </form>
     )

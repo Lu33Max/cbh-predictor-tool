@@ -1,12 +1,12 @@
 import { useState } from "react"
 import axios from "axios";
-import { saveAs } from "file-saver";
+import { saveAs } from "file-saver"
 import Table from "./table/table"
-import FileUploadForm from "./forms/fileUploadForm";
-import CreateEntryForm from "./forms/createEntryForm";
-import UpdateEntryForm from "./forms/updateEntryForm";
-import Constants from "../../../utilities/Constants";
-import styles from "./index.module.css"
+import FileUploadForm from "./forms/fileUploadForm"
+import CreateEntryForm from "./forms/createEntryForm"
+import UpdateEntryForm from "./forms/updateEntryForm"
+import Constants from "../../../utilities/Constants"
+import styles from "./tablescreen.module.css"
 
 const TableScreen = () => {
     const [entries, setEntries] = useState([])
@@ -27,28 +27,28 @@ const TableScreen = () => {
                 <div>
                     <div>
                         <h3>Bing Search Terms</h3>
-                        <button className={styles.button_black}>Graphical Analysis</button>
+                        <button className={styles.button_green}>Graphical Analysis</button>
                         <button onClick={() => getAllEntries('Bing')} className={styles.button_green}>Show Table</button>
                         <button onClick={() => {setShowFileUpload(true); setActiveTable('Bing');}} className={styles.button_gray}>Upload Excel File</button>
                         <button onClick={() => exportToExcel('Bing')} className={styles.button_gray}>Export to Excel File</button>
                     </div>
                     <div className={styles.table}>
                         <h3>Google Search Terms</h3>
-                        <button className={styles.button_black}>Graphical Analysis</button>
+                        <button className={styles.button_green}>Graphical Analysis</button>
                         <button onClick={() => getAllEntries('Google')} className={styles.button_green}>Show Table</button>
                         <button onClick={() => {setShowFileUpload(true); setActiveTable('Google');}} className={styles.button_gray}>Upload Excel File</button>
                         <button onClick={() => exportToExcel('Google')} className={styles.button_gray}>Export to Excel File</button>
                     </div>
                     <div className={styles.table}>
                         <h3>Lead Entries</h3>
-                        <button className={styles.button_black}>Graphical Analysis</button>
+                        <button className={styles.button_green}>Graphical Analysis</button>
                         <button onClick={() => getAllEntries('Lead')} className={styles.button_green}>Show Table</button>
                         <button onClick={() => {setShowFileUpload(true); setActiveTable('Lead');}} className={styles.button_gray}>Upload Excel File</button>
                         <button onClick={() => exportToExcel('Lead')} className={styles.button_gray}>Export to Excel File</button>
                     </div>
                     <div className={styles.table}>
                         <h3>Order Entries</h3>
-                        <button className={styles.button_black}>Graphical Analysis</button>
+                        <button className={styles.button_green}>Graphical Analysis</button>
                         <button onClick={() => getAllEntries('Order')} className={styles.button_green}>Show Table</button>
                         <button onClick={() => {setShowFileUpload(true); setActiveTable('Order');}} className={styles.button_gray}>Upload Excel File</button>
                         <button onClick={() => exportToExcel('Order')} className={styles.button_gray}>Export to Excel File</button>
@@ -70,16 +70,14 @@ const TableScreen = () => {
                                 </div>
                             )}
                             {(Object.keys(entries).length !== 0) && (
-                                <>
-                                    <div styles={styles.tableview}>
-                                        <div classname={styles.row}>
-                                            <input className={styles.rowInput} value={rows} name="rows" type="text" onChange={handleRowChange}/>  Rows
-                                        </div>
-                                        <div className={styles.container}>
-                                            <Table data={entries} rowsPerPage={rows} type={activeTable} getAllEntries={getAllEntries} deleteEntry={deleteSingleEntry} updateEntry={updateEntry}/>
-                                        </div>
+                                <div styles={styles.tableview}>
+                                    <div classname={styles.row}>
+                                        <input className={styles.rowInput} value={rows} name="rows" type="text" onChange={handleRowChange}/>  Rows
                                     </div>
-                                </>
+                                    <div className={styles.container}>
+                                        <Table data={entries} rowsPerPage={rows} type={activeTable} getAllEntries={getAllEntries} deleteEntry={deleteSingleEntry} updateEntry={updateEntry}/>
+                                    </div>
+                                </div>
                             )}
                         </>
                     )}

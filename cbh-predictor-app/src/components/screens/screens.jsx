@@ -1,7 +1,6 @@
 import { useState } from "react"
-import TableScreen from "./tableScreen"
+import TableScreen from "./tableScreen/tablescreen"
 import LogInForm from "./loginScreen/loginForm"
-import Sidebar from "./sidebar"
 
 const Screens = () => {
     const [showLogin, setShowLogin] = useState(true)

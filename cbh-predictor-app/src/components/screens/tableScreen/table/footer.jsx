@@ -12,7 +12,7 @@ const TableFooter = ({ range, setPage, page, slice }) => {
     return (
         <div className={styles.tableFooter}>
             {range.map((el, index) => (
-                <button key={index} className={`${styles.button} ${page === el ? styles.activeButton : styles.inactiveButton}`} onClick={() => setPage(el)}>{el}</button>
+                <button key={index} className={`${styles.footer_button} ${page === el ? styles.activeButton : styles.inactiveButton}`} onClick={() => setPage(el)}>{el}</button>
             ))}
         </div>
     );
