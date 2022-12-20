@@ -27,7 +27,7 @@ main {
 
 main .header {
   height: 10vh;
-  background: #000026;
+  background: #000020;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   box-shadow: 0 4px 20px rgb(2, 4, 2);

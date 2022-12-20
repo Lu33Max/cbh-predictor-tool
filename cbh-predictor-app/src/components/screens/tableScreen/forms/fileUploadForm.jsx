@@ -69,7 +69,7 @@ const FileUploadForm = (props) => {
                 <input type="file" name="file" onChange={changeHandler} />
                 {(props.table === 'Bing' || props.table === 'Google') && (showDateInput())}
 
-                <button onClick={handleSubmission} className={styles.button_black}>Submit</button>
+                <button onClick={handleSubmission} className={styles.button_green}>Submit</button>
                 <button onClick={() => props.onFileUploaded(false)} className={styles.button_gray}>Cancel</button>
             </div>
         </form>

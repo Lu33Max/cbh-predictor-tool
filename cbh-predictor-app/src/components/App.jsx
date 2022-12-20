@@ -1,5 +1,5 @@
 import React from "react";
-import Screens from "./screens";
+import Screens from "./screens/screens";
 import Header from "./header/headerIndex";
 import styles from "./App.module.css"
 
