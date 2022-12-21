@@ -153,11 +153,16 @@ namespace CBHPredictorWebAPI.Controllers
                         ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
                     });
 
+                    int month = ConvertEnum(_month);
+                    string _date = _year.ToString() + "-" + month;
+
+                    string dcommand = "SELECT * FROM GoogleSearchTerms WHERE date = {0}";
+                    await _context.GoogleSearchTerms.FromSqlRaw(dcommand, _date).ExecuteDeleteAsync();
+
+                    await _context.SaveChangesAsync();
+
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
-                        int month = ConvertEnum(_month);
-                        string _date = _year.ToString() + "-" + month;
-
                         if (_context.GoogleSearchTerms.Where(e => (e.terms == ConvertToString(row["Terms"])) && (e.date == _date)).Any())
                         {
                             string command = "SELECT * FROM GoogleSearchTerms WHERE terms = {0} AND date = {1}";
@@ -206,11 +211,16 @@ namespace CBHPredictorWebAPI.Controllers
                         ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
                     });
 
+                    int month = ConvertEnum(_month);
+                    string _date = _year.ToString() + "-" + month;
+
+                    string delcom = "SELECT * FROM BingSearchTerms WHERE date = {0}";
+                    await _context.BingSearchTerms.FromSqlRaw(delcom, _date).ExecuteDeleteAsync();
+
+                    await _context.SaveChangesAsync();
+
                     foreach (DataRow row in result.Tables[0].Rows)
                     {
-                        int month = ConvertEnum(_month);
-                        string _date = _year.ToString() + "-" + month;
-
                         if (_context.BingSearchTerms.Where(e => (e.terms == ConvertToString(row["Search term"])) && (e.date == _date)).Any())
                         {
                             string command = "SELECT * FROM BingSearchTerms WHERE terms = {0} AND date = {1}";
