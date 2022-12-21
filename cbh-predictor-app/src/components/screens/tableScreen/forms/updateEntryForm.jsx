@@ -12,15 +12,15 @@ const UpdateEntryForm = (props) => {
                 terms: props.entry.terms,
                 impressions: props.entry.impressions,
                 clicks: props.entry.clicks,
-                month: props.entry.month,
-                year: props.entry.year
+                month: getMonth(props.entry.date),
+                year: props.entry.date.slice(0, props.entry.date.indexOf('-'))
             });
             break;
         case 'Lead':
             initialFormData = Object.freeze({
                 id: props.entry.id,
                 leadID: props.entry.leadID,
-                leadNO: props.entry.leadNO,
+                leadNo: props.entry.leadNo,
                 leadStatus: props.entry.leadStatus,
                 leadDate: props.entry.leadDate,
                 organisationID: props.entry.organisationID,
@@ -123,7 +123,7 @@ const UpdateEntryForm = (props) => {
         const entryToUpdate = {
             id: formData.id,
             leadID: formData.leadID,
-            leadNO: formData.leadNO,
+            leadNo: formData.leadNo,
             leadStatus: formData.leadStatus,
             leadDate: formData.leadDate,
             organisationID: formData.organisationID,
@@ -254,7 +254,7 @@ const SearchTermForm = (props) => {
                 <input value={props.formData.year || ''} name="year" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
-            <button onClick={props.handleSubmit} className={styles.button_black}>Submit</button>
+            <button onClick={props.handleSubmit} className={styles.button_green}>Submit</button>
             <button onClick={() => props.props.onEntryUpdated(null)} className={styles.button_gray}>Cancel</button>
         </form>
     );
@@ -270,7 +270,7 @@ const LeadEntryForm = (props) => {
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry leadNo</label>
-                <input value={props.formData.leadNO || ''} name="leadNO" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.leadNo || ''} name="leadNO" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
@@ -328,7 +328,7 @@ const LeadEntryForm = (props) => {
                 <input value={props.formData.quantityOfInterest || ''} name="quantityOfInterest" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
-            <button onClick={props.handleSubmit} className={styles.button_black}>Submit</button>
+            <button onClick={props.handleSubmit} className={styles.button_green}>Submit</button>
             <button onClick={() => props.props.onEntryUpdated(null)} className={styles.button_gray}>Cancel</button>
         </form>
     )
@@ -487,10 +487,16 @@ const OrderEntryForm = (props) => {
                 <input value={props.formData.collectionDate || ''} name="collectionDate" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
-            <button onClick={props.handleSubmit} className={styles.button_black}>Submit</button>
+            <button onClick={props.handleSubmit} className={styles.button_green}>Submit</button>
             <button onClick={() => props.props.onEntryUpdated(null)} className={styles.button_gray}>Cancel</button>
         </form>
     )
+}
+
+function getMonth(date) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    const month = date.split('-')[1]
+    return months[month - 1]
 }
 
 export default UpdateEntryForm

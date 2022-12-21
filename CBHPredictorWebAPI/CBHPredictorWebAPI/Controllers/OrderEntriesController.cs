@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
-using System.Net;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -113,7 +112,7 @@ namespace CBHPredictorWebAPI.Controllers
         // DELETE: api/OrderEntries/5
         // Deletes one specific Entry in the OrderEntries Table by ID
         [HttpDelete("{id}")]
-        public async Task<String> DeleteOrderEntry(Guid id)
+        public async Task<string> DeleteOrderEntry(Guid id)
         {
             await _context.OrderEntries.Where(e => e.id == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
@@ -123,7 +122,7 @@ namespace CBHPredictorWebAPI.Controllers
         // DELETE: api/LeadEntries
         // Deletes all Entries in the OrderEntries Table
         [HttpDelete]
-        public async Task<String> DeleteOrderEntries()
+        public async Task<string> DeleteOrderEntries()
         {
             await _context.OrderEntries.ExecuteDeleteAsync();
             await _context.SaveChangesAsync();

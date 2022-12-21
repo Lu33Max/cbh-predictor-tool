@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
-using Microsoft.Data.SqlClient;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -12,7 +11,7 @@ namespace CBHPredictorWebAPI.Controllers
     public class GoogleSearchTermsController : ControllerBase
     {
         private readonly CBHDBContext _context;
-        public enum GSearchTerms { terms, impressions, clicks, month, year }
+        public enum GSearchTerms { terms, impressions, clicks, date }
 
         public GoogleSearchTermsController(CBHDBContext context)
         {
@@ -102,7 +101,7 @@ namespace CBHPredictorWebAPI.Controllers
         // DELETE: api/GoogleSearchTerms/5
         // Deletes one specific Entry in the GoogleSearchTerms Table by ID
         [HttpDelete("{id}")]
-        public async Task<String> DeleteSearchTerm(Guid id)
+        public async Task<string> DeleteSearchTerm(Guid id)
         {
             await _context.GoogleSearchTerms.Where(e => e.id == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
@@ -112,7 +111,7 @@ namespace CBHPredictorWebAPI.Controllers
         // DELETE: api/LeadEntries
         // Deletes all Entries in the GoogleSearchTerms Table
         [HttpDelete]
-        public async Task<String> DeleteSearchTerms()
+        public async Task<string> DeleteSearchTerms()
         {
             await _context.GoogleSearchTerms.ExecuteDeleteAsync();
             await _context.SaveChangesAsync();

@@ -28,7 +28,7 @@ namespace CBHPredictorWebAPI.Controllers
         // Reads all Data from the Input Table and writes it to the LeadEntries Table
         [HttpPost]
         [Route("/LeadTable")]
-        public async Task<String> LeadImport(IFormFile file)
+        public async Task<string> LeadImport(IFormFile file)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
@@ -75,7 +75,7 @@ namespace CBHPredictorWebAPI.Controllers
         // Reads all Data from the Input Table and writes it to the OrderEntries Table
         [HttpPost]
         [Route("/OrderTable")]
-        public async Task<String> OrderImport(IFormFile file)
+        public async Task<string> OrderImport(IFormFile file)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
@@ -139,7 +139,7 @@ namespace CBHPredictorWebAPI.Controllers
 
         [HttpPost]
         [Route("/GoogleTable/{_month}/{_year}")]
-        public async Task<String> GoogleSearchTermsImport(IFormFile file, Month _month, int _year)
+        public async Task<string> GoogleSearchTermsImport(IFormFile file, Month _month, int _year)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
@@ -156,8 +156,8 @@ namespace CBHPredictorWebAPI.Controllers
                     int month = ConvertEnum(_month);
                     string _date = _year.ToString() + "-" + month;
 
-                    string dcommand = "SELECT * FROM GoogleSearchTerms WHERE date = {0}";
-                    await _context.GoogleSearchTerms.FromSqlRaw(dcommand, _date).ExecuteDeleteAsync();
+                    string delcmd = "SELECT * FROM GoogleSearchTerms WHERE date = {0}";
+                    await _context.GoogleSearchTerms.FromSqlRaw(delcmd, _date).ExecuteDeleteAsync();
 
                     await _context.SaveChangesAsync();
 
@@ -166,7 +166,7 @@ namespace CBHPredictorWebAPI.Controllers
                         if (_context.GoogleSearchTerms.Where(e => (e.terms == ConvertToString(row["Terms"])) && (e.date == _date)).Any())
                         {
                             string command = "SELECT * FROM GoogleSearchTerms WHERE terms = {0} AND date = {1}";
-                            GoogleSearchTerm tempTerm = _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _date).FirstOrDefault();
+                            GoogleSearchTerm? tempTerm = await _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _date).FirstOrDefaultAsync();
                             _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _date).ExecuteDelete();
 
                             tempTerm.impressions += ConvertToInt(row["Impressions"]);
@@ -197,7 +197,7 @@ namespace CBHPredictorWebAPI.Controllers
 
         [HttpPost]
         [Route("/BingTable/{_month}/{_year}")]
-        public async Task<String> BingSearchTermsImport(IFormFile file, Month _month, int _year)
+        public async Task<string> BingSearchTermsImport(IFormFile file, Month _month, int _year)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = new MemoryStream())
@@ -214,8 +214,8 @@ namespace CBHPredictorWebAPI.Controllers
                     int month = ConvertEnum(_month);
                     string _date = _year.ToString() + "-" + month;
 
-                    string delcom = "SELECT * FROM BingSearchTerms WHERE date = {0}";
-                    await _context.BingSearchTerms.FromSqlRaw(delcom, _date).ExecuteDeleteAsync();
+                    string delcmd = "SELECT * FROM BingSearchTerms WHERE date = {0}";
+                    await _context.BingSearchTerms.FromSqlRaw(delcmd, _date).ExecuteDeleteAsync();
 
                     await _context.SaveChangesAsync();
 
@@ -224,7 +224,7 @@ namespace CBHPredictorWebAPI.Controllers
                         if (_context.BingSearchTerms.Where(e => (e.terms == ConvertToString(row["Search term"])) && (e.date == _date)).Any())
                         {
                             string command = "SELECT * FROM BingSearchTerms WHERE terms = {0} AND date = {1}";
-                            BingSearchTerm tempTerm = _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _date).FirstOrDefault();
+                            BingSearchTerm? tempTerm = await _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _date).FirstOrDefaultAsync();
                             _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _date).ExecuteDelete();
 
                             tempTerm.impressions += ConvertToInt(row["Impr."]);

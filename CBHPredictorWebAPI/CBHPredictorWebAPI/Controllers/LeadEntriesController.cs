@@ -110,7 +110,7 @@ namespace CBHPredictorWebAPI.Controllers
         // DELETE: api/LeadEntries/5
         // Deletes one specific Entry in the LeadEntries Table by ID
         [HttpDelete("{id}")]
-        public async Task<String> DeleteLeadEntry(Guid id)
+        public async Task<string> DeleteLeadEntry(Guid id)
         {
             await _context.LeadEntries.Where(e => e.id == id).ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
@@ -120,7 +120,7 @@ namespace CBHPredictorWebAPI.Controllers
         // DELETE: api/LeadEntries
         // Deletes all Entries in the LeadEntries Table
         [HttpDelete]
-        public async Task<String> DeleteLeadEntries()
+        public async Task<string> DeleteLeadEntries()
         {
             await _context.LeadEntries.ExecuteDeleteAsync();
             await _context.SaveChangesAsync();
