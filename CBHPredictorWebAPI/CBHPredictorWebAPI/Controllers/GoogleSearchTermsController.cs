@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
+using Microsoft.Data.SqlClient;
 
 namespace CBHPredictorWebAPI.Controllers
 {

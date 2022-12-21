@@ -4,12 +4,10 @@ import useTable from "../../../../hooks/useTable";
 import styles from "./table.module.css";
 import TableFooter from "./footer";
 import PopoverButton from "./popover";
-import UpdateEntryForm from "../forms/updateEntryForm";
 
 const Table = (props) => {
   const [ page, setPage ] = useState(1);
   const { slice, range } = useTable(props.data, page, props.rowsPerPage);
-  const [ entryToUpdate, setEntryToUpdate] = useState(null)
 
   return (
     <>
@@ -83,7 +81,7 @@ const Table = (props) => {
               <td className={styles.tableCell}>{el.leadID}</td>
               <td className={styles.tableCell}>{el.leadNo}</td>
               <td className={styles.tableCell}>{el.leadStatus}</td>
-              <td className={styles.tableCell}>{el.leadDate}</td>
+              {(el.leadDate) ? (<td className={styles.tableCell}>{el.leadDate.slice(0, el.leadDate.indexOf('T')) }</td>) : (<td className={styles.tableCell}>{''}</td>)}
               <td className={styles.tableCell}>{el.organisationID}</td>
               <td className={styles.tableCell}>{el.countryID}</td>
               <td className={styles.tableCell}>{el.channel}</td>
@@ -93,7 +91,7 @@ const Table = (props) => {
               <td className={styles.tableCell}>{el.diagnosisOfInterest}</td>        
               <td className={styles.tableCell}>{el.matrixOfInterest}</td>               
               <td className={styles.tableCell}>{el.quantityOfInterest}</td>
-              <td>
+              <td className={styles.crudCell}>
                 <button onClick={() => props.updatedEntry(el)} className={styles.button_black}>Update</button>
                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${el.id}"?`)) props.deleteEntry(el.id) }} className={styles.button_gray}>Delete</button>
               </td>
@@ -154,7 +152,7 @@ const Table = (props) => {
             <tr className={styles.tableRowItems} key={el.id}>
               <td className={styles.tableCell}>{el.customerID}</td>
               <td className={styles.tableCell}>{el.orderID}</td>
-              <td className={styles.tableCell}>{el.orderDate}</td>
+              {(el.orderDate) ? (<td className={styles.tableCell}>{el.orderDate.slice(0, el.orderDate.indexOf('T')) }</td>) : (<td className={styles.tableCell}>{''}</td>)}
               <td className={styles.tableCell}>{el.orderPrice}</td>
               <td className={styles.tableCell}>{el.storageTemp}</td>
               <td className={styles.tableCell}>{el.donorID}</td>
@@ -181,8 +179,8 @@ const Table = (props) => {
               <td className={styles.tableCell}>{el.histologicalDiagnosis}</td> 
               <td className={styles.tableCell}>{el.organ}</td> 
               <td className={styles.tableCell}>{el.collectionCountry}</td> 
-              <td className={styles.tableCell}>{el.collectionDate}</td>
-              <td>
+              {(el.collectionDate) ? (<td className={styles.tableCell}>{el.collectionDate.slice(0, el.collectionDate.indexOf('T')) }</td>) : (<td className={styles.tableCell}>{''}</td>)}
+              <td className={styles.crudCell}>
                 <button onClick={() => props.updatedEntry(el)} className={styles.button_black}>Update</button>
                 <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${el.id}"?`)) props.deleteEntry(el.id) }} className={styles.button_gray}>Delete</button>
               </td>
