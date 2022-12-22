@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
+using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -11,7 +12,8 @@ namespace CBHPredictorWebAPI.Controllers
     public class BingSearchTermsController : ControllerBase
     {
         private readonly CBHDBContext _context;
-        public enum BSearchTerms { terms, impressions, clicks, month, year }
+        public enum BSearchTerms { terms, impressions, clicks, date }
+        public enum Order { ascending, descending }
 
         public BingSearchTermsController(CBHDBContext context)
         {
@@ -39,6 +41,19 @@ namespace CBHPredictorWebAPI.Controllers
             }
 
             return searchTerm;
+        }
+
+        [HttpGet("SortByColumn")]
+        public async Task<ActionResult<IEnumerable<BingSearchTerm>>> SortByColumn(BSearchTerms col, Order order)
+        {
+            if (order == Order.ascending)
+            {
+                return await _context.BingSearchTerms.FromSqlRaw("SELECT * FROM BingSearchTerms ORDER BY [" + col + "] ASC").ToListAsync();
+            }
+            else
+            {
+                return await _context.BingSearchTerms.FromSqlRaw("SELECT * FROM BingSearchTerms ORDER BY [" + col + "] DESC").ToListAsync();
+            }
         }
 
         [HttpGet("ExportToExcel")]

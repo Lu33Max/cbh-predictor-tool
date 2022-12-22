@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
+using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -12,6 +13,7 @@ namespace CBHPredictorWebAPI.Controllers
     {
         private readonly CBHDBContext _context;
         public enum LeadColumns { leadID, leadNo, leadStatus, leadDate, organisationID, countryID, channel, fieldOfInterest, specificOfInterest, paramOfInterest, diagnosisOfInterest, matrixOfInterest, quantityOfInterest }
+        public enum order { ascending, descending }
 
         public LeadEntriesController(CBHDBContext context)
         {
@@ -39,6 +41,19 @@ namespace CBHPredictorWebAPI.Controllers
             }
 
             return leadEntry;
+        }
+
+        [HttpGet("SortByColumn")]
+        public async Task<ActionResult<IEnumerable<LeadEntry>>> SortByColumn(LeadColumns col, Order order)
+        {
+            if (order == Order.ascending)
+            {
+                return await _context.LeadEntries.FromSqlRaw("SELECT * FROM LeadEntries ORDER BY [" + col + "] ASC").ToListAsync();
+            }
+            else
+            {
+                return await _context.LeadEntries.FromSqlRaw("SELECT * FROM LeadEntries ORDER BY [" + col + "] DESC").ToListAsync();
+            }
         }
 
         [HttpGet("ExportToExcel")]

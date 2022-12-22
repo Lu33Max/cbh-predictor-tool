@@ -4,6 +4,7 @@ using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
 using System.Net;
+using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -40,6 +41,19 @@ namespace CBHPredictorWebAPI.Controllers
             }
 
             return orderEntry;
+        }
+
+        [HttpGet("SortByColumn")]
+        public async Task<ActionResult<IEnumerable<OrderEntry>>> SortByColumn(OrderColumns col, Order order)
+        {
+            if (order == Order.ascending)
+            {
+                return await _context.OrderEntries.FromSqlRaw("SELECT * FROM OrderEntries ORDER BY [" + col + "] ASC").ToListAsync();
+            }
+            else
+            {
+                return await _context.OrderEntries.FromSqlRaw("SELECT * FROM OrderEntries ORDER BY [" + col + "] DESC").ToListAsync();
+            }
         }
 
         [HttpGet("ExportToExcel")]

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
+using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -11,7 +12,8 @@ namespace CBHPredictorWebAPI.Controllers
     public class GoogleSearchTermsController : ControllerBase
     {
         private readonly CBHDBContext _context;
-        public enum GSearchTerms { terms, impressions, clicks, month, year }
+        public enum GSearchTerms { terms, impressions, clicks, date }
+        public enum order { ascending , descending }
 
         public GoogleSearchTermsController(CBHDBContext context)
         {
@@ -39,6 +41,19 @@ namespace CBHPredictorWebAPI.Controllers
             }
 
             return searchTerm;
+        }
+
+        [HttpGet("SortByColumn")]
+        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> SortByColumn(GSearchTerms col, Order order)
+        {
+            if (order == Order.ascending)
+            {
+                return await _context.GoogleSearchTerms.FromSqlRaw("SELECT * FROM GoogleSearchTerms ORDER BY [" + col + "] ASC").ToListAsync();
+            }
+            else
+            {
+                return await _context.GoogleSearchTerms.FromSqlRaw("SELECT * FROM GoogleSearchTerms ORDER BY [" + col + "] DESC").ToListAsync();
+            }
         }
 
         [HttpGet("ExportToExcel")]
