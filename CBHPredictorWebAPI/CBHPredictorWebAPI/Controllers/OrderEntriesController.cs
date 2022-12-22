@@ -3,11 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
-<<<<<<< HEAD
-=======
 using System.Net;
 using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
->>>>>>> 319b8fe35ef730d1d1c95c62bc2cc94ddfaf5a29
 
 namespace CBHPredictorWebAPI.Controllers
 {

@@ -17,14 +17,14 @@ namespace CBHPredictorWebAPI.Controllers
             //Create the object of SqlConnection class to connect with database sql server
             using (SqlConnection conn = new SqlConnection())
             {
-                String backupDestination = "G:/backups/";
+                String backupDestination = "C:/backups/";
 
                 if (!Directory.Exists(backupDestination))
                 {
                     Directory.CreateDirectory(backupDestination);
                 }
 
-                //prepare conectio string
+                //prepare connection string
                 conn.ConnectionString = "server =(local); database=CBHDB; Trusted_Connection=True; TrustServerCertificate=True;";
 
                 try
@@ -33,7 +33,7 @@ namespace CBHPredictorWebAPI.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.CommandType = CommandType.Text;
                     // cmd.CommandText = "SELECT * FROM MYTABLE";
-                    cmd.CommandText = "BACKUP DATABASE CBHDB TO DISK = 'G:/backups/CBHDB" + DateTime.Now.ToString("yyyy-MM-dd@HH_mm") + ".bak';";
+                    cmd.CommandText = "BACKUP DATABASE CBHDB TO DISK = 'C:/backups/CBHDB" + DateTime.Now.ToString("yyyy-MM-dd@HH_mm") + ".bak';";
                     cmd.Connection = conn;
 
                     // open database connection.
@@ -55,7 +55,7 @@ namespace CBHPredictorWebAPI.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Can not open connection !");
+                    Console.WriteLine("Can not open connection!");
 
                 }
             }

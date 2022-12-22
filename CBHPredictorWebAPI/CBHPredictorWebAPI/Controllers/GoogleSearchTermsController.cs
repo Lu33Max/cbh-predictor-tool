@@ -13,10 +13,7 @@ namespace CBHPredictorWebAPI.Controllers
     {
         private readonly CBHDBContext _context;
         public enum GSearchTerms { terms, impressions, clicks, date }
-<<<<<<< HEAD
-=======
         public enum order { ascending , descending }
->>>>>>> 319b8fe35ef730d1d1c95c62bc2cc94ddfaf5a29
 
         public GoogleSearchTermsController(CBHDBContext context)
         {
