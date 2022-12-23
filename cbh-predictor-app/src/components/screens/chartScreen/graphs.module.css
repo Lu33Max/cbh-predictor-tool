@@ -1,0 +1,36 @@
+.grid_container {
+  display: grid;
+  text-align: center;
+  grid-template-columns: [first] 30vw [line2] auto [col3-start] 30vw [end];
+  height: 47vh;
+  background-color: #eeeeee;
+  border-radius: 25px;
+}
+
+.impressions_wrapper {
+  width: 30vw;
+  height: 40vh;
+  font-size: 16px;
+  grid-column-start: 1;
+  grid-column-end: 1;
+}
+
+.clicks_wrapper {
+  width: 30vw;
+  height: 40vh;
+  grid-column-start: 3;
+  grid-column-end: 3;
+}
+
+.min {
+  width: 100%;
+  font-size: 24px;
+  text-align: center;
+  position: relative;
+  top: -10%;
+}
+
+.min_input {
+  width: 10%;
+  text-align: center;
+}

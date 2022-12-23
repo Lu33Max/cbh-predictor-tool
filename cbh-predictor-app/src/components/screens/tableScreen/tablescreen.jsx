@@ -8,11 +8,15 @@ import UpdateEntryForm from "./forms/updateEntryForm"
 import Constants from "../../../utilities/Constants"
 import styles from "./tablescreen.module.css"
 
+import BingChart from "../chartScreen/bingGraphs";
+
+
 const TableScreen = () => {
     const [entries, setEntries] = useState([])
     const [activeTable, setActiveTable] = useState('')
     const [showFileUpload, setShowFileUpload] = useState(false)
     const [showCreateForm, setShowCreateForm] = useState(false)
+    const [showGraphs, setShowGraphs] = useState(false)
     const [entryToUpdate, setEntryToUpdate ] = useState(null)
     const [rows, setRows] = useState(100)
     
@@ -23,11 +27,11 @@ const TableScreen = () => {
 
     return(
         <div className={styles.body}>
-            {(activeTable === '' && showFileUpload === false && showCreateForm === false) && (
+            {(activeTable === '' && showFileUpload === false && showCreateForm === false && showGraphs === false) && (
                 <div>
                     <div>
                         <h3>Bing Search Terms</h3>
-                        <button className={styles.button_green}>Graphical Analysis</button>
+                        <button onClick={() => {setShowGraphs(true); setActiveTable('Bing');}} className={styles.button_green}>Graphical Analysis</button>
                         <button onClick={() => getAllEntries('Bing')} className={styles.button_green}>Show Table</button>
                         <button onClick={() => {setShowFileUpload(true); setActiveTable('Bing');}} className={styles.button_gray}>Upload Excel File</button>
                         <button onClick={() => exportToExcel('Bing')} className={styles.button_gray}>Export to Excel File</button>
@@ -57,7 +61,7 @@ const TableScreen = () => {
             )}
             {(showFileUpload === true) && (<FileUploadForm onFileUploaded={onFileUploaded} table={activeTable}/>)}
             {(showCreateForm === true) && (<CreateEntryForm onEntryCreated={onEntryCreated} table={activeTable}/> )}
-            {(activeTable !== '' && showFileUpload === false && showCreateForm === false) && (
+            {(activeTable !== '' && showFileUpload === false && showCreateForm === false && showGraphs === false) && (
                 <>
                     {(entryToUpdate === null) && (
                         <>
@@ -84,6 +88,12 @@ const TableScreen = () => {
                     {(entryToUpdate !== null) && <UpdateEntryForm entry={entryToUpdate} table={activeTable} onEntryUpdated={onEntryUpdated}/>}
                 </>
             )}
+            {(showGraphs) && (
+                <>
+                    {activeTable === 'Bing' && <BingChart/>}
+                </>
+            )}
+            
         </div>
     )
 
@@ -142,6 +152,7 @@ const TableScreen = () => {
           console.log(error);
           alert(error);
         });
+        
     }
 
     function deleteAllEntries(){

@@ -4,6 +4,7 @@ using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
 using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
+using DocumentFormat.OpenXml.Vml.Office;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -55,6 +56,32 @@ namespace CBHPredictorWebAPI.Controllers
                 return await _context.LeadEntries.FromSqlRaw("SELECT * FROM LeadEntries ORDER BY [" + col + "] DESC").ToListAsync();
             }
         }
+
+        [HttpGet("CountRows")]
+        public async Task<int> CountRows()
+        {
+            var command = new StringBuilder("SELECT * FROM LeadEntries WHERE ");
+            string? filter = HttpContext.Session.GetString("LeadFilter");
+
+            if (string.IsNullOrEmpty(filter))
+            {
+                List<LeadEntry> test = await _context.LeadEntries.ToListAsync();
+                return test.Count();
+            }
+            else
+            {
+                filter = filter.Remove(0, 1);
+                string[] filters = filter.Split(";");
+
+                filter = string.Join(" AND ", filters);
+
+                command.Append(filter);
+
+                List<LeadEntry> test = await _context.LeadEntries.FromSqlRaw(command.ToString()).ToListAsync(); ;
+                return test.Count();
+            }
+        }
+
 
         [HttpGet("ExportToExcel")]
         public async Task<IActionResult> ExportLeadEntriesToExcel()

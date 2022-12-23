@@ -39,7 +39,7 @@ namespace CBHPredictorWebAPI.Controllers
                     // open database connection.
                     conn.Open();
 
-                    Console.WriteLine("Connection Open ! ");
+                    Console.WriteLine("Connection Open !");
 
                     //Execute the query 
                     SqlDataReader sdr = cmd.ExecuteReader();

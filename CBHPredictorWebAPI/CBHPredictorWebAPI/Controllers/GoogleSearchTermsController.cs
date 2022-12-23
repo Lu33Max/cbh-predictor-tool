@@ -237,7 +237,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpDelete("RemoveAllFilter")]
         public string RemoveAllFilter()
         {
-            HttpContext.Session.SetString("LeadFilter", string.Empty);
+            HttpContext.Session.SetString("GoogleFilter", string.Empty);
             return "{\"success\":1}";
         }
 
