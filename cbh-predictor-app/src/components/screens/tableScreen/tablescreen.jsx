@@ -10,6 +10,7 @@ import styles from "./tablescreen.module.css"
 
 import BingChart from "../chartScreen/bingGraphs";
 import GoogleChart from "../chartScreen/googleGraphs";
+import OrderChart from "../chartScreen/orderGraphs";
 
 
 const TableScreen = () => {
@@ -53,7 +54,7 @@ const TableScreen = () => {
                     </div>
                     <div className={styles.table}>
                         <h3>Order Entries</h3>
-                        <button className={styles.button_green}>Graphical Analysis</button>
+                        <button onClick={() => {setShowGraphs(true); setActiveTable('Order');}} className={styles.button_green}>Graphical Analysis</button>
                         <button onClick={() => getAllEntries('Order')} className={styles.button_green}>Show Table</button>
                         <button onClick={() => {setShowFileUpload(true); setActiveTable('Order');}} className={styles.button_gray}>Upload Excel File</button>
                         <button onClick={() => exportToExcel('Order')} className={styles.button_gray}>Export to Excel File</button>
@@ -93,6 +94,7 @@ const TableScreen = () => {
                 <>
                     {activeTable === 'Bing' && <BingChart/>}
                     {activeTable === 'Google' && <GoogleChart/>}
+                    {activeTable === 'Order' && <OrderChart/>}
                 </>
             )}
             
