@@ -9,6 +9,7 @@ import Constants from "../../../utilities/Constants"
 import styles from "./tablescreen.module.css"
 
 import BingChart from "../chartScreen/bingGraphs";
+import GoogleChart from "../chartScreen/googleGraphs";
 
 
 const TableScreen = () => {
@@ -38,7 +39,7 @@ const TableScreen = () => {
                     </div>
                     <div className={styles.table}>
                         <h3>Google Search Terms</h3>
-                        <button className={styles.button_green}>Graphical Analysis</button>
+                        <button onClick={() => {setShowGraphs(true); setActiveTable('Google');}} className={styles.button_green}>Graphical Analysis</button>
                         <button onClick={() => getAllEntries('Google')} className={styles.button_green}>Show Table</button>
                         <button onClick={() => {setShowFileUpload(true); setActiveTable('Google');}} className={styles.button_gray}>Upload Excel File</button>
                         <button onClick={() => exportToExcel('Google')} className={styles.button_gray}>Export to Excel File</button>
@@ -91,6 +92,7 @@ const TableScreen = () => {
             {(showGraphs) && (
                 <>
                     {activeTable === 'Bing' && <BingChart/>}
+                    {activeTable === 'Google' && <GoogleChart/>}
                 </>
             )}
             

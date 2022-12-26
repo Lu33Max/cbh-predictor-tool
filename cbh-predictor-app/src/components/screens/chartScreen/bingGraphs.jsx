@@ -93,7 +93,7 @@ const BingChart = () => {
             <div className={styles.impressions_wrapper}>
                 <h3>Impressions</h3>
                 <PieChart data={GetAllEntries('impressions', minImpr)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Impressions: <input className={styles.min_input} value={minImpr} name="minImpr" type="text" onChange={onInputChange}/> </div>
+                <div className={styles.min}>Min. Impressions: <input className={styles.min_input} value={minImpr} name="minImpr" type="number" onChange={onInputChange}/> </div>
             </div>
             <div>
                 vs. <br/><br/><br/>
@@ -103,7 +103,7 @@ const BingChart = () => {
             <div className={styles.clicks_wrapper}>
                 <h3>Clicks</h3>
                 <PieChart data={GetAllEntries('clicks', minClicks)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Clicks: <input className={styles.min_input} value={minClicks} name="minClicks" type="text" onChange={onInputChange}/> </div>
+                <div className={styles.min}>Min. Clicks: <input className={styles.min_input} value={minClicks} name="minClicks" type="number" onChange={onInputChange}/> </div>
             </div>
         </div>
     )
