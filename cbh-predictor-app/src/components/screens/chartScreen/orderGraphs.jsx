@@ -12,24 +12,32 @@ function getMatrices(entries, minOcc) {
     var others = 0
 
     entries.map(function(entry){
-
         if(data.find(e => e.id === entry.matrix)) {
-            var i = data.findIndex((e => e.id == entry.matrix))
-            data[i].value++;
+            data[data.findIndex((e => e.id === entry.matrix))].value++
         } else {
             data.push({
-                id: entry.matrix, 
+                id: entry.matrix,
+                name: entry.matrix,
                 value: 1
             })
         }
     })
 
-    function remove() {
-        var i = data.findIndex((e => e.value < minOcc))
-        data.splice(i, 1);
+    for(let i = 0; i <= data.length; i++){
+        if(data[i]){
+            if(data[i].value < minOcc){
+                others += data[i].value
+                data.splice(i, 1)
+                i--
+            }
+        }
     }
 
-    data.forEach(remove)
+    data.push({
+        id: "others",
+        name: "others",
+        value: others
+    })
 
     return data
 }
@@ -71,7 +79,12 @@ function GetAllEntries(type, props){
         })
     }, [])
 
-    return getMatrices(entries)
+    switch(type){
+        case 'matrix':
+            return getMatrices(entries, props)
+        default:
+            return
+    }
 }
 
 export default OrderChart
