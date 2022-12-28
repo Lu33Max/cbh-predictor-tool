@@ -1,4 +1,4 @@
-import { ResponsiveLine } from '@nivo/line'
+//import { ResponsiveLine } from '@nivo/line'
 
 export const LineChart = (props) => {
     return(
