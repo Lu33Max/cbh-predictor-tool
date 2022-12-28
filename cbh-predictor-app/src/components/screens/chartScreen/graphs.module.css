@@ -2,20 +2,26 @@
   display: grid;
   text-align: center;
   grid-template-columns: [first] 30vw [line2] auto [col3-start] 30vw [end];
-  height: 47vh;
+  height: 54vh;
   background-color: #eeeeee;
   border-radius: 25px;
 }
 
-.impressions_wrapper {
+.left_wrapper {
   width: 30vw;
   height: 40vh;
-  font-size: 16px;
   grid-column-start: 1;
   grid-column-end: 1;
 }
 
-.clicks_wrapper {
+.middle_wrapper {
+  width: 30vw;
+  height: 40vh;
+  grid-column-start: 2;
+  grid-column-end: 2;
+}
+
+.right_wrapper {
   width: 30vw;
   height: 40vh;
   grid-column-start: 3;
@@ -23,6 +29,7 @@
 }
 
 .min {
+  margin-top: 10px;
   width: 100%;
   font-size: 24px;
   text-align: center;
@@ -33,4 +40,41 @@
 .min_input {
   width: 10%;
   text-align: center;
+  border: 1.5px solid #949494;
+  border-radius: 6px;
+}
+
+/*Anpassen der Überschriftenposition mit margins*/
+h3 {
+margin-top: 16px;
+margin-bottom: 16px;
+}
+
+/*customized CHeckboxen*/
+input[type=checkbox] {
+  /*Entfernen der Standard-Appearance*/
+  -webkit-appearance: none;
+  appearance: none;
+
+  /*custom design*/
+  height: 25px;
+  width: 25px;
+  padding: 6px;
+  background-clip: content-box;
+
+  border: 1.5px solid #949494;
+  border-radius: 6px;
+
+  background-color: #cecece;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+input[type=checkbox]:hover {
+  background-color: #a3a3a3;
+  cursor: pointer;
+}
+
+input[type=checkbox]:checked {
+  background-color: #686868;
 }

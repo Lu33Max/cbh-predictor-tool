@@ -153,21 +153,24 @@ const OrderChart = () => {
 
     return(
         <div className={styles.grid_container}>
-            <div className={styles.impressions_wrapper}>
+            <div className={styles.left_wrapper}>
                 <h3>Matrix</h3>
                 <PieChart data={GetAllEntries('matrix', minMatrix, showOtherMatrices)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minMatrix} name="minMatrix" type="number" onChange={onInputChange}/> <input type="checkbox" className={styles.min_input} value={showOtherMatrices} name="showOtherMatrices" onChange={onInputChange}/> </div>
+                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minMatrix} name="minMatrix" type="number" onChange={onInputChange}/></div>
+                <div className={styles.min}>Show Section "others": <input type="checkbox" value={showOtherMatrices} name="showOtherMatrices" onChange={onInputChange}/> </div>
             </div>
-            <div className={styles.clicks_wrapper}>
+            <div className={styles.middle_wrapper}>
                 <h3>Lab Parameters</h3>
                 <PieChart data={GetAllEntries('labParameter', minParams, showOtherParams)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> <input type="checkbox" className={styles.min_input} value={showOtherParams} name="showOtherParams" onChange={onInputChange}/> </div>
+                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> </div>
+                <div className={styles.min}>Show Section "others": <input type="checkbox" value={showOtherParams} name="showOtherParams" onChange={onInputChange}/> </div>
+
             </div>
-            <div className={styles.impressions_wrapper}>
-                <br/><br/><br/><br/>
+            <div className={styles.right_wrapper}>
                 <h3>Diagnosis</h3>
                 <PieChart data={GetAllEntries('diagnosis', minDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> <input type="checkbox" className={styles.min_input} value={showOtherDiagnoses} name="showOtherDiagnoses" onChange={onInputChange}/> </div>
+                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> </div>
+                <div className={styles.min}>Show Section "others": <input type="checkbox" value={showOtherDiagnoses} name="showOtherDiagnoses" onChange={onInputChange}/> </div>
             </div>
         </div>       
     )
