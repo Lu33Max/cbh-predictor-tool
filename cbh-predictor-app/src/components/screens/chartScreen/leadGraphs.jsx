@@ -64,7 +64,7 @@ const LeadChart = () => {
 
     return(
         <div className={styles.grid_container}>
-            <div className={styles.impressions_wrapper}>
+            <div className={styles.left_wrapper}>
                 <h3>Customer Fields</h3>
                 <PieChart data={GetAllEntries('Field_of_interest', minField, showOtherFields)} scheme={primaryScheme}/>
                 <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minField} name="minField" type="number" onChange={onInputChange}/> <input type="checkbox" className={styles.min_input} value={showOtherFields} name="showOtherFields" onChange={onInputChange}/> </div>
