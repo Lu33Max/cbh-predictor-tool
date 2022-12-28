@@ -43,7 +43,7 @@ function getMatrices(entries, minMatrix, showOtherMatrices) {
     return data
 }
 
-function getLabParameter(entries, minParam, showOtherParam) {
+function getLabParameter(entries, minParams, showOtherParams) {
     const data = []
     var others = 0
 
@@ -61,7 +61,7 @@ function getLabParameter(entries, minParam, showOtherParam) {
 
     for(let i = 0; i <= data.length; i++){
         if(data[i]){
-            if(data[i].value < minParam){
+            if(data[i].value < minParams){
                 others += data[i].value
                 data.splice(i, 1)
                 i--
@@ -69,7 +69,7 @@ function getLabParameter(entries, minParam, showOtherParam) {
         }
     }
 
-    if(showOtherParam) {
+    if(showOtherParams) {
         data.push({
             id: "others",
             name: "others",
@@ -80,7 +80,7 @@ function getLabParameter(entries, minParam, showOtherParam) {
     return data
 }
 
-function getDiagnosis(entries, minDiag, showOtherDiag) {
+function getDiagnosis(entries, minDiagnoses, showOtherDiagnoses) {
     const data = []
     var others = 0
 
@@ -98,7 +98,7 @@ function getDiagnosis(entries, minDiag, showOtherDiag) {
 
     for(let i = 0; i <= data.length; i++){
         if(data[i]){
-            if(data[i].value < minDiag){
+            if(data[i].value < minDiagnoses){
                 others += data[i].value
                 data.splice(i, 1)
                 i--
@@ -106,7 +106,7 @@ function getDiagnosis(entries, minDiag, showOtherDiag) {
         }
     }
 
-    if(showOtherDiag) {
+    if(showOtherDiagnoses) {
         data.push({
             id: "others",
             name: "others",
@@ -121,30 +121,30 @@ function getDiagnosis(entries, minDiag, showOtherDiag) {
 const OrderChart = () => {
     const [minMatrix, setMinMatrix] = useState(150)
     const [showOtherMatrices, setShowOtherMatrices] = useState(false)
-    const [minParam, setMinParam] = useState(150)
-    const [showOtherParam, setShowOtherParam] = useState(false)
-    const [minDiag, setMinDiag] = useState(150)
-    const [showOtherDiag, setShowOtherDiag] = useState(false)
+    const [minParams, setMinParams] = useState(150)
+    const [showOtherParams, setShowOtherParam] = useState(false)
+    const [minDiagnoses, setMinDiagnoses] = useState(150)
+    const [showOtherDiagnoses, setShowOtherDiagnoses] = useState(false)
 
     const onInputChange = (e) => {
         switch(e.target.name){
             case 'minMatrix':
                 setMinMatrix(e.target.value)
                 return
-            case 'minParam':
-                setMinParam(e.target.value)
-                return
-            case 'minDiag':
-                setMinDiag(e.target.value)
-                return
             case 'showOtherMatrices':
                 setShowOtherMatrices(!showOtherMatrices)
                 return
-            case 'showOtherParam':
-                setShowOtherParam(!showOtherParam)
+            case 'minParams':
+                setMinParams(e.target.value)
                 return
-            case 'showOtherDiag':
-                setShowOtherDiag(!showOtherDiag)
+            case 'showOtherParams':
+                setShowOtherParam(!showOtherParams)
+                return
+            case 'minDiagnoses':
+                setMinDiagnoses(e.target.value)
+                return
+            case 'showOtherDiagnoses':
+                setShowOtherDiagnoses(!showOtherDiagnoses)
                 return
             default:
                 return
@@ -160,14 +160,14 @@ const OrderChart = () => {
             </div>
             <div className={styles.clicks_wrapper}>
                 <h3>Lab Parameters</h3>
-                <PieChart data={GetAllEntries('labParameter', minParam, showOtherParam)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minParam} name="minParam" type="number" onChange={onInputChange}/> <input type="checkbox" className={styles.min_input} value={showOtherParam} name="showOtherParam" onChange={onInputChange}/> </div>
+                <PieChart data={GetAllEntries('labParameter', minParams, showOtherParams)} scheme={primaryScheme}/>
+                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> <input type="checkbox" className={styles.min_input} value={showOtherParams} name="showOtherParams" onChange={onInputChange}/> </div>
             </div>
             <div className={styles.impressions_wrapper}>
                 <br/><br/><br/><br/>
                 <h3>Diagnosis</h3>
-                <PieChart data={GetAllEntries('diagnosis', minDiag, showOtherDiag)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minDiag} name="minDiag" type="number" onChange={onInputChange}/> <input type="checkbox" className={styles.min_input} value={showOtherDiag} name="showOtherDiag" onChange={onInputChange}/> </div>
+                <PieChart data={GetAllEntries('diagnosis', minDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
+                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> <input type="checkbox" className={styles.min_input} value={showOtherDiagnoses} name="showOtherDiagnoses" onChange={onInputChange}/> </div>
             </div>
         </div>       
     )
