@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { PieChart } from "./charts/pieChart";
+import { LineChart } from "./charts/lineChart";
 import Constants from "../../../utilities/Constants";
-import styles from "./graphs.module.css"
+import styles from "./graphs.module.css";
 import axios from "axios";
 
 var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6','#a1e5ad','#82cc96','#62b37f','#429a6a','#188255','#429a6a','#62b37f','#82cc96','#a1e5ad','#c0ffc6','#abf4ab','#96e890','#83dc73','#71d055']
@@ -117,6 +118,25 @@ function getDiagnosis(entries, minDiagnoses, showOtherDiagnoses) {
     return data
 }
 
+function getOrders(entries) {
+    const data = []
+
+    entries.map(function(entry){
+        if(data.find(e => e.id === entry.orderDate)) {
+            data[data.findIndex((e => e.id === entry.orderDate))].x++
+        } else {
+            data.push({
+                id: entry.orderDate,
+                name: entry.orderDate,
+                x: 1,
+                y: 2
+            })
+        }
+    })
+
+    return data
+}
+
 //// RENDER VIEW ////
 const OrderChart = () => {
     const [minMatrix, setMinMatrix] = useState(150)
@@ -172,7 +192,13 @@ const OrderChart = () => {
                 <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> </div>
                 <div className={styles.min}>Show Section "others": <input type="checkbox" value={showOtherDiagnoses} name="showOtherDiagnoses" onChange={onInputChange}/> </div>
             </div>
-        </div>       
+            {/* <div className={styles.clicks_wrapper}>
+                <br/><br/><br/><br/>
+                <h3>Test</h3>
+                <LineChart data={GetAllEntries('date')} scheme={primaryScheme}/>
+                <div className={styles.min}>Test: </div>
+            </div> */}
+        </div>
     )
 }
 
@@ -195,6 +221,8 @@ function GetAllEntries(type, prop1, prop2){
             return getLabParameter(entries, prop1, prop2)
         case 'diagnosis':
             return getDiagnosis(entries, prop1, prop2)
+        case 'date':
+            return getOrders(entries)
         default:
             return
     }
