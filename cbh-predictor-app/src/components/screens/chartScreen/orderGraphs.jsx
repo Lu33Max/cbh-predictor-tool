@@ -119,17 +119,19 @@ function getDiagnosis(entries, minDiagnoses, showOtherDiagnoses) {
 }
 
 function getOrders(entries) {
-    const data = []
+    const data = [{
+        id: "dates",
+        color: "hsl(48, 70%, 50%)",
+        data: []
+    }]
 
     entries.map(function(entry){
-        if(data.find(e => e.id === entry.orderDate)) {
-            data[data.findIndex((e => e.id === entry.orderDate))].x++
+        if(data[0].data.find(e => e.x === entry.orderDate)) {
+            data[0].data[data[0].data.findIndex((e => e.x === entry.orderDate))].y++
         } else {
-            data.push({
-                id: entry.orderDate,
-                name: entry.orderDate,
-                x: 1,
-                y: 2
+            data[0].data.push({
+                x: entry.orderDate,
+                y: 1
             })
         }
     })
@@ -172,7 +174,8 @@ const OrderChart = () => {
     }
 
     return(
-        <div className={styles.grid_container}>
+        <>
+        <div className={styles.grid_container_order}>
             <div className={styles.left_wrapper}>
                 <h3>Matrix</h3>
                 <PieChart data={GetAllEntries('matrix', minMatrix, showOtherMatrices)} scheme={primaryScheme}/>
@@ -192,13 +195,13 @@ const OrderChart = () => {
                 <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> </div>
                 <div className={styles.min}>Show Section "others": <input type="checkbox" value={showOtherDiagnoses} name="showOtherDiagnoses" onChange={onInputChange}/> </div>
             </div>
-            {/* <div className={styles.clicks_wrapper}>
-                <br/><br/><br/><br/>
+            <div className={styles.center_wrapper}>
                 <h3>Test</h3>
                 <LineChart data={GetAllEntries('date')} scheme={primaryScheme}/>
                 <div className={styles.min}>Test: </div>
-            </div> */}
+            </div>
         </div>
+    </>
     )
 }
 

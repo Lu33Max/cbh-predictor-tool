@@ -89,7 +89,7 @@ const GoogleChart = () => {
     }
 
     return(
-        <div className={styles.grid_container}>
+        <div className={styles.grid_container_terms}>
             <div className={styles.impressions_wrapper}>
                 <h3>Impressions</h3>
                 <PieChart data={GetAllEntries('impressions', minImpr)} scheme={primaryScheme}/>

@@ -89,18 +89,18 @@ const BingChart = () => {
     }
 
     return(
-        <div className={styles.grid_container}>
-            <div className={styles.impressions_wrapper}>
+        <div className={styles.grid_container_terms}>
+            <div className={styles.left_wrapper}>
                 <h3>Impressions</h3>
                 <PieChart data={GetAllEntries('impressions', minImpr)} scheme={primaryScheme}/>
                 <div className={styles.min}>Min. Impressions: <input className={styles.min_input} value={minImpr} name="minImpr" type="number" onChange={onInputChange}/> </div>
             </div>
-            <div>
+            <div className={styles.middle_wrapper}>
                 vs. <br/><br/><br/>
                 <h5>Click-Through-Rate</h5>
                 {GetAllEntries('clickthrough')} %
             </div>
-            <div className={styles.clicks_wrapper}>
+            <div className={styles.right_wrapper}>
                 <h3>Clicks</h3>
                 <PieChart data={GetAllEntries('clicks', minClicks)} scheme={primaryScheme}/>
                 <div className={styles.min}>Min. Clicks: <input className={styles.min_input} value={minClicks} name="minClicks" type="number" onChange={onInputChange}/> </div>

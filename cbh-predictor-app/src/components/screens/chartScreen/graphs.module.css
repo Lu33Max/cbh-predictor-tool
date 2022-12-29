@@ -1,8 +1,17 @@
-.grid_container {
+.grid_container_terms {
   display: grid;
   text-align: center;
-  grid-template-columns: [first] 30vw [line2] auto [col3-start] 30vw [end];
-  height: 54vh;
+  grid-template-columns: 30vw auto 30vw;
+  grid-template-rows: 52vh;
+  background-color: #eeeeee;
+  border-radius: 25px;
+}
+
+.grid_container_order {
+  display: grid;
+  text-align: center;
+  grid-template-columns: 30vw auto 30vw;
+  grid-template-rows: 54vh 50vh;
   background-color: #eeeeee;
   border-radius: 25px;
 }
@@ -10,22 +19,37 @@
 .left_wrapper {
   width: 30vw;
   height: 40vh;
+  grid-row-start: 1;
+  grid-row-end: 2;
   grid-column-start: 1;
-  grid-column-end: 1;
+  grid-column-end: 2;
 }
 
 .middle_wrapper {
   width: 30vw;
   height: 40vh;
+  grid-row-start: 1;
+  grid-row-end: 2;
   grid-column-start: 2;
-  grid-column-end: 2;
+  grid-column-end: 3;
 }
 
 .right_wrapper {
   width: 30vw;
   height: 40vh;
+  grid-row-start: 1;
+  grid-row-end: 2;
   grid-column-start: 3;
-  grid-column-end: 3;
+  grid-column-end: 4;
+}
+
+.center_wrapper {
+  width: 100%;
+  height: 40vh;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  grid-column-start: 1;
+  grid-column-end: 4;
 }
 
 .min {
@@ -39,7 +63,7 @@
 
 .min_input {
   width: 10%;
-  text-align: center;
+  text-align: left;
   border: 1.5px solid #949494;
   border-radius: 6px;
 }
