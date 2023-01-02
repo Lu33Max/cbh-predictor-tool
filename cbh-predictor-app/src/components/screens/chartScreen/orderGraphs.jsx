@@ -6,9 +6,10 @@ import styles from "./graphs.module.css";
 import axios from "axios";
 
 var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6','#a1e5ad','#82cc96','#62b37f','#429a6a','#188255','#429a6a','#62b37f','#82cc96','#a1e5ad','#c0ffc6','#abf4ab','#96e890','#83dc73','#71d055']
+var secondaryScheme = ['#d15454','#e16c7c','#ec86a1','#f4a2c3','#f9bee1','#ffd9fa','#e6b2e3','#cc8bce','#b066bb','#9140a8','#711496']
 
 //// MAPPING FUNCTIONS ////
-function getMatrices(entries, minMatrix, showOtherMatrices) {
+function getMatrices(entries, minMatrix, maxMatrix, showOtherMatrices) {
     const data = []
     var others = 0
 
@@ -26,7 +27,7 @@ function getMatrices(entries, minMatrix, showOtherMatrices) {
 
     for(let i = 0; i <= data.length; i++){
         if(data[i]){
-            if(data[i].value < minMatrix){
+            if(data[i].value < minMatrix || data[i].value > maxMatrix){
                 others += data[i].value
                 data.splice(i, 1)
                 i--
@@ -44,7 +45,7 @@ function getMatrices(entries, minMatrix, showOtherMatrices) {
     return data
 }
 
-function getLabParameter(entries, minParams, showOtherParams) {
+function getLabParameter(entries, minParams, maxParams, showOtherParams) {
     const data = []
     var others = 0
 
@@ -62,7 +63,7 @@ function getLabParameter(entries, minParams, showOtherParams) {
 
     for(let i = 0; i <= data.length; i++){
         if(data[i]){
-            if(data[i].value < minParams){
+            if(data[i].value < minParams || data[i].value > maxParams){
                 others += data[i].value
                 data.splice(i, 1)
                 i--
@@ -81,7 +82,7 @@ function getLabParameter(entries, minParams, showOtherParams) {
     return data
 }
 
-function getDiagnosis(entries, minDiagnoses, showOtherDiagnoses) {
+function getDiagnosis(entries, minDiagnoses, maxDiagnoses, showOtherDiagnoses) {
     const data = []
     var others = 0
 
@@ -99,7 +100,7 @@ function getDiagnosis(entries, minDiagnoses, showOtherDiagnoses) {
 
     for(let i = 0; i <= data.length; i++){
         if(data[i]){
-            if(data[i].value < minDiagnoses){
+            if(data[i].value < minDiagnoses || data[i].value > maxDiagnoses){
                 others += data[i].value
                 data.splice(i, 1)
                 i--
@@ -142,10 +143,13 @@ function getOrders(entries) {
 //// RENDER VIEW ////
 const OrderChart = (props) => {
     const [minMatrix, setMinMatrix] = useState(150)
+    const [maxMatrix, setMaxMatrix] = useState(400)
     const [showOtherMatrices, setShowOtherMatrices] = useState(false)
     const [minParams, setMinParams] = useState(150)
+    const [maxParams, setMaxParams] = useState(400)
     const [showOtherParams, setShowOtherParam] = useState(false)
     const [minDiagnoses, setMinDiagnoses] = useState(150)
+    const [maxDiagnoses, setMaxDiagnoses] = useState(400)
     const [showOtherDiagnoses, setShowOtherDiagnoses] = useState(false)
 
     const onInputChange = (e) => {
@@ -153,17 +157,26 @@ const OrderChart = (props) => {
             case 'minMatrix':
                 setMinMatrix(e.target.value)
                 return
+            case 'maxMatrix':
+                setMaxMatrix(e.target.value)
+                return
             case 'showOtherMatrices':
                 setShowOtherMatrices(!showOtherMatrices)
                 return
             case 'minParams':
                 setMinParams(e.target.value)
                 return
+            case 'maxParams':
+                setMaxParams(e.target.value)
+                return
             case 'showOtherParams':
                 setShowOtherParam(!showOtherParams)
                 return
             case 'minDiagnoses':
                 setMinDiagnoses(e.target.value)
+                return
+            case 'maxDiagnoses':
+                setMaxDiagnoses(e.target.value)
                 return
             case 'showOtherDiagnoses':
                 setShowOtherDiagnoses(!showOtherDiagnoses)
@@ -179,27 +192,26 @@ const OrderChart = (props) => {
         <div className={styles.grid_container_order}>
             <div className={styles.left_wrapper}>
                 <h3>Matrix</h3>
-                <PieChart data={GetAllEntries('matrix', minMatrix, showOtherMatrices)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minMatrix} name="minMatrix" type="number" onChange={onInputChange}/></div>
-                <div className={styles.min}>Show Section "others": <input type="checkbox" value={showOtherMatrices} name="showOtherMatrices" onChange={onInputChange}/> </div>
+                <PieChart data={GetAllEntries('matrix', minMatrix, maxMatrix, showOtherMatrices)} scheme={primaryScheme}/>
+                <div className={styles.min}>Min: <input className={styles.min_input} value={minMatrix} name="minMatrix" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxMatrix} name="maxMatrix" type="number" onChange={onInputChange}/></div>
+                <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherMatrices} name="showOtherMatrices" onChange={onInputChange}/> </div>
             </div>
             <div className={styles.middle_wrapper}>
                 <h3>Lab Parameters</h3>
-                <PieChart data={GetAllEntries('labParameter', minParams, showOtherParams)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> </div>
-                <div className={styles.min}>Show Section "others": <input type="checkbox" value={showOtherParams} name="showOtherParams" onChange={onInputChange}/> </div>
+                <PieChart data={GetAllEntries('labParameter', minParams, maxParams, showOtherParams)} scheme={secondaryScheme}/>
+                <div className={styles.min}>Min: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxParams} name="maxParams" type="number" onChange={onInputChange}/></div>
+                <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherParams} name="showOtherParams" onChange={onInputChange}/> </div>
 
             </div>
             <div className={styles.right_wrapper}>
                 <h3>Diagnosis</h3>
-                <PieChart data={GetAllEntries('diagnosis', minDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> </div>
-                <div className={styles.min}>Show Section "others": <input type="checkbox" value={showOtherDiagnoses} name="showOtherDiagnoses" onChange={onInputChange}/> </div>
+                <PieChart data={GetAllEntries('diagnosis', minDiagnoses, maxDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
+                <div className={styles.min}>Min: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxDiagnoses} name="maxDiagnoses" type="number" onChange={onInputChange}/></div>
+                <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherDiagnoses} name="showOtherDiagnoses" onChange={onInputChange}/> </div>
             </div>
             <div className={styles.center_wrapper}>
-                <h3>Test</h3>
+                <h3>Orders Over Time</h3>
                 <LineChart data={GetAllEntries('date')} scheme={primaryScheme}/>
-                <div className={styles.min}>Test: </div>
             </div>
         </div>
     </>
@@ -207,7 +219,7 @@ const OrderChart = (props) => {
 }
 
 //// GETTER METHODS ////
-function GetAllEntries(type, prop1, prop2){
+function GetAllEntries(type, prop1, prop2, prop3){
     const url = Constants.API_URL_ORDER_ENTRIES;
     const [entries, setEntries] = useState([])
 
@@ -220,11 +232,11 @@ function GetAllEntries(type, prop1, prop2){
 
     switch(type){
         case 'matrix':
-            return getMatrices(entries, prop1, prop2)
+            return getMatrices(entries, prop1, prop2, prop3)
         case 'labParameter':
-            return getLabParameter(entries, prop1, prop2)
+            return getLabParameter(entries, prop1, prop2, prop3)
         case 'diagnosis':
-            return getDiagnosis(entries, prop1, prop2)
+            return getDiagnosis(entries, prop1, prop2, prop3)
         case 'date':
             return getOrders(entries)
         default:
