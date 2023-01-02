@@ -56,6 +56,57 @@ namespace CBHPredictorWebAPI.Controllers
             }
         }
 
+
+        [HttpGet("CountRows")]
+        public async Task<int> CountRows()
+        {
+            var command = new StringBuilder("SELECT * FROM GoogleSearchTerms WHERE ");
+            string? filter = HttpContext.Session.GetString("GoogleFilter");
+
+            if (string.IsNullOrEmpty(filter))
+            {
+                List<GoogleSearchTerm> unfilteredRows = await _context.GoogleSearchTerms.ToListAsync();
+                return unfilteredRows.Count();
+            }
+            else
+            {
+                filter = filter.Remove(0, 1);
+                string[] filters = filter.Split(";");
+
+                filter = string.Join(" AND ", filters);
+
+                command.Append(filter);
+                List<GoogleSearchTerm> fitleredRows = await _context.GoogleSearchTerms.FromSqlRaw(command.ToString()).ToListAsync();
+
+                return fitleredRows.Count();
+            }
+        }
+
+        [HttpGet("GetCurrentMonth")]
+        public string selectCurrentMonth()
+        {
+            int latestMonth = DateTime.Now.Month;
+            int latestYear = DateTime.Now.Year;
+            string latestDate = latestYear + "-" + latestMonth.ToString();
+
+            while (!_context.GoogleSearchTerms.Any(e => e.date == latestDate))
+            {
+                if (latestMonth != 0)
+                {
+                    latestMonth--;
+                    latestDate = latestYear + "-" + latestMonth.ToString();
+                }
+                else
+                {
+                    latestYear--;
+                    latestMonth = 12;
+                    latestDate = latestYear + "-" + latestMonth.ToString();
+                }
+            }
+
+            return latestDate;
+        }
+
         [HttpGet("ExportToExcel")]
         public async Task<IActionResult> ExportGTermsToExcel()
         {

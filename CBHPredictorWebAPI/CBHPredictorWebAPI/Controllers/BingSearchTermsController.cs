@@ -56,6 +56,56 @@ namespace CBHPredictorWebAPI.Controllers
             }
         }
 
+                [HttpGet("CountRows")]
+        public async Task<int> CountRows()
+        {
+            var command = new StringBuilder("SELECT * FROM BingSearchTerms WHERE ");
+            string? filter = HttpContext.Session.GetString("BingFilter");
+
+            if (string.IsNullOrEmpty(filter))
+            {
+                List<BingSearchTerm> unfilteredRows = await _context.BingSearchTerms.ToListAsync();
+                return unfilteredRows.Count();
+            }
+            else
+            {
+                filter = filter.Remove(0, 1);
+                string[] filters = filter.Split(";");
+
+                filter = string.Join(" AND ", filters);
+
+                command.Append(filter);
+                List<BingSearchTerm> fitleredRows = await _context.BingSearchTerms.FromSqlRaw(command.ToString()).ToListAsync();
+
+                return fitleredRows.Count();
+            }
+        }
+
+        [HttpGet("GetCurrentMonth")]
+        public string selectCurrentMonth()
+        {
+            int latestMonth = DateTime.Now.Month;
+            int latestYear = DateTime.Now.Year;
+            string latestDate = latestYear + "-" + latestMonth.ToString();
+
+            while (!_context.BingSearchTerms.Any(e => e.date == latestDate))
+            {
+                if (latestMonth != 0)
+                {
+                    latestMonth--;
+                    latestDate = latestYear + "-" + latestMonth.ToString();
+                }
+                else
+                {
+                    latestYear--;
+                    latestMonth = 12;
+                    latestDate = latestYear + "-" + latestMonth.ToString();
+                }
+            }
+
+            return latestDate;
+        }
+
         [HttpGet("ExportToExcel")]
         public async Task<IActionResult> ExportBTermsToExcel()
         {

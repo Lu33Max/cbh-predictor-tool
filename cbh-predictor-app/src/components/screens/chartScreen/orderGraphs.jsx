@@ -140,7 +140,7 @@ function getOrders(entries) {
 }
 
 //// RENDER VIEW ////
-const OrderChart = () => {
+const OrderChart = (props) => {
     const [minMatrix, setMinMatrix] = useState(150)
     const [showOtherMatrices, setShowOtherMatrices] = useState(false)
     const [minParams, setMinParams] = useState(150)
@@ -175,6 +175,7 @@ const OrderChart = () => {
 
     return(
         <>
+        <button onClick={() => {props.setShowGraphs(false); props.setActiveTable('')}} className={styles.button_backarrow}>&#60;</button>
         <div className={styles.grid_container_order}>
             <div className={styles.left_wrapper}>
                 <h3>Matrix</h3>

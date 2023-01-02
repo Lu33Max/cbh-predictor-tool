@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
-using System.Net;
 using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
 
 namespace CBHPredictorWebAPI.Controllers
@@ -53,6 +52,31 @@ namespace CBHPredictorWebAPI.Controllers
             else
             {
                 return await _context.OrderEntries.FromSqlRaw("SELECT * FROM OrderEntries ORDER BY [" + col + "] DESC").ToListAsync();
+            }
+        }
+
+        [HttpGet("CountRows")]
+        public async Task<int> CountRows()
+        {
+            var command = new StringBuilder("SELECT * FROM OrderEntries WHERE ");
+            string? filter = HttpContext.Session.GetString("OrderFilter");
+
+            if (string.IsNullOrEmpty(filter))
+            {
+                List<OrderEntry> unfilteredRows = await _context.OrderEntries.ToListAsync();
+                return unfilteredRows.Count();
+            }
+            else
+            {
+                filter = filter.Remove(0, 1);
+                string[] filters = filter.Split(";");
+
+                filter = string.Join(" AND ", filters);
+
+                command.Append(filter);
+                List<OrderEntry> fitleredRows = await _context.OrderEntries.FromSqlRaw(command.ToString()).ToListAsync();
+
+                return fitleredRows.Count();
             }
         }
 

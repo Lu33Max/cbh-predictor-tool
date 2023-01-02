@@ -1,10 +1,28 @@
 .grid_container_terms {
   display: grid;
+  width: 100%;
   text-align: center;
+  margin-bottom: 2%;
   grid-template-columns: 30vw auto 30vw;
-  grid-template-rows: 52vh;
+  grid-template-rows: auto 60vh;
   background-color: #eeeeee;
   border-radius: 25px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 4px 20px rgb(2, 4, 2);
+}
+
+.grid_container_2_items {
+  display: grid;
+  width: 100%;
+  text-align: center;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: auto 60vh;
+  background-color: #eeeeee;
+  border-radius: 25px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 4px 20px rgb(2, 4, 2);
 }
 
 .grid_container_order {
@@ -17,37 +35,37 @@
 }
 
 .left_wrapper {
-  width: 30vw;
-  height: 40vh;
-  grid-row-start: 1;
-  grid-row-end: 2;
+  width: 100%;
+  height: 50vh;
+  grid-row-start: 2;
+  grid-row-end: 3;
   grid-column-start: 1;
   grid-column-end: 2;
 }
 
 .middle_wrapper {
+  margin-top: 16px;
   width: 30vw;
-  height: 40vh;
-  grid-row-start: 1;
-  grid-row-end: 2;
+  height: 50vh;
+  grid-row-start: 2;
+  grid-row-end: 3;
   grid-column-start: 2;
   grid-column-end: 3;
 }
 
 .right_wrapper {
-  width: 30vw;
-  height: 40vh;
-  grid-row-start: 1;
-  grid-row-end: 2;
+  width: 100%;
+  height: 50vh;
+  grid-row-start: 2;
+  grid-row-end: 3;
   grid-column-start: 3;
   grid-column-end: 4;
 }
 
 .center_wrapper {
   width: 100%;
-  height: 40vh;
-  grid-row-start: 2;
-  grid-row-end: 3;
+  grid-row-start: 3;
+  grid-row-end: 4;
   grid-column-start: 1;
   grid-column-end: 4;
 }
@@ -63,15 +81,45 @@
 
 .min_input {
   width: 10%;
-  text-align: left;
+  text-align: center;
   border: 1.5px solid #949494;
   border-radius: 6px;
 }
 
+.settings {
+  height: 5vh;
+  width: 100%;
+  border-radius: 25px;
+  background-color: rgb(137, 208, 86);
+  grid-column-start: 1;
+  grid-column-end: 4;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+
+select {
+  transform: translate(0, -20%);
+  font-size: 16px;
+  margin-left: 1%;
+  margin-right: 3%;
+}
+
+.button_backarrow {
+  position: fixed;
+  transform: translate(-150%, -50%);
+  width: 2.5%;
+  margin-top: 1%;
+  background-color: rgb(40, 40, 40);
+}
+
+.button_backarrow:hover {
+  background-color: rgb(70, 70, 70);
+}
+
 /*Anpassen der Überschriftenposition mit margins*/
 h3 {
-margin-top: 16px;
-margin-bottom: 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 /*customized CHeckboxen*/

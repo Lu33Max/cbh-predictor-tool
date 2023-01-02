@@ -71,7 +71,7 @@ function getClickThrough(entries) {
 }
 
 //// RENDER VIEW ////
-const GoogleChart = () => {
+const GoogleChart = (props) => {
     const [minImpr, setMinImpr] = useState(25)
     const [minClicks, setMinClicks] = useState(5)
 
@@ -89,23 +89,26 @@ const GoogleChart = () => {
     }
 
     return(
-        <div className={styles.grid_container_terms}>
-            <div className={styles.impressions_wrapper}>
-                <h3>Impressions</h3>
-                <PieChart data={GetAllEntries('impressions', minImpr)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Impressions: <input className={styles.min_input} value={minImpr} name="minImpr" type="number" onChange={onInputChange}/> </div>
+        <>
+            <button onClick={() => {props.setShowGraphs(false); props.setActiveTable('')}} className={styles.button_backarrow}>&#60;</button>
+            <div className={styles.grid_container_terms}>
+                <div className={styles.impressions_wrapper}>
+                    <h3>Impressions</h3>
+                    <PieChart data={GetAllEntries('impressions', minImpr)} scheme={primaryScheme}/>
+                    <div className={styles.min}>Min. Impressions: <input className={styles.min_input} value={minImpr} name="minImpr" type="number" onChange={onInputChange}/> </div>
+                </div>
+                <div>
+                    vs. <br/><br/><br/>
+                    <h5>Click-Through-Rate</h5>
+                    {GetAllEntries('clickthrough')} %
+                </div>
+                <div className={styles.clicks_wrapper}>
+                    <h3>Clicks</h3>
+                    <PieChart data={GetAllEntries('clicks', minClicks)} scheme={primaryScheme}/>
+                    <div className={styles.min}>Min. Clicks: <input className={styles.min_input} value={minClicks} name="minClicks" type="number" onChange={onInputChange}/> </div>
+                </div>
             </div>
-            <div>
-                vs. <br/><br/><br/>
-                <h5>Click-Through-Rate</h5>
-                {GetAllEntries('clickthrough')} %
-            </div>
-            <div className={styles.clicks_wrapper}>
-                <h3>Clicks</h3>
-                <PieChart data={GetAllEntries('clicks', minClicks)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min. Clicks: <input className={styles.min_input} value={minClicks} name="minClicks" type="number" onChange={onInputChange}/> </div>
-            </div>
-        </div>
+        </>
     )
 }
 

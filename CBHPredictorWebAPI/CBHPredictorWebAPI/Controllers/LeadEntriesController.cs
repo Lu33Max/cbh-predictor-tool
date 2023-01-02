@@ -4,7 +4,6 @@ using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
 using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
-using DocumentFormat.OpenXml.Vml.Office;
 
 namespace CBHPredictorWebAPI.Controllers
 {

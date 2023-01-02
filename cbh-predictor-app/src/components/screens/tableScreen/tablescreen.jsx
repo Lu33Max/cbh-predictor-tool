@@ -93,10 +93,10 @@ const TableScreen = () => {
             )}
             {(showGraphs) && (
                 <>
-                    {activeTable === 'Bing' && <BingChart/>}
-                    {activeTable === 'Google' && <GoogleChart/>}
-                    {activeTable === 'Order' && <OrderChart/>}
-                    {activeTable === 'Lead' && <LeadChart/>}
+                    {activeTable === 'Bing' && <BingChart setShowGraphs={setShowGraphs} setActiveTable={setActiveTable}/>}
+                    {activeTable === 'Google' && <GoogleChart setShowGraphs={setShowGraphs} setActiveTable={setActiveTable}/>}
+                    {activeTable === 'Order' && <OrderChart setShowGraphs={setShowGraphs} setActiveTable={setActiveTable}/>}
+                    {activeTable === 'Lead' && <LeadChart setShowGraphs={setShowGraphs} setActiveTable={setActiveTable}/>}
                 </>
             )}
             
@@ -122,7 +122,7 @@ const TableScreen = () => {
         if (updatedEntry === null) return;
         alert(`Entry successfully updated. After clicking OK, look for the Entry in the table below to see the updates.`);
         getAllEntries(activeTable);
-      }
+    }
 
     //// SERVER REQUESTS ////
     function getAllEntries(table){
