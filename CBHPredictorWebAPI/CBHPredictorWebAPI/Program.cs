@@ -1,4 +1,5 @@
 using CBHPredictorWebAPI.Data;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -29,12 +30,19 @@ namespace CBHPredictorWebAPI
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
+            builder.Services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => false;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
             // Session Management
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(10);
-                options.Cookie.HttpOnly = true;
+                options.Cookie.HttpOnly = false;
                 options.Cookie.IsEssential = true;
             });
 
@@ -59,8 +67,6 @@ namespace CBHPredictorWebAPI
             }
             app.UseRouting();
 
-            app.UseRouting();
-
             app.UseAuthorization();
 
             app.UseSession();
@@ -68,8 +74,6 @@ namespace CBHPredictorWebAPI
             app.UseHttpsRedirection();
 
             app.UseCors("CORSPolicy");
-
-            app.UseSession();
 
             app.MapControllers();
 

@@ -5,7 +5,7 @@ table tfoot {
   inset-block-end: 0;
 }
 table td {
-  max-width: 10%;;
+  max-width: 10%;
 }
 
 .table {
@@ -14,7 +14,6 @@ table td {
   border: none;
   width: 100%;
   min-width: max-content;
-  margin: 2rem auto;
 }
 
 .tableRowHeader {

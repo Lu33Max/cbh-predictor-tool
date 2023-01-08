@@ -38,7 +38,7 @@ const Table = (props) => {
               <td className={styles.tableCell}>{el.date}</td>
               <td className={styles.crudCell}>
                 <button onClick={() => props.updateEntry(el)} className={styles.button_black}>Update</button>
-                <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${el.id}"?`)) props.deleteEntry(el.id) }} className={styles.button_gray}>Delete</button>
+                <button onClick={() => { if(window.confirm(`Are you sure you want to delete the entry with ID "${el.id}"?`)) props.deleteEntry(el.id) }} className={styles.button_gray}>Delete</button>
               </td>
             </tr>
           ))}
@@ -93,7 +93,7 @@ const Table = (props) => {
               <td className={styles.tableCell}>{el.quantityOfInterest}</td>
               <td className={styles.crudCell}>
                 <button onClick={() => props.updateEntry(el)} className={styles.button_black}>Update</button>
-                <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${el.id}"?`)) props.deleteEntry(el.id) }} className={styles.button_gray}>Delete</button>
+                <button onClick={() => { if(window.confirm(`Are you sure you want to delete the entry with ID "${el.id}"?`)) props.deleteEntry(el.id) }} className={styles.button_gray}>Delete</button>
               </td>
             </tr>
           ))}
@@ -182,7 +182,7 @@ const Table = (props) => {
               {(el.collectionDate) ? (<td className={styles.tableCell}>{el.collectionDate.slice(0, el.collectionDate.indexOf('T')) }</td>) : (<td className={styles.tableCell}>{''}</td>)}
               <td className={styles.crudCell}>
                 <button onClick={() => props.updateEntry(el)} className={styles.button_black}>Update</button>
-                <button onClick={() => { if(window.confirm(`Are you sure you wannt to delete the entry with ID "${el.id}"?`)) props.deleteEntry(el.id) }} className={styles.button_gray}>Delete</button>
+                <button onClick={() => { if(window.confirm(`Are you sure you want to delete the entry with ID "${el.id}"?`)) props.deleteEntry(el.id) }} className={styles.button_gray}>Delete</button>
               </td>
             </tr>
           ))}

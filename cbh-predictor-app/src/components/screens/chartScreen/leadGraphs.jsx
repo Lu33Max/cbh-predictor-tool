@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { PieChart } from "./charts/pieChart";
+import { LineChart } from "./charts/lineChart";
 import Constants from "../../../utilities/Constants";
 import styles from "./graphs.module.css"
 import axios from "axios";
 
 var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6','#a1e5ad','#82cc96','#62b37f','#429a6a','#188255','#429a6a','#62b37f','#82cc96','#a1e5ad','#c0ffc6','#abf4ab','#96e890','#83dc73','#71d055']
+var secondaryScheme = ['#d15454','#e16c7c','#ec86a1','#f4a2c3','#f9bee1','#ffd9fa','#e6b2e3','#cc8bce','#b066bb','#9140a8','#711496']
 
 //// MAPPING FUNCTIONS ////
-function getMedicalField(entries, minField, showOtherFields) {
+function getMedicalField(entries, minField, showOthers) {
     const data = []
     var others = 0
 
@@ -33,7 +35,7 @@ function getMedicalField(entries, minField, showOtherFields) {
         }
     }
 
-    if(showOtherFields) {
+    if(showOthers) {
         data.push({
             id: "others",
             name: "others",
@@ -44,10 +46,68 @@ function getMedicalField(entries, minField, showOtherFields) {
     return data
 }
 
+function getLeadStatus(entries, showOther) {
+    const data = []
+    var others = 0    
+
+    entries.map(function(entry){
+        if(data.find(e => e.id === entry.leadStatus)) {
+            data[data.findIndex((e => e.id === entry.leadStatus))].value++
+        } else {
+            data.push({
+                id: entry.leadStatus,
+                name: entry.leadStatus,
+                value: 1
+            })
+        }
+    })
+
+    for(let i = 0; i <= data.length; i++){
+        if(data[i]){
+            if(data[i].id === null){
+                others += data[i].value
+                data.splice(i, 1)
+                i--
+            }
+            var _value = data[i].value
+            data[i].value = Math.trunc(((_value / entries.length - 1) + 1 ) * 100) 
+        }
+    }
+
+    return data
+}
+
+function getLeadsOverTime(entries) {
+    const data = [{
+        id: "dates",
+        color: "hsl(48, 70%, 50%)",
+        data: []
+    }]
+
+    entries.map(function(entry){
+        if(data[0].data.find(e => e.x === truncateTime(entry.leadDate))) {
+            data[0].data[data[0].data.findIndex((e => e.x === truncateTime(entry.leadDate)))].y++
+        } else {
+            data[0].data.push({
+                x: truncateTime(entry.leadDate),
+                y: 1
+            })
+        }
+    })
+      data.sort((a,b) => a[1] - b[1]);
+
+    return data
+}
+
+function truncateTime(str) {
+    return str.slice(0, 10)
+} 
+
 //// RENDER VIEW ////
 const LeadChart = (props) => {
     const [minField, setMinField] = useState(10)
     const [showOtherFields, setShowOtherFields] = useState(false)
+    const [showOthers, setShowOthers] = useState(true)
 
     const onInputChange = (e) => {
         switch(e.target.name){
@@ -65,11 +125,30 @@ const LeadChart = (props) => {
     return(
         <>
             <button onClick={() => {props.setShowGraphs(false); props.setActiveTable('')}} className={styles.button_backarrow}>&#60;</button>
-            <div className={styles.grid_container}>
+            <div className={styles.grid_container_2_items_3_rows}>
+                <div className={styles.settings}>
+                    Period:
+                    <select>
+                        <option defaultValue={true}>Last Month</option>
+                        <option>Last 3 Months</option>
+                        <option>Last Year</option>
+                        <option>All Time</option>
+                    </select>
+                    Show Others
+                    <input type="checkbox" onChange={() => setShowOthers(!showOthers)}></input>
+                </div>
                 <div className={styles.left_wrapper}>
                     <h3>Customer Fields</h3>
-                    <PieChart data={GetAllEntries('Field_of_interest', minField, showOtherFields)} scheme={primaryScheme}/>
-                    <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minField} name="minField" type="number" onChange={onInputChange}/> <input type="checkbox" className={styles.min_input} value={showOtherFields} name="showOtherFields" onChange={onInputChange}/> </div>
+                    <PieChart data={GetAllEntries('Field_of_interest', minField, showOthers)} scheme={primaryScheme}/>
+                    <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minField} name="minField" type="number" onChange={onInputChange}/></div>
+                </div>
+                <div className={styles.middle_wrapper}>
+                    <h3>Status in %</h3>
+                    <PieChart data={GetAllEntries('Lead_Status', showOthers)} scheme={secondaryScheme}/>
+                </div>
+                <div className={styles.center_wrapper}>
+                    <h3>Lead Requests Over Time</h3>
+                    <LineChart data={GetAllEntries('Lead_Date')} scheme={primaryScheme}/>
                 </div>
             </div>
         </>
@@ -91,6 +170,10 @@ function GetAllEntries(type, prop1, prop2){
     switch(type){
         case 'Field_of_interest':
             return getMedicalField(entries, prop1, prop2)
+        case 'Lead_Status':
+            return getLeadStatus(entries, prop1)
+        case 'Lead_Date':
+            return getLeadsOverTime(entries)
     }
 }
 

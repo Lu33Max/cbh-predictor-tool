@@ -25,7 +25,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> GetSearchTerms()
         {
-            return await _context.GoogleSearchTerms.OrderBy(e => e.terms).ToListAsync();
+            return await _context.GoogleSearchTerms.OrderBy(e => e.date).ThenBy(e => e.terms).ToListAsync();
         }
 
         // GET: api/GoogleSearchTerms/5

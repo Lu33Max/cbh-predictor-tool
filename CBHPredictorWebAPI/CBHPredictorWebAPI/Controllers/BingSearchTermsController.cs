@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
-using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -25,7 +24,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BingSearchTerm>>> GetSearchTerms()
         {
-            return await _context.BingSearchTerms.OrderBy(e => e.terms).ToListAsync();
+            return await _context.BingSearchTerms.OrderBy(e => e.date).ThenBy(e => e.terms).ToListAsync();
         }
 
         // GET: api/BingSearchTerms/5
@@ -100,6 +99,11 @@ namespace CBHPredictorWebAPI.Controllers
                     latestYear--;
                     latestMonth = 12;
                     latestDate = latestYear + "-" + latestMonth.ToString();
+                }
+
+                if (latestYear <= 2015)
+                {
+                    break;
                 }
             }
 

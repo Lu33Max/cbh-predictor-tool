@@ -4,13 +4,15 @@ export const LineChart = (props) => {
     return(
         <ResponsiveLine
         data={props.data}
+        colors={props.scheme}
+        curve='monotoneX'
         margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
         xScale={{ type: 'point' }}
         yScale={{
             type: 'linear',
-            min: 'auto',
+            min: '0',
             max: 'auto',
-            stacked: true,
+            stacked: false,
             reverse: false
         }}
         yFormat=" >-.2f"
@@ -21,7 +23,7 @@ export const LineChart = (props) => {
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'transportation',
+            legend: props.axisBottom,
             legendOffset: 36,
             legendPosition: 'middle'
         }}
@@ -30,7 +32,7 @@ export const LineChart = (props) => {
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'count',
+            legend: props.axisLeft,
             legendOffset: -40,
             legendPosition: 'middle'
         }}

@@ -25,7 +25,7 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeadEntry>>> GetLeadEntries()
         {
-            return await _context.LeadEntries.ToListAsync();
+            return await _context.LeadEntries.OrderBy(e => e.leadDate).ToListAsync();
         }
 
         // GET: api/LeadEntries/5

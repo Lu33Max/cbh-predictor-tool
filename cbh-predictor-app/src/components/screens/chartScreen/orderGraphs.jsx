@@ -119,6 +119,83 @@ function getDiagnosis(entries, minDiagnoses, maxDiagnoses, showOtherDiagnoses) {
     return data
 }
 
+function getAverageQuantity(entries, minDiagnoses, maxDiagnoses, showOtherDiagnoses) {
+    const data = []
+    var others = 0
+
+    entries.map(function(entry){
+        if(data.find(e => e.id === entry.unit)) {
+            data[data.findIndex((e => e.id === entry.unit))].occurrences++
+        } else if(entry.unit != null) {             
+            data.push({
+                id: entry.unit,
+                name: entry.unit,
+                value: 1,
+                occurrences: 1
+            })            
+        }
+    })
+
+    // for(let i = 0; i <= data.length; i++){
+    //     if(data[i]){
+    //         if(data[i].id === "ml"){
+    //             others += data[i].value
+    //             data.splice(i, 1)
+    //             i--
+    //         }
+    //     }
+    // }
+
+    // if(showOtherDiagnoses) {
+    //     data.push({
+    //         id: "others",
+    //         name: "others",
+    //         value: others
+    //     })
+    // }
+
+    return data
+}
+
+function getResult(entries) {
+    const data = []
+
+    entries.map(function(entry){
+        if(data.find(e => e.id === entry.resultInterpretation)) {
+            data[data.findIndex((e => e.id === entry.resultInterpretation))].value++
+        } else if(entry.resultInterpretation != null) {             
+            data.push({
+                id: entry.resultInterpretation,
+                name: entry.resultInterpretation,
+                value: 1
+            })            
+        }
+    })
+
+    for(let i = 0; i <= data.length; i++){
+        if(data[i]){
+            if(data[i].id === null || data[i].id === "detected" || data[i].id === "Detected" || data[i].id === "not detected"){
+                data.splice(i, 1)
+                i--
+            }
+            if(data[i].id === "Positive"){
+                data[data.findIndex((e => e.id === "positive"))].value +=  data[i].value
+                data.splice(i, 1)
+                //i--
+            }
+            if(data[i].id === "Negative"){
+                data[data.findIndex((e => e.id === "negative"))].value +=  data[i].value
+                data.splice(i, 1)
+                //i--
+            }
+            var _value = data[i].value
+            //data[i].value = Math.trunc(((_value / entries.length - 1) + 1 ) * 100) 
+        }
+    }
+
+    return data
+}
+
 function getOrders(entries) {
     const data = [{
         id: "dates",
@@ -127,18 +204,23 @@ function getOrders(entries) {
     }]
 
     entries.map(function(entry){
-        if(data[0].data.find(e => e.x === entry.orderDate)) {
-            data[0].data[data[0].data.findIndex((e => e.x === entry.orderDate))].y++
+        if(data[0].data.find(e => e.x === truncateTime(entry.orderDate))) {
+            data[0].data[data[0].data.findIndex((e => e.x === truncateTime(entry.orderDate)))].y++
         } else {
             data[0].data.push({
-                x: entry.orderDate,
+                x: truncateTime(entry.orderDate),
                 y: 1
             })
         }
     })
+    data[0].data.sort((a,b) => a[1] - b[1]);
 
     return data
 }
+
+function truncateTime(str) {
+    return str.slice(0, 10)
+} 
 
 //// RENDER VIEW ////
 const OrderChart = (props) => {
@@ -146,7 +228,7 @@ const OrderChart = (props) => {
     const [maxMatrix, setMaxMatrix] = useState(400)
     const [showOtherMatrices, setShowOtherMatrices] = useState(false)
     const [minParams, setMinParams] = useState(150)
-    const [maxParams, setMaxParams] = useState(400)
+    const [maxParams, setMaxParams] = useState(1000)
     const [showOtherParams, setShowOtherParam] = useState(false)
     const [minDiagnoses, setMinDiagnoses] = useState(150)
     const [maxDiagnoses, setMaxDiagnoses] = useState(400)
@@ -189,7 +271,16 @@ const OrderChart = (props) => {
     return(
         <>
         <button onClick={() => {props.setShowGraphs(false); props.setActiveTable('')}} className={styles.button_backarrow}>&#60;</button>
-        <div className={styles.grid_container_order}>
+        <div className={styles.grid_container_3_items_3_rows}>
+            <div className={styles.settings}>
+                Period:
+                <select>
+                    <option defaultValue={true}>Last Month</option>
+                    <option>Last 3 Months</option>
+                    <option>Last Year</option>
+                    <option>All Time</option>
+                </select>
+            </div>
             <div className={styles.left_wrapper}>
                 <h3>Matrix</h3>
                 <PieChart data={GetAllEntries('matrix', minMatrix, maxMatrix, showOtherMatrices)} scheme={primaryScheme}/>
@@ -203,11 +294,15 @@ const OrderChart = (props) => {
                 <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherParams} name="showOtherParams" onChange={onInputChange}/> </div>
 
             </div>
-            <div className={styles.right_wrapper}>
+            {/*<div className={styles.right_wrapper}>
                 <h3>Diagnosis</h3>
                 <PieChart data={GetAllEntries('diagnosis', minDiagnoses, maxDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
                 <div className={styles.min}>Min: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxDiagnoses} name="maxDiagnoses" type="number" onChange={onInputChange}/></div>
                 <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherDiagnoses} name="showOtherDiagnoses" onChange={onInputChange}/> </div>
+            </div>*/}
+            <div className={styles.right_wrapper}>
+                <h3>Lab Result</h3>
+                <PieChart data={GetAllEntries('Result_Interpretation', minDiagnoses, maxDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
             </div>
             <div className={styles.center_wrapper}>
                 <h3>Orders Over Time</h3>
@@ -237,6 +332,8 @@ function GetAllEntries(type, prop1, prop2, prop3){
             return getLabParameter(entries, prop1, prop2, prop3)
         case 'diagnosis':
             return getDiagnosis(entries, prop1, prop2, prop3)
+        case 'Result_Interpretation':
+            return getResult(entries)
         case 'date':
             return getOrders(entries)
         default:
