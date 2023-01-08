@@ -231,7 +231,23 @@ const OrderChart = (props) => {
     const [minDiagnoses, setMinDiagnoses] = useState(150)
     const [maxDiagnoses, setMaxDiagnoses] = useState(400)
     const [showOthers1, setShowOthers1] = useState(false)
-    const [showOthers2, setShowOthers2] = useState(false)
+    const [showOthers2, setShowOthers2] = useState(false)    
+    const [allEntries, setAllEntries] = useState([])
+    const [latestDate, setLatestDate] = useState([])
+
+    useEffect(() => {
+        const url = Constants.API_URL_ORDER_ENTRIES;
+
+        axios.get(url)
+        .then(res => {
+            setAllEntries(res.data);
+        })
+
+        axios.get([url,'/GetCurrentMonth'].join(''))
+        .then(res => {
+            setLatestDate(res.data.split('-'))
+        })
+    }, [])
 
     const onInputChange = (e) => {
         switch(e.target.name){
@@ -275,12 +291,12 @@ const OrderChart = (props) => {
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Matrix</h3>
-                    <PieChart data={GetAllEntries('matrix', minMatrix, maxMatrix, showOthers1)} scheme={primaryScheme}/>
+                    <PieChart data={getMatrices(allEntries, minMatrix, maxMatrix, showOthers1)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minMatrix} name="minMatrix" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxMatrix} name="maxMatrix" type="number" onChange={onInputChange}/></div>
                 </div>
                 <div className={styles.middle_wrapper}>
                     <h3>Diagnosis</h3>
-                    <PieChart data={GetAllEntries('diagnosis', minDiagnoses, maxDiagnoses, showOthers1)} scheme={primaryScheme}/>
+                    <PieChart data={getDiagnosis(allEntries, minDiagnoses, maxDiagnoses, showOthers1)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxDiagnoses} name="maxDiagnoses" type="number" onChange={onInputChange}/></div>
                 </div>
             </div>        
@@ -299,12 +315,12 @@ const OrderChart = (props) => {
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Lab Parameters</h3>
-                    <PieChart data={GetAllEntries('labParameter', minParams, maxParams, showOthers2)} scheme={secondaryScheme}/>
+                    <PieChart data={getLabParameter(allEntries, minParams, maxParams, showOthers2)} scheme={secondaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxParams} name="maxParams" type="number" onChange={onInputChange}/></div>
                 </div>
                 <div className={styles.middle_wrapper}>
                     <h3>Lab Result</h3>
-                    <PieChart data={GetAllEntries('Result_Interpretation', minDiagnoses, maxDiagnoses, showOthers1)} scheme={primaryScheme}/>
+                    <PieChart data={getResult(allEntries, minDiagnoses, maxDiagnoses, showOthers1)} scheme={primaryScheme}/>
                 </div>
             </div>
             {/* Third Block */}
@@ -321,39 +337,11 @@ const OrderChart = (props) => {
                 <div className={styles.center_wrapper_top}>
                 <br/>
                 <h3>Orders Over Time</h3>
-                <LineChart data={GetAllEntries('date')} scheme={primaryScheme}/>
+                <LineChart data={getOrders(allEntries)} scheme={primaryScheme}/>
             </div>
         </div>
     </>
     )
-}
-
-//// GETTER METHODS ////
-function GetAllEntries(type, prop1, prop2, prop3){
-    const url = Constants.API_URL_ORDER_ENTRIES;
-    const [entries, setEntries] = useState([])
-
-    useEffect(() => {
-        axios.get(url)
-        .then(res => {
-            setEntries(res.data);
-        })
-    }, [])
-
-    switch(type){
-        case 'matrix':
-            return getMatrices(entries, prop1, prop2, prop3)
-        case 'labParameter':
-            return getLabParameter(entries, prop1, prop2, prop3)
-        case 'diagnosis':
-            return getDiagnosis(entries, prop1, prop2, prop3)
-        case 'Result_Interpretation':
-            return getResult(entries)
-        case 'date':
-            return getOrders(entries)
-        default:
-            return
-    }
 }
 
 export default OrderChart

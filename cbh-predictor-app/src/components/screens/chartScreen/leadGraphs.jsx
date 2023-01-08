@@ -127,6 +127,22 @@ const LeadChart = (props) => {
     const [minField, setMinField] = useState(10)
     const [showOtherFields, setShowOtherFields] = useState(false)
     const [showOthers, setShowOthers] = useState(true)
+    const [allEntries, setAllEntries] = useState([])
+    const [latestDate, setLatestDate] = useState([])
+
+    useEffect(() => {
+        const url = Constants.API_URL_LEAD_ENTRIES;
+
+        axios.get(url)
+        .then(res => {
+            setAllEntries(res.data);
+        })
+
+        axios.get([url,'/GetCurrentMonth'].join(''))
+        .then(res => {
+            setLatestDate(res.data.split('-'))
+        })
+    }, [])
 
     const onInputChange = (e) => {
         switch(e.target.name){
@@ -158,42 +174,20 @@ const LeadChart = (props) => {
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Customer Fields</h3>
-                    <PieChart data={GetAllEntries('Field_of_interest', minField, showOthers)} scheme={primaryScheme}/>
+                    <PieChart data={getMedicalField(allEntries, minField, showOthers)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minField} name="minField" type="number" onChange={onInputChange}/></div>
                 </div>
                 <div className={styles.middle_wrapper}>
                     <h3>Status in %</h3>
-                    <PieChart data={GetAllEntries('Lead_Status', showOthers)} scheme={secondaryScheme}/>
+                    <PieChart data={getLeadStatus(allEntries, showOthers)} scheme={secondaryScheme}/>
                 </div>
                 <div className={styles.center_wrapper}>
                     <h3>Lead Requests Over Time</h3>
-                    <LineChart data={GetAllEntries('Lead_Date')} scheme={primaryScheme}/>
+                    <LineChart data={getLeadsOverTime(allEntries)} scheme={primaryScheme}/>
                 </div>
             </div>
         </>
     )
-}
-
-//// GETTER METHODS ////
-function GetAllEntries(type, prop1, prop2){
-    const url = Constants.API_URL_LEAD_ENTRIES;
-    const [entries, setEntries] = useState([])
-
-    useEffect(() => {
-        axios.get(url)
-        .then(res => {
-            setEntries(res.data);
-        })
-    }, [])
-
-    switch(type){
-        case 'Field_of_interest':
-            return getMedicalField(entries, prop1, prop2)
-        case 'Lead_Status':
-            return getLeadStatus(entries, prop1)
-        case 'Lead_Date':
-            return getLeadsOverTime(entries)
-    }
 }
 
 export default LeadChart
