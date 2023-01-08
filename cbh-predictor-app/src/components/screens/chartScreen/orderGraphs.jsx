@@ -119,45 +119,37 @@ function getLabParameter(entries, minParams, maxParams, showOthers2) {
     return data
 }
 
-function getAverageQuantity(entries, minDiagnoses, maxDiagnoses, showOthers2) {
+function getSampleSizes(entries, minSampleSize) {
     const data = []
     var others = 0
 
     entries.map(function(entry){
-        if(data.find(e => e.id === entry.unit)) {
-            data[data.findIndex((e => e.id === entry.unit))].occurrences++
-        } else if(entry.unit != null) {             
+        if(data.find(e => e.id === entry.quantity)) {
+            data[data.findIndex((e => e.id === entry.quantity))].value++
+        } else if(entry.quantity != null) {             
             data.push({
-                id: entry.unit,
-                name: entry.unit,
+                id: entry.quantity,
+                name: entry.quantity,
                 value: 1,
                 occurrences: 1
             })            
         }
     })
 
-    // for(let i = 0; i <= data.length; i++){
-    //     if(data[i]){
-    //         if(data[i].id === "ml"){
-    //             others += data[i].value
-    //             data.splice(i, 1)
-    //             i--
-    //         }
-    //     }
-    // }
-
-    // if(showOtherDiagnoses) {
-    //     data.push({
-    //         id: "others",
-    //         name: "others",
-    //         value: others
-    //     })
-    // }
+    for(let i = 0; i <= data.length; i++){
+        if(data[i]){
+            if(data[i].value < minSampleSize){
+                others += data[i].value
+                data.splice(i, 1)
+                i--
+            }
+        }
+    }
 
     return data
 }
 
-function getResult(entries) {
+function getLabResult(entries, showOthers2) {
     const data = []
 
     entries.map(function(entry){
@@ -169,28 +161,44 @@ function getResult(entries) {
                 name: entry.resultInterpretation,
                 value: 1
             })            
-        }
+        } 
     })
 
     for(let i = 0; i <= data.length; i++){
         if(data[i]){
-            if(data[i].id === null || data[i].id === "detected" || data[i].id === "Detected" || data[i].id === "not detected"){
+            if(data[i].id === null || data[i].id === "detected" || data[i].id === "Detected" || data[i].id === "not detected" || data[i].id ==="Reactive" || data[i].id ==="Not Detected"){
                 data.splice(i, 1)
                 i--
             }
             if(data[i].id === "Positive"){
                 data[data.findIndex((e => e.id === "positive"))].value +=  data[i].value
                 data.splice(i, 1)
-                //i--
+                i--
             }
             if(data[i].id === "Negative"){
                 data[data.findIndex((e => e.id === "negative"))].value +=  data[i].value
                 data.splice(i, 1)
-                //i--
+                i--
             }
-            var _value = data[i].value
-            //data[i].value = Math.trunc(((_value / entries.length - 1) + 1 ) * 100) 
         }
+    }
+    var others = 0
+
+    for(let i = 0; i <= data.length; i++){
+        if(data[i]){
+            data[i].value = Math.round((data[i].value/entries.length + Number.EPSILON) * 100)
+            others += data[i].value
+        }
+    }
+    
+    others = 100 - others
+    
+    if(showOthers2) {
+        data.push({
+            id: "others",
+            name: "others",
+            value: others
+        })
     }
 
     return data
@@ -204,11 +212,11 @@ function getOrders(entries) {
     }]
 
     entries.map(function(entry){
-        if(data[0].data.find(e => e.x === truncateTime(entry.orderDate))) {
-            data[0].data[data[0].data.findIndex((e => e.x === truncateTime(entry.orderDate)))].y++
+        if(data[0].data.find(e => e.x === truncateTimeMonth(entry.orderDate))) {
+            data[0].data[data[0].data.findIndex((e => e.x === truncateTimeMonth(entry.orderDate)))].y++
         } else {
             data[0].data.push({
-                x: truncateTime(entry.orderDate),
+                x: truncateTimeMonth(entry.orderDate),
                 y: 1
             })
         }
@@ -218,18 +226,19 @@ function getOrders(entries) {
     return data
 }
 
-function truncateTime(str) {
-    return str.slice(0, 10)
+function truncateTimeMonth(str) {
+    return str.slice(0, 7)
 } 
 
 //// RENDER VIEW ////
 const OrderChart = (props) => {
     const [minMatrix, setMinMatrix] = useState(150)
-    const [maxMatrix, setMaxMatrix] = useState(400)
+    const [maxMatrix, setMaxMatrix] = useState(7000)
     const [minParams, setMinParams] = useState(150)
     const [maxParams, setMaxParams] = useState(1000)
     const [minDiagnoses, setMinDiagnoses] = useState(150)
-    const [maxDiagnoses, setMaxDiagnoses] = useState(400)
+    const [maxDiagnoses, setMaxDiagnoses] = useState(800)
+    const [minSampleSize, setMinSampleSize] = useState(250)
     const [showOthers1, setShowOthers1] = useState(false)
     const [showOthers2, setShowOthers2] = useState(false)    
     const [allEntries, setAllEntries] = useState([])
@@ -269,6 +278,9 @@ const OrderChart = (props) => {
             case 'maxDiagnoses':
                 setMaxDiagnoses(e.target.value)
                 return
+            case 'minSampleSize':
+                setMinSampleSize(e.target.value)
+                return
             default:
                 return
         }
@@ -278,7 +290,7 @@ const OrderChart = (props) => {
         <>
             <button onClick={() => {props.setShowGraphs(false); props.setActiveTable('')}} className={styles.button_backarrow}>&#60;</button>        
             {/* First Block */}
-            <div className={styles.grid_container_2_items}>
+            <div className={styles.grid_container_3_items}>
                 <div className={styles.settings}>
                     Period:
                     <select>
@@ -290,16 +302,21 @@ const OrderChart = (props) => {
                     <input type="checkbox" onChange={() => setShowOthers1(!showOthers1)}></input>
                 </div>
                 <div className={styles.left_wrapper}>
-                    <h3>Matrix</h3>
+                    <h3>Frequent Matrices</h3>
                     <PieChart data={getMatrices(allEntries, minMatrix, maxMatrix, showOthers1)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minMatrix} name="minMatrix" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxMatrix} name="maxMatrix" type="number" onChange={onInputChange}/></div>
                 </div>
                 <div className={styles.middle_wrapper}>
-                    <h3>Diagnosis</h3>
+                    <h3>Frequent Diagnoses</h3>
                     <PieChart data={getDiagnosis(allEntries, minDiagnoses, maxDiagnoses, showOthers1)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxDiagnoses} name="maxDiagnoses" type="number" onChange={onInputChange}/></div>
                 </div>
-            </div>        
+                <div className={styles.right_wrapper}>
+                    <h3>Frequent Sample Sizes (in ml)</h3>
+                    <PieChart data={getSampleSizes(allEntries, minSampleSize, showOthers1)} scheme={primaryScheme}/>
+                    <div className={styles.min}>Min: <input className={styles.min_input} value={minSampleSize} name="minSampleSize" type="number" onChange={onInputChange}/> </div>
+                </div>
+            </div>
             {/* Second Block */}
             <div className={styles.grid_container_2_items}>
                 <div className={styles.settings}>
@@ -319,8 +336,8 @@ const OrderChart = (props) => {
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxParams} name="maxParams" type="number" onChange={onInputChange}/></div>
                 </div>
                 <div className={styles.middle_wrapper}>
-                    <h3>Lab Result</h3>
-                    <PieChart data={getResult(allEntries, minDiagnoses, maxDiagnoses, showOthers1)} scheme={primaryScheme}/>
+                    <h3>Lab Results (in %)</h3>
+                    <PieChart data={getLabResult(allEntries, showOthers2)} scheme={primaryScheme}/>
                 </div>
             </div>
             {/* Third Block */}

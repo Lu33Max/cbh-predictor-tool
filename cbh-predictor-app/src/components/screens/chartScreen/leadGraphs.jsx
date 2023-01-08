@@ -104,11 +104,11 @@ function getLeadsOverTime(entries) {
     }]
 
     entries.map(function(entry){
-        if(data[0].data.find(e => e.x === truncateTime(entry.leadDate))) {
-            data[0].data[data[0].data.findIndex((e => e.x === truncateTime(entry.leadDate)))].y++
+        if(data[0].data.find(e => e.x === truncateTimeMonth(entry.leadDate))) {
+            data[0].data[data[0].data.findIndex((e => e.x === truncateTimeMonth(entry.leadDate)))].y++
         } else {
             data[0].data.push({
-                x: truncateTime(entry.leadDate),
+                x: truncateTimeMonth(entry.leadDate),
                 y: 1
             })
         }
@@ -118,8 +118,8 @@ function getLeadsOverTime(entries) {
     return data
 }
 
-function truncateTime(str) {
-    return str.slice(0, 10)
+function truncateTimeMonth(str) {
+    return str.slice(0, 7)
 } 
 
 //// RENDER VIEW ////
@@ -178,7 +178,7 @@ const LeadChart = (props) => {
                     <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minField} name="minField" type="number" onChange={onInputChange}/></div>
                 </div>
                 <div className={styles.middle_wrapper}>
-                    <h3>Status in %</h3>
+                    <h3>Lead Status in %</h3>
                     <PieChart data={getLeadStatus(allEntries, showOthers)} scheme={secondaryScheme}/>
                 </div>
                 <div className={styles.center_wrapper}>
