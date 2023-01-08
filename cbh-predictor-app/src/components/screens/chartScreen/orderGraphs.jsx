@@ -270,41 +270,64 @@ const OrderChart = (props) => {
 
     return(
         <>
-        <button onClick={() => {props.setShowGraphs(false); props.setActiveTable('')}} className={styles.button_backarrow}>&#60;</button>
-        <div className={styles.grid_container_3_items_3_rows}>
+            <button onClick={() => {props.setShowGraphs(false); props.setActiveTable('')}} className={styles.button_backarrow}>&#60;</button>        
+            {/* First Block */}
+            <div className={styles.grid_container_2_items}>
+                <div className={styles.settings}>
+                    Period:
+                    <select>
+                        <option defaultValue={true}>Last 3 Months</option>
+                        <option>Last Year</option>
+                        <option>All Time</option>
+                    </select>
+                </div>
+                <div className={styles.left_wrapper}>
+                    <h3>Matrix</h3>
+                    <PieChart data={GetAllEntries('matrix', minMatrix, maxMatrix, showOtherMatrices)} scheme={primaryScheme}/>
+                    <div className={styles.min}>Min: <input className={styles.min_input} value={minMatrix} name="minMatrix" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxMatrix} name="maxMatrix" type="number" onChange={onInputChange}/></div>
+                    <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherMatrices} name="showOtherMatrices" onChange={onInputChange}/> </div>
+                </div>
+                <div className={styles.middle_wrapper}>
+                    <h3>Diagnosis</h3>
+                    <PieChart data={GetAllEntries('diagnosis', minDiagnoses, maxDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
+                    <div className={styles.min}>Min: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxDiagnoses} name="maxDiagnoses" type="number" onChange={onInputChange}/></div>
+                    <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherDiagnoses} name="showOtherDiagnoses" onChange={onInputChange}/> </div>
+                </div>
+            </div>        
+            {/* Second Block */}
+            <div className={styles.grid_container_2_items}>
+                <div className={styles.settings}>
+                    Period:
+                    <select>
+                        <option defaultValue={true}>Last Month</option>
+                        <option>Last 3 Months</option>
+                        <option>Last Year</option>
+                    <   option>All Time</option>
+                    </select>
+                </div>
+                <div className={styles.left_wrapper}>
+                    <h3>Lab Parameters</h3>
+                    <PieChart data={GetAllEntries('labParameter', minParams, maxParams, showOtherParams)} scheme={secondaryScheme}/>
+                    <div className={styles.min}>Min: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxParams} name="maxParams" type="number" onChange={onInputChange}/></div>
+                    <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherParams} name="showOtherParams" onChange={onInputChange}/> </div>
+                </div>
+                <div className={styles.middle_wrapper}>
+                    <h3>Lab Result</h3>
+                    <PieChart data={GetAllEntries('Result_Interpretation', minDiagnoses, maxDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
+                </div>
+            </div>
+            <div className={styles.grid_container_3_items_1_rows}>
             <div className={styles.settings}>
-                Period:
-                <select>
-                    <option defaultValue={true}>Last Month</option>
-                    <option>Last 3 Months</option>
-                    <option>Last Year</option>
-                    <option>All Time</option>
-                </select>
-            </div>
-            <div className={styles.left_wrapper}>
-                <h3>Matrix</h3>
-                <PieChart data={GetAllEntries('matrix', minMatrix, maxMatrix, showOtherMatrices)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min: <input className={styles.min_input} value={minMatrix} name="minMatrix" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxMatrix} name="maxMatrix" type="number" onChange={onInputChange}/></div>
-                <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherMatrices} name="showOtherMatrices" onChange={onInputChange}/> </div>
-            </div>
-            <div className={styles.middle_wrapper}>
-                <h3>Lab Parameters</h3>
-                <PieChart data={GetAllEntries('labParameter', minParams, maxParams, showOtherParams)} scheme={secondaryScheme}/>
-                <div className={styles.min}>Min: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxParams} name="maxParams" type="number" onChange={onInputChange}/></div>
-                <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherParams} name="showOtherParams" onChange={onInputChange}/> </div>
-
-            </div>
-            {/*<div className={styles.right_wrapper}>
-                <h3>Diagnosis</h3>
-                <PieChart data={GetAllEntries('diagnosis', minDiagnoses, maxDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
-                <div className={styles.min}>Min: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxDiagnoses} name="maxDiagnoses" type="number" onChange={onInputChange}/></div>
-                <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherDiagnoses} name="showOtherDiagnoses" onChange={onInputChange}/> </div>
-            </div>*/}
-            <div className={styles.right_wrapper}>
-                <h3>Lab Result</h3>
-                <PieChart data={GetAllEntries('Result_Interpretation', minDiagnoses, maxDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
-            </div>
-            <div className={styles.center_wrapper}>
+                    Period:
+                    <select>
+                        <option defaultValue={true}>Last Month</option>
+                        <option>Last 3 Months</option>
+                        <option>Last Year</option>
+                    <   option>All Time</option>
+                    </select>
+                </div>
+                <div className={styles.center_wrapper_top}>
+                <br/>
                 <h3>Orders Over Time</h3>
                 <LineChart data={GetAllEntries('date')} scheme={primaryScheme}/>
             </div>
