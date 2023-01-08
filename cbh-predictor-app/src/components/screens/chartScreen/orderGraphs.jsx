@@ -198,16 +198,14 @@ function GetLabResult(entries, showOthers) {
 
         for(let i = 0; i <= newData.length; i++){
             if(newData[i]){
-                if(newData[i].id === null || newData[i].id === "detected" || newData[i].id === "Detected" || newData[i].id === "not detected" || newData[i].id ==="Reactive" || newData[i].id ==="Not Detected"){
+                if(!(newData[i].id.toLowerCase() === "positive") && !(newData[i].id.toLowerCase() === "negative")){
                     newData.splice(i, 1)
                     i--
-                }
-                if(newData[i].id === "Positive"){
+                } else if(newData[i].id === "Positive"){
                     newData[newData.findIndex((e => e.id === "positive"))].value +=  newData[i].value
                     newData.splice(i, 1)
                     i--
-                }
-                if(newData[i].id === "Negative"){
+                } else if(newData[i].id === "Negative"){
                     newData[newData.findIndex((e => e.id === "negative"))].value +=  newData[i].value
                     newData.splice(i, 1)
                     i--

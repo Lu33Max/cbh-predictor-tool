@@ -30,13 +30,8 @@ function GetMedicalField(entries, minField, showOthers) {
 
         for(let i = 0; i <= newData.length; i++){
             if(newData[i]){
-                if(newData[i].value < minField || newData[i].id === null){
+                if(newData[i].value < minField || newData[i].id === null || newData[i].id === "Other"){
                     others += newData[i].value
-                    newData.splice(i, 1)
-                    i--
-                }
-                if(newData[i].id === "Other"){
-                    others +=  newData[i].value
                     newData.splice(i, 1)
                     i--
                 }
@@ -77,18 +72,14 @@ function GetLeadStatus(entries, showOthers) {
 
         for(let i = 0; i <= newData.length; i++){
             if(newData[i]){
-                if(newData[i].id === null){
+                if(newData[i].id === null || newData[i].id === "Other"){
                     others += newData[i].value
                     newData.splice(i, 1)
                     i--
+                } else {
+                    var _value = newData[i].value
+                    newData[i].value = Math.trunc(((_value / entries.length - 1) + 1 ) * 100)
                 }
-                if(newData[i].id === "Other"){
-                    others +=  newData[i].value
-                    newData.splice(i, 1)
-                    //i--
-                }
-                var _value = newData[i].value
-                newData[i].value = Math.trunc(((_value / entries.length - 1) + 1 ) * 100) 
             }
         }
 
