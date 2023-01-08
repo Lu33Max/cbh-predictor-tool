@@ -9,111 +9,129 @@ var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6'
 var secondaryScheme = ['#d15454','#e16c7c','#ec86a1','#f4a2c3','#f9bee1','#ffd9fa','#e6b2e3','#cc8bce','#b066bb','#9140a8','#711496']
 
 //// MAPPING FUNCTIONS ////
-function getMedicalField(entries, minField, showOthers) {
-    const data = []
-    var others = 0
+function GetMedicalField(entries, minField, showOthers) {
+    const [data, setData] = useState([])
 
-    entries.map(function(entry){
-        if(data.find(e => e.id === entry.fieldOfInterest)) {
-            data[data.findIndex((e => e.id === entry.fieldOfInterest))].value++
-        } else {
-            data.push({
-                id: entry.fieldOfInterest,
-                name: entry.fieldOfInterest,
-                value: 1
+    useEffect(() => {
+        const newData = []
+        var others = 0
+
+        entries.map(function(entry){
+            if(newData.find(e => e.id === entry.fieldOfInterest)) {
+                newData[newData.findIndex((e => e.id === entry.fieldOfInterest))].value++
+            } else {
+                newData.push({
+                    id: entry.fieldOfInterest,
+                    name: entry.fieldOfInterest,
+                    value: 1
+                })
+            }
+        })
+
+        for(let i = 0; i <= newData.length; i++){
+            if(newData[i]){
+                if(newData[i].value < minField || newData[i].id === null){
+                    others += newData[i].value
+                    newData.splice(i, 1)
+                    i--
+                }
+                if(newData[i].id === "Other"){
+                    others +=  newData[i].value
+                    newData.splice(i, 1)
+                    i--
+                }
+            }
+        }
+
+        if(showOthers) {
+            newData.push({
+                id: "others",
+                name: "others",
+                value: others
             })
         }
-    })
-
-    for(let i = 0; i <= data.length; i++){
-        if(data[i]){
-            if(data[i].value < minField || data[i].id === null){
-                others += data[i].value
-                data.splice(i, 1)
-                i--
-            }
-            if(data[i].id === "Other"){
-                others +=  data[i].value
-                data.splice(i, 1)
-                i--
-            }
-        }
-    }
-
-    if(showOthers) {
-        data.push({
-            id: "others",
-            name: "others",
-            value: others
-        })
-    }
+        setData(newData)
+    },[entries, minField, showOthers])
 
     return data
 }
 
-function getLeadStatus(entries, showOthers) {
-    const data = []
-    var others = 0    
+function GetLeadStatus(entries, showOthers) {
+    const [data, setData] = useState([])
 
-    entries.map(function(entry){
-        if(data.find(e => e.id === entry.leadStatus)) {
-            data[data.findIndex((e => e.id === entry.leadStatus))].value++
-        } else {
-            data.push({
-                id: entry.leadStatus,
-                name: entry.leadStatus,
-                value: 1
-            })
-        }
-    })
+    useEffect(() => {
+        const newData = []
+        var others = 0    
 
-    for(let i = 0; i <= data.length; i++){
-        if(data[i]){
-            if(data[i].id === null){
-                others += data[i].value
-                data.splice(i, 1)
-                i--
+        entries.map(function(entry){
+            if(newData.find(e => e.id === entry.leadStatus)) {
+                newData[newData.findIndex((e => e.id === entry.leadStatus))].value++
+            } else {
+                newData.push({
+                    id: entry.leadStatus,
+                    name: entry.leadStatus,
+                    value: 1
+                })
             }
-            if(data[i].id === "Other"){
-                others +=  data[i].value
-                data.splice(i, 1)
-                //i--
-            }
-            var _value = data[i].value
-            data[i].value = Math.trunc(((_value / entries.length - 1) + 1 ) * 100) 
-        }
-    }
-
-    if(showOthers) {
-        data.push({
-            id: "others",
-            name: "others",
-            value: others
         })
-        data[data.findIndex((e => e.id === "others"))].value = Math.trunc(((_value / entries.length - 1) + 1 ) * 100) 
-    }
+
+        for(let i = 0; i <= newData.length; i++){
+            if(newData[i]){
+                if(newData[i].id === null){
+                    others += newData[i].value
+                    newData.splice(i, 1)
+                    i--
+                }
+                if(newData[i].id === "Other"){
+                    others +=  newData[i].value
+                    newData.splice(i, 1)
+                    //i--
+                }
+                var _value = newData[i].value
+                newData[i].value = Math.trunc(((_value / entries.length - 1) + 1 ) * 100) 
+            }
+        }
+
+        if(showOthers) {
+            newData.push({
+                id: "others",
+                name: "others",
+                value: others
+            })
+            newData[newData.findIndex((e => e.id === "others"))].value = Math.trunc(((_value / entries.length - 1) + 1 ) * 100) 
+        }
+
+        setData(newData)
+    }, [entries, showOthers])
 
     return data
 }
 
-function getLeadsOverTime(entries) {
-    const data = [{
-        id: "dates",
-        color: "hsl(48, 70%, 50%)",
-        data: []
-    }]
+function GetLeadsOverTime(entries) {
+    const [data, setData] = useState([])
 
-    entries.map(function(entry){
-        if(data[0].data.find(e => e.x === truncateTimeMonth(entry.leadDate))) {
-            data[0].data[data[0].data.findIndex((e => e.x === truncateTimeMonth(entry.leadDate)))].y++
-        } else {
-            data[0].data.push({
-                x: truncateTimeMonth(entry.leadDate),
-                y: 1
-            })
-        }
-    })
-      data.sort((a,b) => a[1] - b[1]);
+    useEffect(() => {
+        const newData = [{
+            id: "dates",
+            color: "hsl(48, 70%, 50%)",
+            data: []
+        }]
+
+        entries.map(function(entry){
+            if(entry.leadDate){
+                if(newData[0].data.find(e => e.x === truncateTimeMonth(entry.leadDate))) {
+                    newData[0].data[newData[0].data.findIndex((e => e.x === truncateTimeMonth(entry.leadDate)))].y++
+                } else {
+                    newData[0].data.push({
+                        x: truncateTimeMonth(entry.leadDate),
+                        y: 1
+                    })
+                }
+            }
+        })
+
+        setData(newData)
+    }, [entries])
 
     return data
 }
@@ -128,7 +146,6 @@ const LeadChart = (props) => {
     const [showOtherFields, setShowOtherFields] = useState(false)
     const [showOthers, setShowOthers] = useState(true)
     const [allEntries, setAllEntries] = useState([])
-    const [latestDate, setLatestDate] = useState([])
 
     useEffect(() => {
         const url = Constants.API_URL_LEAD_ENTRIES;
@@ -138,10 +155,6 @@ const LeadChart = (props) => {
             setAllEntries(res.data);
         })
 
-        axios.get([url,'/GetCurrentMonth'].join(''))
-        .then(res => {
-            setLatestDate(res.data.split('-'))
-        })
     }, [])
 
     const onInputChange = (e) => {
@@ -174,16 +187,16 @@ const LeadChart = (props) => {
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Customer Fields</h3>
-                    <PieChart data={getMedicalField(allEntries, minField, showOthers)} scheme={primaryScheme}/>
+                    <PieChart data={GetMedicalField(allEntries, minField, showOthers)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min. Occurrences: <input className={styles.min_input} value={minField} name="minField" type="number" onChange={onInputChange}/></div>
                 </div>
                 <div className={styles.middle_wrapper}>
                     <h3>Lead Status in %</h3>
-                    <PieChart data={getLeadStatus(allEntries, showOthers)} scheme={secondaryScheme}/>
+                    <PieChart data={GetLeadStatus(allEntries, showOthers)} scheme={secondaryScheme}/>
                 </div>
                 <div className={styles.center_wrapper}>
                     <h3>Lead Requests Over Time</h3>
-                    <LineChart data={getLeadsOverTime(allEntries)} scheme={primaryScheme}/>
+                    <LineChart data={GetLeadsOverTime(allEntries)} scheme={primaryScheme}/>
                 </div>
             </div>
         </>

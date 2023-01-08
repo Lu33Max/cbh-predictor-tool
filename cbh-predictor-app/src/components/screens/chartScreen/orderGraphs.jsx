@@ -9,220 +9,259 @@ var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6'
 var secondaryScheme = ['#d15454','#e16c7c','#ec86a1','#f4a2c3','#f9bee1','#ffd9fa','#e6b2e3','#cc8bce','#b066bb','#9140a8','#711496']
 
 //// MAPPING FUNCTIONS ////
-function getMatrices(entries, minMatrix, maxMatrix, showOthers1) {
-    const data = []
-    var others = 0
+function GetMatrices(entries, minMatrix, maxMatrix, showOthers) {
+    const [data, setData] = useState([])
 
-    entries.map(function(entry){
-        if(data.find(e => e.id === entry.matrix)) {
-            data[data.findIndex((e => e.id === entry.matrix))].value++
-        } else {
-            data.push({
-                id: entry.matrix,
-                name: entry.matrix,
-                value: 1
+    useEffect(() => {
+        console.log("Rerender1")
+        const newData = []
+        var others = 0
+
+        entries.map(function(entry){
+            if(newData.find(e => e.id === entry.matrix)) {
+                newData[newData.findIndex((e => e.id === entry.matrix))].value++
+            } else {
+                newData.push({
+                    id: entry.matrix,
+                    name: entry.matrix,
+                    value: 1
+                })
+            }
+        })
+
+        for(let i = 0; i <= newData.length; i++){
+            if(newData[i]){
+                if(newData[i].value < minMatrix || newData[i].value > maxMatrix){
+                    others += newData[i].value
+                    newData.splice(i, 1)
+                    i--
+                }
+            }
+        }
+
+        if(showOthers) {
+            newData.push({
+                id: "others",
+                name: "others",
+                value: others
             })
         }
-    })
 
-    for(let i = 0; i <= data.length; i++){
-        if(data[i]){
-            if(data[i].value < minMatrix || data[i].value > maxMatrix){
-                others += data[i].value
-                data.splice(i, 1)
-                i--
-            }
-        }
-    }
-
-    if(showOthers1) {
-        data.push({
-            id: "others",
-            name: "others",
-            value: others
-        })
-    }
-    return data
-}
-
-function getDiagnosis(entries, minDiagnoses, maxDiagnoses, showOthers1) {
-    const data = []
-    var others = 0
-
-    entries.map(function(entry){
-        if(data.find(e => e.id === entry.diagnosis)) {
-            data[data.findIndex((e => e.id === entry.diagnosis))].value++
-        } else if(entry.diagnosis != null) {             
-            data.push({
-                id: entry.diagnosis,
-                name: entry.diagnosis,
-                value: 1
-            })            
-        }
-    })
-
-    for(let i = 0; i <= data.length; i++){
-        if(data[i]){
-            if(data[i].value < minDiagnoses || data[i].value > maxDiagnoses){
-                others += data[i].value
-                data.splice(i, 1)
-                i--
-            }
-        }
-    }
-
-    if(showOthers1) {
-        data.push({
-            id: "others",
-            name: "others",
-            value: others
-        })
-    }
+        setData(newData)
+    }, [entries, minMatrix, maxMatrix, showOthers])
 
     return data
 }
 
-function getLabParameter(entries, minParams, maxParams, showOthers2) {
-    const data = []
-    var others = 0
+function GetDiagnosis(entries, minDiagnoses, maxDiagnoses, showOthers) {
+    const [data, setData] = useState([])
 
-    entries.map(function(entry){
-        if(data.find(e => e.id === entry.labParameter)) {
-            data[data.findIndex((e => e.id === entry.labParameter))].value++
-        } else if (entry.labParameter != null) {
-            data.push({
-                id: entry.labParameter,
-                name: entry.labParameter,
-                value: 1
+    useEffect(() => {
+        console.log("Rerender2")
+        const newData = []
+        var others = 0
+
+        entries.map(function(entry){
+            if(newData.find(e => e.id === entry.diagnosis)) {
+                newData[newData.findIndex((e => e.id === entry.diagnosis))].value++
+            } else if(entry.diagnosis != null) {             
+                newData.push({
+                    id: entry.diagnosis,
+                    name: entry.diagnosis,
+                    value: 1
+                })            
+            }
+        })
+
+        for(let i = 0; i <= newData.length; i++){
+            if(newData[i]){
+                if(newData[i].value < minDiagnoses || newData[i].value > maxDiagnoses){
+                    others += newData[i].value
+                    newData.splice(i, 1)
+                    i--
+                }
+            }
+        }
+
+        if(showOthers) {
+            newData.push({
+                id: "others",
+                name: "others",
+                value: others
             })
         }
-    })
 
-    for(let i = 0; i <= data.length; i++){
-        if(data[i]){
-            if(data[i].value < minParams || data[i].value > maxParams){
-                others += data[i].value
-                data.splice(i, 1)
-                i--
+        setData(newData)
+    }, [entries, minDiagnoses, maxDiagnoses, showOthers])
+
+    return data
+}
+
+function GetLabParameter(entries, minParams, maxParams, showOthers) {
+    const [data, setData] = useState([])
+
+    useEffect(() => {
+        console.log("Rerender3")
+        const newData = []
+        var others = 0
+
+        entries.map(function(entry){
+            if(newData.find(e => e.id === entry.labParameter)) {
+                newData[newData.findIndex((e => e.id === entry.labParameter))].value++
+            } else if (entry.labParameter != null) {
+                newData.push({
+                    id: entry.labParameter,
+                    name: entry.labParameter,
+                    value: 1
+                })
             }
-        }
-    }
-
-    if(showOthers2) {
-        data.push({
-            id: "others",
-            name: "others",
-            value: others
         })
-    }
 
-    return data
-}
-
-function getSampleSizes(entries, minSampleSize) {
-    const data = []
-    var others = 0
-
-    entries.map(function(entry){
-        if(data.find(e => e.id === entry.quantity)) {
-            data[data.findIndex((e => e.id === entry.quantity))].value++
-        } else if(entry.quantity != null) {             
-            data.push({
-                id: entry.quantity,
-                name: entry.quantity,
-                value: 1,
-                occurrences: 1
-            })            
-        }
-    })
-
-    for(let i = 0; i <= data.length; i++){
-        if(data[i]){
-            if(data[i].value < minSampleSize){
-                others += data[i].value
-                data.splice(i, 1)
-                i--
+        for(let i = 0; i <= newData.length; i++){
+            if(newData[i]){
+                if(newData[i].value < minParams || newData[i].value > maxParams){
+                    others += newData[i].value
+                    newData.splice(i, 1)
+                    i--
+                }
             }
         }
-    }
 
-    return data
-}
-
-function getLabResult(entries, showOthers2) {
-    const data = []
-
-    entries.map(function(entry){
-        if(data.find(e => e.id === entry.resultInterpretation)) {
-            data[data.findIndex((e => e.id === entry.resultInterpretation))].value++
-        } else if(entry.resultInterpretation != null) {             
-            data.push({
-                id: entry.resultInterpretation,
-                name: entry.resultInterpretation,
-                value: 1
-            })            
-        } 
-    })
-
-    for(let i = 0; i <= data.length; i++){
-        if(data[i]){
-            if(data[i].id === null || data[i].id === "detected" || data[i].id === "Detected" || data[i].id === "not detected" || data[i].id ==="Reactive" || data[i].id ==="Not Detected"){
-                data.splice(i, 1)
-                i--
-            }
-            if(data[i].id === "Positive"){
-                data[data.findIndex((e => e.id === "positive"))].value +=  data[i].value
-                data.splice(i, 1)
-                i--
-            }
-            if(data[i].id === "Negative"){
-                data[data.findIndex((e => e.id === "negative"))].value +=  data[i].value
-                data.splice(i, 1)
-                i--
-            }
-        }
-    }
-    var others = 0
-
-    for(let i = 0; i <= data.length; i++){
-        if(data[i]){
-            data[i].value = Math.round((data[i].value/entries.length + Number.EPSILON) * 100)
-            others += data[i].value
-        }
-    }
-    
-    others = 100 - others
-    
-    if(showOthers2) {
-        data.push({
-            id: "others",
-            name: "others",
-            value: others
-        })
-    }
-
-    return data
-}
-
-function getOrders(entries) {
-    const data = [{
-        id: "dates",
-        color: "hsl(48, 70%, 50%)",
-        data: []
-    }]
-
-    entries.map(function(entry){
-        if(data[0].data.find(e => e.x === truncateTimeMonth(entry.orderDate))) {
-            data[0].data[data[0].data.findIndex((e => e.x === truncateTimeMonth(entry.orderDate)))].y++
-        } else {
-            data[0].data.push({
-                x: truncateTimeMonth(entry.orderDate),
-                y: 1
+        if(showOthers) {
+            newData.push({
+                id: "others",
+                name: "others",
+                value: others
             })
         }
-    })
-    data[0].data.sort((a,b) => a[1] - b[1]);
 
+        setData(newData)
+    }, [entries, minParams, maxParams, showOthers])
+
+    return data
+}
+
+function GetSampleSizes(entries, minSampleSize) {
+    const [data, setData] = useState([])
+
+    useEffect(() => {
+        console.log("Rerender4")
+        const newData = []
+        var others = 0
+
+        entries.map(function(entry){
+            if(newData.find(e => e.id === entry.quantity)) {
+                newData[newData.findIndex((e => e.id === entry.quantity))].value++
+            } else if(entry.quantity != null) {             
+                newData.push({
+                    id: entry.quantity,
+                    name: entry.quantity,
+                    value: 1,
+                })            
+            }
+        })
+
+        for(let i = 0; i <= newData.length; i++){
+            if(newData[i]){
+                if(newData[i].value < minSampleSize){
+                    others += newData[i].value
+                    newData.splice(i, 1)
+                    i--
+                }
+            }
+        }
+
+        setData(newData)
+    }, [entries, minSampleSize])
+
+    return data
+}
+
+function GetLabResult(entries, showOthers) {
+    const [data, setData] = useState([])
+
+    useEffect(() => {
+        console.log("Rerender5")
+        const newData = []
+
+        entries.map(function(entry){
+            if(newData.find(e => e.id === entry.resultInterpretation)) {
+                newData[newData.findIndex((e => e.id === entry.resultInterpretation))].value++
+            } else if(entry.resultInterpretation != null) {             
+                newData.push({
+                    id: entry.resultInterpretation,
+                    name: entry.resultInterpretation,
+                    value: 1
+                })            
+            } 
+        })
+
+        for(let i = 0; i <= newData.length; i++){
+            if(newData[i]){
+                if(newData[i].id === null || newData[i].id === "detected" || newData[i].id === "Detected" || newData[i].id === "not detected" || newData[i].id ==="Reactive" || newData[i].id ==="Not Detected"){
+                    newData.splice(i, 1)
+                    i--
+                }
+                if(newData[i].id === "Positive"){
+                    newData[newData.findIndex((e => e.id === "positive"))].value +=  newData[i].value
+                    newData.splice(i, 1)
+                    i--
+                }
+                if(newData[i].id === "Negative"){
+                    newData[newData.findIndex((e => e.id === "negative"))].value +=  newData[i].value
+                    newData.splice(i, 1)
+                    i--
+                }
+            }
+        }
+        var others = 0
+
+        for(let i = 0; i <= newData.length; i++){
+            if(newData[i]){
+                newData[i].value = Math.round((newData[i].value/entries.length + Number.EPSILON) * 100)
+                others += newData[i].value
+            }
+        }
+        
+        others = 100 - others
+        
+        if(showOthers) {
+            newData.push({
+                id: "others",
+                name: "others",
+                value: others
+            })
+        }
+
+        setData(newData)
+    }, [entries, showOthers])
+
+    return data
+}
+
+function GetOrders(entries) {
+    const [data, setData] = useState([])
+
+    useEffect(() => {
+        console.log("Rerender6")
+        const newData = [{
+            id: "dates",
+            color: "hsl(48, 70%, 50%)",
+            data: []
+        }]
+
+        entries.map(function(entry){
+            if(newData[0].data.find(e => e.x === truncateTimeMonth(entry.orderDate))) {
+                newData[0].data[newData[0].data.findIndex((e => e.x === truncateTimeMonth(entry.orderDate)))].y++
+            } else {
+                newData[0].data.push({
+                    x: truncateTimeMonth(entry.orderDate),
+                    y: 1
+                })
+            }
+        })
+        setData(newData)
+    }, [entries])
     return data
 }
 
@@ -242,7 +281,6 @@ const OrderChart = (props) => {
     const [showOthers1, setShowOthers1] = useState(false)
     const [showOthers2, setShowOthers2] = useState(false)    
     const [allEntries, setAllEntries] = useState([])
-    const [latestDate, setLatestDate] = useState([])
 
     useEffect(() => {
         const url = Constants.API_URL_ORDER_ENTRIES;
@@ -252,10 +290,6 @@ const OrderChart = (props) => {
             setAllEntries(res.data);
         })
 
-        axios.get([url,'/GetCurrentMonth'].join(''))
-        .then(res => {
-            setLatestDate(res.data.split('-'))
-        })
     }, [])
 
     const onInputChange = (e) => {
@@ -303,17 +337,17 @@ const OrderChart = (props) => {
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Frequent Matrices</h3>
-                    <PieChart data={getMatrices(allEntries, minMatrix, maxMatrix, showOthers1)} scheme={primaryScheme}/>
+                    <PieChart data={GetMatrices(allEntries, minMatrix, maxMatrix, showOthers1)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minMatrix} name="minMatrix" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxMatrix} name="maxMatrix" type="number" onChange={onInputChange}/></div>
                 </div>
                 <div className={styles.middle_wrapper}>
                     <h3>Frequent Diagnoses</h3>
-                    <PieChart data={getDiagnosis(allEntries, minDiagnoses, maxDiagnoses, showOthers1)} scheme={primaryScheme}/>
+                    <PieChart data={GetDiagnosis(allEntries, minDiagnoses, maxDiagnoses, showOthers1)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxDiagnoses} name="maxDiagnoses" type="number" onChange={onInputChange}/></div>
                 </div>
                 <div className={styles.right_wrapper}>
                     <h3>Frequent Sample Sizes (in ml)</h3>
-                    <PieChart data={getSampleSizes(allEntries, minSampleSize, showOthers1)} scheme={primaryScheme}/>
+                    <PieChart data={GetSampleSizes(allEntries, minSampleSize, showOthers1)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minSampleSize} name="minSampleSize" type="number" onChange={onInputChange}/> </div>
                 </div>
             </div>
@@ -332,12 +366,12 @@ const OrderChart = (props) => {
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Lab Parameters</h3>
-                    <PieChart data={getLabParameter(allEntries, minParams, maxParams, showOthers2)} scheme={secondaryScheme}/>
+                    <PieChart data={GetLabParameter(allEntries, minParams, maxParams, showOthers2)} scheme={secondaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxParams} name="maxParams" type="number" onChange={onInputChange}/></div>
                 </div>
                 <div className={styles.middle_wrapper}>
                     <h3>Lab Results (in %)</h3>
-                    <PieChart data={getLabResult(allEntries, showOthers2)} scheme={primaryScheme}/>
+                    <PieChart data={GetLabResult(allEntries, showOthers2)} scheme={primaryScheme}/>
                 </div>
             </div>
             {/* Third Block */}
@@ -354,7 +388,7 @@ const OrderChart = (props) => {
                 <div className={styles.center_wrapper_top}>
                 <br/>
                 <h3>Orders Over Time</h3>
-                <LineChart data={getOrders(allEntries)} scheme={primaryScheme}/>
+                <LineChart data={GetOrders(allEntries)} scheme={primaryScheme}/>
             </div>
         </div>
     </>
