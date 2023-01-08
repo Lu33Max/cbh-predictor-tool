@@ -26,7 +26,7 @@
   box-shadow: 0 4px 20px rgb(2, 4, 2);
 }
 
-.grid_container_3_items_1_rows {
+.grid_container_3_items_1_row {
   display: grid;
   width: 100%;
   text-align: center;
@@ -46,7 +46,7 @@
   text-align: center;
   margin-bottom: 2%;
   grid-template-columns: 50% 50%;
-  grid-template-rows: auto 65vh;
+  grid-template-rows: auto 60vh;
   background-color: #eeeeee;
   border-radius: 25px;
   backdrop-filter: blur(6px);

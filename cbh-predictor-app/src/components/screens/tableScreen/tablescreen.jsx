@@ -50,7 +50,7 @@ const TableScreen = () => {
                                         }
                                     }
                                 } else {
-                                    if(allEntries[j][filters[i].val1].toString().includes(filters[i].val2)){
+                                    if((allEntries[j][filters[i].val1] + "").toLocaleLowerCase.includes(filters[i].val2)){
                                         if(!newEntries.find(e => e.id === allEntries[j].id)){
                                             newEntries.push(allEntries[j])
                                         }
@@ -100,7 +100,7 @@ const TableScreen = () => {
                                         }
                                     }
                                 } else {
-                                    if(filtered[m][filters[i].val1].toString().includes(filters[i].val2)){
+                                    if((filtered[m][filters[i].val1] + "").includes(filters[i].val2)){
                                         if(!newEntries.find(e => e.id === filtered[m].id)){
                                             newEntries.push(filtered[m])
                                         }
@@ -203,12 +203,12 @@ const TableScreen = () => {
                             <button onClick={() => setActiveTable('')} className={styles.button_backarrow}>&#60;</button>
                             <button onClick={() => setShowCreateForm(true)} className={styles.button_newentry}>Create New Entry</button>
                             <button onClick={() => deleteAllEntries()} className={styles.button_deleteentries}>Delete All Entries</button>
-                            {(Object.keys(entries).length === 0) && (
+                            {(Object.keys(allEntries).length === 0) && (
                                 <div>
                                     Please upload a table to view its content
                                 </div>
                             )}
-                            {(Object.keys(entries).length !== 0) && (
+                            {(Object.keys(allEntries).length !== 0) && (
                                 <div styles={styles.tableview}>
                                     <div className={styles.grid}>
                                         <input className={styles.rowInput} value={rows} name="rows" type="text" onChange={handleRowChange}/><label className={styles.rows}>Rows</label>

@@ -9,7 +9,7 @@ var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6'
 var secondaryScheme = ['#d15454','#e16c7c','#ec86a1','#f4a2c3','#f9bee1','#ffd9fa','#e6b2e3','#cc8bce','#b066bb','#9140a8','#711496']
 
 //// MAPPING FUNCTIONS ////
-function getMatrices(entries, minMatrix, maxMatrix, showOtherMatrices) {
+function getMatrices(entries, minMatrix, maxMatrix, showOthers1) {
     const data = []
     var others = 0
 
@@ -35,7 +35,7 @@ function getMatrices(entries, minMatrix, maxMatrix, showOtherMatrices) {
         }
     }
 
-    if(showOtherMatrices) {
+    if(showOthers1) {
         data.push({
             id: "others",
             name: "others",
@@ -45,44 +45,7 @@ function getMatrices(entries, minMatrix, maxMatrix, showOtherMatrices) {
     return data
 }
 
-function getLabParameter(entries, minParams, maxParams, showOtherParams) {
-    const data = []
-    var others = 0
-
-    entries.map(function(entry){
-        if(data.find(e => e.id === entry.labParameter)) {
-            data[data.findIndex((e => e.id === entry.labParameter))].value++
-        } else if (entry.labParameter != null) {
-            data.push({
-                id: entry.labParameter,
-                name: entry.labParameter,
-                value: 1
-            })
-        }
-    })
-
-    for(let i = 0; i <= data.length; i++){
-        if(data[i]){
-            if(data[i].value < minParams || data[i].value > maxParams){
-                others += data[i].value
-                data.splice(i, 1)
-                i--
-            }
-        }
-    }
-
-    if(showOtherParams) {
-        data.push({
-            id: "others",
-            name: "others",
-            value: others
-        })
-    }
-
-    return data
-}
-
-function getDiagnosis(entries, minDiagnoses, maxDiagnoses, showOtherDiagnoses) {
+function getDiagnosis(entries, minDiagnoses, maxDiagnoses, showOthers1) {
     const data = []
     var others = 0
 
@@ -108,7 +71,7 @@ function getDiagnosis(entries, minDiagnoses, maxDiagnoses, showOtherDiagnoses) {
         }
     }
 
-    if(showOtherDiagnoses) {
+    if(showOthers1) {
         data.push({
             id: "others",
             name: "others",
@@ -119,7 +82,44 @@ function getDiagnosis(entries, minDiagnoses, maxDiagnoses, showOtherDiagnoses) {
     return data
 }
 
-function getAverageQuantity(entries, minDiagnoses, maxDiagnoses, showOtherDiagnoses) {
+function getLabParameter(entries, minParams, maxParams, showOthers2) {
+    const data = []
+    var others = 0
+
+    entries.map(function(entry){
+        if(data.find(e => e.id === entry.labParameter)) {
+            data[data.findIndex((e => e.id === entry.labParameter))].value++
+        } else if (entry.labParameter != null) {
+            data.push({
+                id: entry.labParameter,
+                name: entry.labParameter,
+                value: 1
+            })
+        }
+    })
+
+    for(let i = 0; i <= data.length; i++){
+        if(data[i]){
+            if(data[i].value < minParams || data[i].value > maxParams){
+                others += data[i].value
+                data.splice(i, 1)
+                i--
+            }
+        }
+    }
+
+    if(showOthers2) {
+        data.push({
+            id: "others",
+            name: "others",
+            value: others
+        })
+    }
+
+    return data
+}
+
+function getAverageQuantity(entries, minDiagnoses, maxDiagnoses, showOthers2) {
     const data = []
     var others = 0
 
@@ -226,13 +226,12 @@ function truncateTime(str) {
 const OrderChart = (props) => {
     const [minMatrix, setMinMatrix] = useState(150)
     const [maxMatrix, setMaxMatrix] = useState(400)
-    const [showOtherMatrices, setShowOtherMatrices] = useState(false)
     const [minParams, setMinParams] = useState(150)
     const [maxParams, setMaxParams] = useState(1000)
-    const [showOtherParams, setShowOtherParam] = useState(false)
     const [minDiagnoses, setMinDiagnoses] = useState(150)
     const [maxDiagnoses, setMaxDiagnoses] = useState(400)
-    const [showOtherDiagnoses, setShowOtherDiagnoses] = useState(false)
+    const [showOthers1, setShowOthers1] = useState(false)
+    const [showOthers2, setShowOthers2] = useState(false)
 
     const onInputChange = (e) => {
         switch(e.target.name){
@@ -242,26 +241,17 @@ const OrderChart = (props) => {
             case 'maxMatrix':
                 setMaxMatrix(e.target.value)
                 return
-            case 'showOtherMatrices':
-                setShowOtherMatrices(!showOtherMatrices)
-                return
             case 'minParams':
                 setMinParams(e.target.value)
                 return
             case 'maxParams':
                 setMaxParams(e.target.value)
                 return
-            case 'showOtherParams':
-                setShowOtherParam(!showOtherParams)
-                return
             case 'minDiagnoses':
                 setMinDiagnoses(e.target.value)
                 return
             case 'maxDiagnoses':
                 setMaxDiagnoses(e.target.value)
-                return
-            case 'showOtherDiagnoses':
-                setShowOtherDiagnoses(!showOtherDiagnoses)
                 return
             default:
                 return
@@ -280,18 +270,18 @@ const OrderChart = (props) => {
                         <option>Last Year</option>
                         <option>All Time</option>
                     </select>
+                    Show Others
+                    <input type="checkbox" onChange={() => setShowOthers1(!showOthers1)}></input>
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Matrix</h3>
-                    <PieChart data={GetAllEntries('matrix', minMatrix, maxMatrix, showOtherMatrices)} scheme={primaryScheme}/>
+                    <PieChart data={GetAllEntries('matrix', minMatrix, maxMatrix, showOthers1)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minMatrix} name="minMatrix" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxMatrix} name="maxMatrix" type="number" onChange={onInputChange}/></div>
-                    <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherMatrices} name="showOtherMatrices" onChange={onInputChange}/> </div>
                 </div>
                 <div className={styles.middle_wrapper}>
                     <h3>Diagnosis</h3>
-                    <PieChart data={GetAllEntries('diagnosis', minDiagnoses, maxDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
+                    <PieChart data={GetAllEntries('diagnosis', minDiagnoses, maxDiagnoses, showOthers1)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxDiagnoses} name="maxDiagnoses" type="number" onChange={onInputChange}/></div>
-                    <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherDiagnoses} name="showOtherDiagnoses" onChange={onInputChange}/> </div>
                 </div>
             </div>        
             {/* Second Block */}
@@ -302,28 +292,30 @@ const OrderChart = (props) => {
                         <option defaultValue={true}>Last Month</option>
                         <option>Last 3 Months</option>
                         <option>Last Year</option>
-                    <   option>All Time</option>
+                        <option>All Time</option>
                     </select>
+                    Show Others
+                    <input type="checkbox" onChange={() => setShowOthers2(!showOthers2)}></input>
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Lab Parameters</h3>
-                    <PieChart data={GetAllEntries('labParameter', minParams, maxParams, showOtherParams)} scheme={secondaryScheme}/>
+                    <PieChart data={GetAllEntries('labParameter', minParams, maxParams, showOthers2)} scheme={secondaryScheme}/>
                     <div className={styles.min}>Min: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxParams} name="maxParams" type="number" onChange={onInputChange}/></div>
-                    <div className={styles.min}>Show Others: <input type="checkbox" value={showOtherParams} name="showOtherParams" onChange={onInputChange}/> </div>
                 </div>
                 <div className={styles.middle_wrapper}>
                     <h3>Lab Result</h3>
-                    <PieChart data={GetAllEntries('Result_Interpretation', minDiagnoses, maxDiagnoses, showOtherDiagnoses)} scheme={primaryScheme}/>
+                    <PieChart data={GetAllEntries('Result_Interpretation', minDiagnoses, maxDiagnoses, showOthers1)} scheme={primaryScheme}/>
                 </div>
             </div>
-            <div className={styles.grid_container_3_items_1_rows}>
+            {/* Third Block */}
+            <div className={styles.grid_container_3_items_1_row}>
             <div className={styles.settings}>
                     Period:
                     <select>
                         <option defaultValue={true}>Last Month</option>
                         <option>Last 3 Months</option>
                         <option>Last Year</option>
-                    <   option>All Time</option>
+                        <option>All Time</option>
                     </select>
                 </div>
                 <div className={styles.center_wrapper_top}>

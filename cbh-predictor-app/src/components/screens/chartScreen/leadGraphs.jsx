@@ -32,6 +32,11 @@ function getMedicalField(entries, minField, showOthers) {
                 data.splice(i, 1)
                 i--
             }
+            if(data[i].id === "Other"){
+                others +=  data[i].value
+                data.splice(i, 1)
+                i--
+            }
         }
     }
 
@@ -46,7 +51,7 @@ function getMedicalField(entries, minField, showOthers) {
     return data
 }
 
-function getLeadStatus(entries, showOther) {
+function getLeadStatus(entries, showOthers) {
     const data = []
     var others = 0    
 
@@ -69,9 +74,23 @@ function getLeadStatus(entries, showOther) {
                 data.splice(i, 1)
                 i--
             }
+            if(data[i].id === "Other"){
+                others +=  data[i].value
+                data.splice(i, 1)
+                //i--
+            }
             var _value = data[i].value
             data[i].value = Math.trunc(((_value / entries.length - 1) + 1 ) * 100) 
         }
+    }
+
+    if(showOthers) {
+        data.push({
+            id: "others",
+            name: "others",
+            value: others
+        })
+        data[data.findIndex((e => e.id === "others"))].value = Math.trunc(((_value / entries.length - 1) + 1 ) * 100) 
     }
 
     return data
