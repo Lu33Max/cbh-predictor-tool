@@ -69,12 +69,12 @@
 }
 
 .filterSelect {
-  width: 6.5vw;
+  width: 6vw;
   margin-left: .5vw;
   font-size: 25px;
   border: 2px;
   text-align: center;
-  translate: 0 10%;
+  translate: 0 -10%;
 }
 
 .container {
