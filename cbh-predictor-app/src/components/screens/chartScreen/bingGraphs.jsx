@@ -303,6 +303,7 @@ const BingChart = (props) => {
         .then(res => {
             setLatestDate(res.data.split('-'))
         })
+
     }, [])
 
     const onInputChange = (e) => {
@@ -318,6 +319,8 @@ const BingChart = (props) => {
         }
     }
 
+    console.log(latestDate)
+
     return(
         <>
             <button onClick={() => {props.setShowGraphs(false); props.setActiveTable('')}} className={styles.button_backarrow}>&#60;</button>
@@ -326,10 +329,10 @@ const BingChart = (props) => {
                 <div className={styles.settings}>
                     Period:
                     <select>
-                        <option defaultValue={true}>Last Month</option>
-                        <option>Last 3 Months</option>
-                        <option>Last Year</option>
-                        <option>All Time</option>
+                        <option defaultValue={true} value={0}>Last Month</option>
+                        <option value={2}>Last 3 Months</option>
+                        <option value={11}>Last Year</option>
+                        <option value={-1}>All Time</option>
                     </select>
                     Show Others
                     <input type="checkbox" onChange={() => setShowOthers(!showOthers)}></input>

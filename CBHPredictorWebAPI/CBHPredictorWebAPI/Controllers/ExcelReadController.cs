@@ -19,9 +19,16 @@ namespace CBHPredictorWebAPI.Controllers
             _context = context;
         }
 
-        private int ConvertEnum(Month _month)
+        private string ConvertEnum(Month _month)
         {
-            int month = Array.IndexOf(Enum.GetValues(_month.GetType()), _month) + 1;
+            int temp = Array.IndexOf(Enum.GetValues(_month.GetType()), _month) + 1;
+            string month = temp.ToString();
+
+            if(temp <= 9)
+            {
+                month = "0" + temp.ToString();
+            }
+
             return month;
         }
 
@@ -153,7 +160,7 @@ namespace CBHPredictorWebAPI.Controllers
                         ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
                     });
 
-                    int month = ConvertEnum(_month);
+                    string month = ConvertEnum(_month);
                     string _date = _year.ToString() + "-" + month;
 
                     string delcmd = "SELECT * FROM GoogleSearchTerms WHERE date = {0}";
@@ -211,7 +218,7 @@ namespace CBHPredictorWebAPI.Controllers
                         ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
                     });
 
-                    int month = ConvertEnum(_month);
+                    string month = ConvertEnum(_month);
                     string _date = _year.ToString() + "-" + month;
 
                     string delcmd = "SELECT * FROM BingSearchTerms WHERE date = {0}";

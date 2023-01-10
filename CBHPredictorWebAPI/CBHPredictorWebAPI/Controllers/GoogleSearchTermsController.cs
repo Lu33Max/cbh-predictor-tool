@@ -85,21 +85,36 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpGet("GetCurrentMonth")]
         public string selectCurrentMonth()
         {
-            int latestMonth = DateTime.Now.Month;
+            int _latestMonth = DateTime.Now.Month;
+            string latestMonth = _latestMonth.ToString();
             int latestYear = DateTime.Now.Year;
-            string latestDate = latestYear + "-" + latestMonth.ToString();
+
+            if(_latestMonth <= 9)
+            {
+                latestMonth = "0" + _latestMonth;
+            }
+
+            string latestDate = latestYear + "-" + latestMonth;
 
             while (!_context.GoogleSearchTerms.Any(e => e.date == latestDate))
             {
-                if (latestMonth != 0)
+                if (_latestMonth != 0)
                 {
-                    latestMonth--;
+                    _latestMonth--;
+                    latestMonth = _latestMonth.ToString();
+
+                    if (_latestMonth <= 9)
+                    {
+                        latestMonth = "0" + _latestMonth;
+                    }
+
                     latestDate = latestYear + "-" + latestMonth.ToString();
                 }
                 else
                 {
                     latestYear--;
-                    latestMonth = 12;
+                    _latestMonth = 12;
+                    latestMonth = _latestMonth.ToString();
                     latestDate = latestYear + "-" + latestMonth.ToString();
                 }
             }

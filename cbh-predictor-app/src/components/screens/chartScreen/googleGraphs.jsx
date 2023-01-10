@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { PieChart } from "./charts/pieChart";
 import { LineChart } from "./charts/lineChart";
 import { AreaBump } from "./charts/areabumpChart";
@@ -7,6 +7,8 @@ import Constants from "../../../utilities/Constants";
 import PopoverButton from "./popover";
 import styles from "./graphs.module.css"
 import axios from "axios";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6','#a1e5ad','#82cc96','#62b37f','#429a6a','#188255','#429a6a','#62b37f','#82cc96','#a1e5ad','#c0ffc6','#abf4ab','#96e890','#83dc73','#71d055']
 var secondaryScheme = ['#d15454','#e16c7c','#ec86a1','#f4a2c3','#f9bee1','#ffd9fa','#e6b2e3','#cc8bce','#b066bb','#9140a8','#711496']
@@ -292,6 +294,8 @@ const GoogleChart = (props) => {
     const [latestDate, setLatestDate] = useState([])
     const [terms, setTerms] = useState(["biobank","ffpe","ffpe tissue"])
 
+    const printRef = React.useRef();
+
     useEffect(() => {
         const url = Constants.API_URL_GOOGLE_ENTRIES;
 
@@ -319,6 +323,20 @@ const GoogleChart = (props) => {
         }
     }
 
+    const handleDownloadPdf = async () => {
+        const element = printRef.current;
+        const canvas = await html2canvas(element, {scale: 3, height: 490, width: 600});
+        const data = canvas.toDataURL('image/png');
+    
+        const pdf = new jsPDF();
+        const imgProperties = pdf.getImageProperties(data);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
+    
+        pdf.addImage(data, 'PNG', 40, 0, pdfWidth - 80, pdfHeight - 60);
+        pdf.save('print.pdf');
+    };
+
     return(
         <>
             <button onClick={() => {props.setShowGraphs(false); props.setActiveTable('')}} className={styles.button_backarrow}>&#60;</button>
@@ -335,7 +353,7 @@ const GoogleChart = (props) => {
                     Show Others
                     <input type="checkbox" onChange={() => setShowOthers(!showOthers)}></input>
                 </div>
-                <div className={styles.left_wrapper}>
+                <div ref={printRef} className={styles.left_wrapper}>
                     <h3>Impressions</h3>
                     <PieChart data={GetImpressions(allEntries, minImpr, showOthers)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min. Impressions: <input className={styles.min_input} value={minImpr} name="minImpr" type="number" onChange={onInputChange}/> </div>
@@ -350,6 +368,7 @@ const GoogleChart = (props) => {
                     <PieChart data={GetClicks(allEntries, minClicks, showOthers)} scheme={primaryScheme}/>
                     <div className={styles.min}>Min. Clicks: <input className={styles.min_input} value={minClicks} name="minClicks" type="number" onChange={onInputChange}/> </div>
                 </div>
+                <button onClick={handleDownloadPdf} className={styles.submitButton}>Export Graph</button>
             </div>
             {/* Second Block */}
             <div className={styles.grid_container_2_items}>

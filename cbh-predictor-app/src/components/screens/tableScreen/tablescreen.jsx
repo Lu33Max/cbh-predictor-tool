@@ -50,7 +50,7 @@ const TableScreen = () => {
                                         }
                                     }
                                 } else {
-                                    if((allEntries[j][filters[i].val1] + "").toLocaleLowerCase.includes(filters[i].val2)){
+                                    if((allEntries[j][filters[i].val1] + "").toLowerCase().includes(filters[i].val2)){
                                         if(!newEntries.find(e => e.id === allEntries[j].id)){
                                             newEntries.push(allEntries[j])
                                         }
@@ -100,7 +100,7 @@ const TableScreen = () => {
                                         }
                                     }
                                 } else {
-                                    if((filtered[m][filters[i].val1] + "").includes(filters[i].val2)){
+                                    if((filtered[m][filters[i].val1] + "").toLowerCase().includes(filters[i].val2)){
                                         if(!newEntries.find(e => e.id === filtered[m].id)){
                                             newEntries.push(filtered[m])
                                         }
@@ -118,7 +118,7 @@ const TableScreen = () => {
                             }
                             break
                         case "compare":
-                            for(var o = 0; o < filtered.length; l++){
+                            for(var o = 0; o < filtered.length; o++){
                                 if(filters[i].val3){
                                     if(filtered[o][filters[i].val1] <= filters[i].val2){
                                         if(!newEntries.find(e => e.id === filtered[o].id)){

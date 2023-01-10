@@ -13,7 +13,6 @@ function GetMatrices(entries, minMatrix, maxMatrix, showOthers) {
     const [data, setData] = useState([])
 
     useEffect(() => {
-        console.log("Rerender1")
         const newData = []
         var others = 0
 
@@ -57,7 +56,6 @@ function GetDiagnosis(entries, minDiagnoses, maxDiagnoses, showOthers) {
     const [data, setData] = useState([])
 
     useEffect(() => {
-        console.log("Rerender2")
         const newData = []
         var others = 0
 
@@ -101,7 +99,6 @@ function GetLabParameter(entries, minParams, maxParams, showOthers) {
     const [data, setData] = useState([])
 
     useEffect(() => {
-        console.log("Rerender3")
         const newData = []
         var others = 0
 
@@ -145,7 +142,6 @@ function GetSampleSizes(entries, minSampleSize) {
     const [data, setData] = useState([])
 
     useEffect(() => {
-        console.log("Rerender4")
         const newData = []
         var others = 0
 
@@ -181,7 +177,6 @@ function GetLabResult(entries, showOthers) {
     const [data, setData] = useState([])
 
     useEffect(() => {
-        console.log("Rerender5")
         const newData = []
 
         entries.map(function(entry){
@@ -198,16 +193,14 @@ function GetLabResult(entries, showOthers) {
 
         for(let i = 0; i <= newData.length; i++){
             if(newData[i]){
-                if(newData[i].id === null || newData[i].id === "detected" || newData[i].id === "Detected" || newData[i].id === "not detected" || newData[i].id ==="Reactive" || newData[i].id ==="Not Detected"){
+                if(!(newData[i].id.toLowerCase() === "positive") && !(newData[i].id.toLowerCase() === "negative")){
                     newData.splice(i, 1)
                     i--
-                }
-                if(newData[i].id === "Positive"){
+                } else if(newData[i].id === "Positive"){
                     newData[newData.findIndex((e => e.id === "positive"))].value +=  newData[i].value
                     newData.splice(i, 1)
                     i--
-                }
-                if(newData[i].id === "Negative"){
+                } else if(newData[i].id === "Negative"){
                     newData[newData.findIndex((e => e.id === "negative"))].value +=  newData[i].value
                     newData.splice(i, 1)
                     i--
@@ -243,7 +236,6 @@ function GetOrders(entries) {
     const [data, setData] = useState([])
 
     useEffect(() => {
-        console.log("Rerender6")
         const newData = [{
             id: "dates",
             color: "hsl(48, 70%, 50%)",
