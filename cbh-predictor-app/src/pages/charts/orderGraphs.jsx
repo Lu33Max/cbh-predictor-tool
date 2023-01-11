@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { PieChart } from "./charts/pieChart";
-import { LineChart } from "./charts/lineChart";
-import Constants from "../../../utilities/Constants";
+import { PieChart } from "../../components/charts/pieChart";
+import { LineChart } from "../../components/charts/lineChart";
+import Constants from "../../utilities/Constants";
 import styles from "./graphs.module.css";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6','#a1e5ad','#82cc96','#62b37f','#429a6a','#188255','#429a6a','#62b37f','#82cc96','#a1e5ad','#c0ffc6','#abf4ab','#96e890','#83dc73','#71d055']
 var secondaryScheme = ['#d15454','#e16c7c','#ec86a1','#f4a2c3','#f9bee1','#ffd9fa','#e6b2e3','#cc8bce','#b066bb','#9140a8','#711496']
@@ -274,6 +275,8 @@ const OrderChart = (props) => {
     const [showOthers2, setShowOthers2] = useState(false)    
     const [allEntries, setAllEntries] = useState([])
 
+    const navigate = useNavigate()
+
     useEffect(() => {
         const url = Constants.API_URL_ORDER_ENTRIES;
 
@@ -313,8 +316,8 @@ const OrderChart = (props) => {
     }
 
     return(
-        <>
-            <button onClick={() => {props.setShowGraphs(false); props.setActiveTable('')}} className={styles.button_backarrow}>&#60;</button>        
+        <div className={styles.body}>
+            <button onClick={() => navigate("/")} className={styles.button_backarrow}>&#60;</button>        
             {/* First Block */}
             <div className={styles.grid_container_3_items}>
                 <div className={styles.settings}>
@@ -368,7 +371,7 @@ const OrderChart = (props) => {
             </div>
             {/* Third Block */}
             <div className={styles.grid_container_3_items_1_row}>
-            <div className={styles.settings}>
+                <div className={styles.settings}>
                     Period:
                     <select>
                         <option defaultValue={true}>Last Month</option>
@@ -378,12 +381,12 @@ const OrderChart = (props) => {
                     </select>
                 </div>
                 <div className={styles.center_wrapper_top}>
-                <br/>
-                <h3>Orders Over Time</h3>
-                <LineChart data={GetOrders(allEntries)} scheme={primaryScheme}/>
+                    <br/>
+                    <h3>Orders Over Time</h3>
+                    <LineChart data={GetOrders(allEntries)} scheme={primaryScheme}/>
+                </div>
             </div>
         </div>
-    </>
     )
 }
 

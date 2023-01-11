@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-import styles from "./graphs.module.css";
+import styles from './popover.module.css'
 
 const PopoverButton = (props) => {
     const [newTerm, setNewTerm] = useState("")

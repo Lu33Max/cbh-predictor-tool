@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
-import Constants from '../../../utilities/Constants';
+import { useNavigate } from 'react-router-dom';
+import Constants from '../../utilities/Constants';
 import styles from "./loginForm.module.css"
 
-function LogInForm(props) {
+const LoginForm = (props) => {
     const [formData, setFormData] = useState([])
+
+    const navigate = useNavigate()
 
     const handleChange = (e) => {
         setFormData({
@@ -22,7 +25,12 @@ function LogInForm(props) {
         })
         .then(response => response.json())
         .then(responseFromServer => {
-            props.onLogin(responseFromServer)
+            if(responseFromServer === true){
+                props.setLoggedIn(responseFromServer)
+                navigate("/")
+            } else {
+                alert('Wrong Email or password. Try again.')
+            }
         })
         .catch((error) => {
             console.log(error);
@@ -51,4 +59,4 @@ function LogInForm(props) {
     );    
 }
 
-export default LogInForm
+export default LoginForm

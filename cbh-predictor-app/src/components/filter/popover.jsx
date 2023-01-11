@@ -1,7 +1,6 @@
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-import styles from "./tablescreen.module.css"
-import Constants from '../../../utilities/Constants';
+import styles from "../../pages/table/tablescreen.module.css"
 import { useState } from 'react';
 
 function FilterOverlay (handleChange,handleChangeFiltertype, handleSubmit, filtertype, filter) {

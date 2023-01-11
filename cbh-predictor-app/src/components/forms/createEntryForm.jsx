@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Constants from '../../../../utilities/Constants';
+import Constants from '../../utilities/Constants';
 import styles from "./forms.module.css"
 
 const CreateEntryForm = (props) => {

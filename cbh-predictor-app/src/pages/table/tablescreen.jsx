@@ -1,36 +1,36 @@
 import { useState, useEffect } from "react"
 import axios from "axios";
 import { saveAs } from "file-saver"
-import Table from "./table/table"
-import FileUploadForm from "./forms/fileUploadForm"
-import CreateEntryForm from "./forms/createEntryForm"
-import UpdateEntryForm from "./forms/updateEntryForm"
-import PopoverButton from "./popover";
-import Constants from "../../../utilities/Constants"
+import Table from "../../components/table/table"
+import FileUploadForm from "../../components/forms/fileUploadForm"
+import CreateEntryForm from "../../components/forms/createEntryForm"
+import UpdateEntryForm from "../../components/forms/updateEntryForm"
+import PopoverButton from "../../components/filter/popover";
+import Constants from "../../utilities/Constants"
 import styles from "./tablescreen.module.css"
+import { useNavigate } from "react-router-dom";
 
-import BingChart from "../chartScreen/bingGraphs";
-import GoogleChart from "../chartScreen/googleGraphs";
-import OrderChart from "../chartScreen/orderGraphs";
-import LeadChart from "../chartScreen/leadGraphs";
-
-
-const TableScreen = () => {
+const TableScreen = (props) => {
     const [entries, setEntries] = useState([])
     const [allEntries, setAllEntries] = useState([])
-    const [activeTable, setActiveTable] = useState('')
+    const [activeTable, setActiveTable] = useState(props.table)
     const [showFileUpload, setShowFileUpload] = useState(false)
     const [showCreateForm, setShowCreateForm] = useState(false)
-    const [showGraphs, setShowGraphs] = useState(false)
     const [entryToUpdate, setEntryToUpdate ] = useState(null)
     const [rows, setRows] = useState(100)
     const [filters, setFilters] = useState([])
     const [andRelation, setAndRelation] = useState(true)
-    
-    const handleRowChange = (e) => {
-        setRows(e.target.value)
-        getAllEntries(activeTable)
-    };
+    const navigate = useNavigate()
+
+    console.log("Table Render")
+
+    useEffect(() => {
+        setActiveTable(props.table)
+    },[props.table])
+
+    useEffect(() => {
+        getAllEntries()
+    },[activeTable])
 
     useEffect(() => {
         if(Object.keys(filters).length !== 0){
@@ -154,6 +154,11 @@ const TableScreen = () => {
 
     },[filters, allEntries, andRelation])
 
+    const handleRowChange = (e) => {
+        setRows(e.target.value)
+        getAllEntries()
+    };
+
     const DelButton = (props) => {
         return(
             <button onClick={() => {removeFilter(props.index)}}>X</button>
@@ -162,45 +167,13 @@ const TableScreen = () => {
 
     return(
         <div className={styles.body}>
-            {(activeTable === '' && showFileUpload === false && showCreateForm === false && showGraphs === false) && (
-                <div>
-                    <div className={styles.table}>
-                        <h3>Bing Search Terms</h3>
-                        <button onClick={() => {setShowGraphs(true); setActiveTable('Bing');}} className={styles.button_green}>Graphical Analysis</button>
-                        <button onClick={() => getAllEntries('Bing')} className={styles.button_green}>Show Table</button>
-                        <button onClick={() => {setShowFileUpload(true); setActiveTable('Bing');}} className={styles.button_gray}>Upload Excel File</button>
-                        <button onClick={() => exportToExcel('Bing')} className={styles.button_gray}>Export to Excel File</button>
-                    </div>
-                    <div className={styles.table}>
-                        <h3>Google Search Terms</h3>
-                        <button onClick={() => {setShowGraphs(true); setActiveTable('Google');}} className={styles.button_green}>Graphical Analysis</button>
-                        <button onClick={() => getAllEntries('Google')} className={styles.button_green}>Show Table</button>
-                        <button onClick={() => {setShowFileUpload(true); setActiveTable('Google');}} className={styles.button_gray}>Upload Excel File</button>
-                        <button onClick={() => exportToExcel('Google')} className={styles.button_gray}>Export to Excel File</button>
-                    </div>
-                    <div className={styles.table}>
-                        <h3>Lead Entries</h3>
-                        <button onClick={() => {setShowGraphs(true); setActiveTable('Lead');}} className={styles.button_green}>Graphical Analysis</button>
-                        <button onClick={() => getAllEntries('Lead')} className={styles.button_green}>Show Table</button>
-                        <button onClick={() => {setShowFileUpload(true); setActiveTable('Lead');}} className={styles.button_gray}>Upload Excel File</button>
-                        <button onClick={() => exportToExcel('Lead')} className={styles.button_gray}>Export to Excel File</button>
-                    </div>
-                    <div className={styles.table}>
-                        <h3>Order Entries</h3>
-                        <button onClick={() => {setShowGraphs(true); setActiveTable('Order');}} className={styles.button_green}>Graphical Analysis</button>
-                        <button onClick={() => getAllEntries('Order')} className={styles.button_green}>Show Table</button>
-                        <button onClick={() => {setShowFileUpload(true); setActiveTable('Order');}} className={styles.button_gray}>Upload Excel File</button>
-                        <button onClick={() => exportToExcel('Order')} className={styles.button_gray}>Export to Excel File</button>
-                    </div>
-                </div>
-            )}
             {(showFileUpload === true) && (<FileUploadForm onFileUploaded={onFileUploaded} table={activeTable}/>)}
             {(showCreateForm === true) && (<CreateEntryForm onEntryCreated={onEntryCreated} table={activeTable}/> )}
-            {(activeTable !== '' && showFileUpload === false && showCreateForm === false && showGraphs === false) && (
+            {(activeTable !== '' && showFileUpload === false && showCreateForm === false) && (
                 <>
                     {(entryToUpdate === null) && (
                         <>
-                            <button onClick={() => setActiveTable('')} className={styles.button_backarrow}>&#60;</button>
+                            <button onClick={() => navigate("/")} className={styles.button_backarrow}>&#60;</button>
                             <button onClick={() => setShowCreateForm(true)} className={styles.button_newentry}>Create New Entry</button>
                             <button onClick={() => deleteAllEntries()} className={styles.button_deleteentries}>Delete All Entries</button>
                             {(Object.keys(allEntries).length === 0) && (
@@ -227,16 +200,7 @@ const TableScreen = () => {
                     )}
                     {(entryToUpdate !== null) && <UpdateEntryForm entry={entryToUpdate} table={activeTable} onEntryUpdated={onEntryUpdated}/>}
                 </>
-            )}
-            {(showGraphs) && (
-                <>
-                    {activeTable === 'Bing' && <BingChart setShowGraphs={setShowGraphs} setActiveTable={setActiveTable}/>}
-                    {activeTable === 'Google' && <GoogleChart setShowGraphs={setShowGraphs} setActiveTable={setActiveTable}/>}
-                    {activeTable === 'Order' && <OrderChart setShowGraphs={setShowGraphs} setActiveTable={setActiveTable}/>}
-                    {activeTable === 'Lead' && <LeadChart setShowGraphs={setShowGraphs} setActiveTable={setActiveTable}/>}
-                </>
-            )}
-            
+            )}            
         </div>
     )
 
@@ -289,7 +253,7 @@ const TableScreen = () => {
     function onEntryCreated(created){
         if (created !== null) alert(`Entry succesfully created. After clicking OK, your new Entry will show up in the table below.`);
         setShowCreateForm(false)
-        getAllEntries(activeTable);
+        getAllEntries();
     }
     function updateEntry(entry){
         setEntryToUpdate(entry)
@@ -298,15 +262,14 @@ const TableScreen = () => {
         setEntryToUpdate(null);
         if (updatedEntry === null) return;
         alert(`Entry successfully updated. After clicking OK, look for the Entry in the table below to see the updates.`);
-        getAllEntries(activeTable);
+        getAllEntries();
     }
 
     //// SERVER REQUESTS ////
-    function getAllEntries(table){
-        setActiveTable(table);
+    function getAllEntries(){
         var url;
   
-        switch (table) {
+        switch (activeTable) {
         case 'Bing':
             url = Constants.API_URL_BING_ENTRIES;
             break;
@@ -320,7 +283,7 @@ const TableScreen = () => {
             url = Constants.API_URL_ORDER_ENTRIES;
             break;
         default:
-            alert(`Error: Table with name "${table}" does not exist`)
+            alert(`Error: Table with name "${activeTable}" does not exist`)
             return;
         }
       
@@ -366,7 +329,7 @@ const TableScreen = () => {
         .then(responseFromServer => {
           console.log(responseFromServer);
           alert(`Sucessfully deleted Entries from "${activeTable}" Table.`);
-          getAllEntries(activeTable)
+          getAllEntries()
         })
         .catch((error) => {
           console.log(error);
@@ -408,7 +371,7 @@ const TableScreen = () => {
         });
 
         alert('Entry successfully deleted. After clicking OK, look at the table below to see your Entry disappear.');
-        getAllEntries(activeTable);
+        getAllEntries();
     }
 
     function exportToExcel(table) {
