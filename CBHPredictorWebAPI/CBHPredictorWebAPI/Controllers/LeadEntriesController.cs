@@ -43,7 +43,7 @@ namespace CBHPredictorWebAPI.Controllers
             return leadEntry;
         }
 
-        [HttpGet("SortByColumn")]
+        [HttpGet("SortByColumn/{col}/{order}")]
         public async Task<ActionResult<IEnumerable<LeadEntry>>> SortByColumn(LeadColumns col, Order order)
         {
             if (order == Order.ascending)

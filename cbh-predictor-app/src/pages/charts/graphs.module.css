@@ -235,11 +235,11 @@ select {
   transform: translate(-150%, -50%);
   width: 2.5%;
   margin-top: 1%;
-  background-color: rgb(40, 40, 40);
+  background-color: #2c3e50;
 }
 
 .button_backarrow:hover {
-  background-color: rgb(70, 70, 70);
+  background-color: #3e5b77;
 }
 
 .submitButton {

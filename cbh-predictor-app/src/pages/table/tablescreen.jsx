@@ -22,8 +22,6 @@ const TableScreen = (props) => {
     const [andRelation, setAndRelation] = useState(true)
     const navigate = useNavigate()
 
-    console.log("Table Render")
-
     useEffect(() => {
         setActiveTable(props.table)
     },[props.table])
@@ -176,6 +174,8 @@ const TableScreen = (props) => {
                             <button onClick={() => navigate("/")} className={styles.button_backarrow}>&#60;</button>
                             <button onClick={() => setShowCreateForm(true)} className={styles.button_newentry}>Create New Entry</button>
                             <button onClick={() => deleteAllEntries()} className={styles.button_deleteentries}>Delete All Entries</button>
+                            <button onClick={() => setShowFileUpload(true)} className={styles.button_uploadtable}>Upload Excel File</button>
+                            <button onClick={() => exportToExcel()} className={styles.button_exporttable}>Export to Excel</button>
                             {(Object.keys(allEntries).length === 0) && (
                                 <div>
                                     Please upload a table to view its content
@@ -192,7 +192,7 @@ const TableScreen = (props) => {
                                         <PopoverButton addFilter={addFilter}/>  
                                     </div>
                                     <div className={styles.container}>
-                                        <Table data={entries} rowsPerPage={rows} type={activeTable} getAllEntries={getAllEntries} deleteEntry={deleteSingleEntry} updateEntry={updateEntry}/>
+                                        <Table data={entries} rowsPerPage={rows > 0 ? rows : 1} type={activeTable} setEntries={setAllEntries} deleteEntry={deleteSingleEntry} updateEntry={updateEntry}/>
                                     </div>
                                 </div>
                             )}
@@ -248,10 +248,10 @@ const TableScreen = (props) => {
     function onFileUploaded(created){
         if(created) alert(`Sucessfully uploaded the file contents to "${activeTable}" Table.`)
         setShowFileUpload(false)
-        setActiveTable('')
+        getAllEntries()
     }
     function onEntryCreated(created){
-        if (created !== null) alert(`Entry succesfully created. After clicking OK, your new Entry will show up in the table below.`);
+        if (created !== null) alert(`Entry succesfully created.`);
         setShowCreateForm(false)
         getAllEntries();
     }
@@ -261,7 +261,7 @@ const TableScreen = (props) => {
     function onEntryUpdated(updatedEntry){
         setEntryToUpdate(null);
         if (updatedEntry === null) return;
-        alert(`Entry successfully updated. After clicking OK, look for the Entry in the table below to see the updates.`);
+        alert(`Entry successfully updated.`);
         getAllEntries();
     }
 
@@ -286,19 +286,15 @@ const TableScreen = (props) => {
             alert(`Error: Table with name "${activeTable}" does not exist`)
             return;
         }
-      
-        fetch(url, {
-          method: 'GET'
+
+        axios.get(url)
+        .then(res => {
+            setAllEntries(res.data)
         })
-        .then(response => response.json())
-        .then(entriesFromServer => {
-          setAllEntries(entriesFromServer);
+        .catch(error => {
+            console.log(error)
+            alert(error)
         })
-        .catch((error) => {
-          console.log(error);
-          alert(error);
-        });
-        
     }
 
     function deleteAllEntries(){
@@ -322,19 +318,16 @@ const TableScreen = (props) => {
             return;
         }
     
-        fetch(url, {
-          method: 'DELETE'
+        axios.delete(url)
+        .then(res => {
+            console.log(res)
+            alert('Entry successfully deleted.');
+            getAllEntries();
         })
-        .then(response => response.json())
-        .then(responseFromServer => {
-          console.log(responseFromServer);
-          alert(`Sucessfully deleted Entries from "${activeTable}" Table.`);
-          getAllEntries()
+        .catch(error => {
+            console.log(error)
+            alert(error)
         })
-        .catch((error) => {
-          console.log(error);
-          alert(error);
-        });
     }
 
     function deleteSingleEntry(id){
@@ -358,26 +351,22 @@ const TableScreen = (props) => {
             return;
         }
 
-        fetch(url, {
-            method: 'DELETE'
+        axios.delete(url)
+        .then(res => {
+            console.log(res)
+            alert('Entry successfully deleted.');
+            getAllEntries();
         })
-        .then(response => response.json())
-        .then(responseFromServer => {
-            console.log(responseFromServer);
+        .catch(error => {
+            console.log(error)
+            alert(error)
         })
-        .catch((error) => {
-            console.log(error);
-            alert(error);
-        });
-
-        alert('Entry successfully deleted. After clicking OK, look at the table below to see your Entry disappear.');
-        getAllEntries();
     }
 
-    function exportToExcel(table) {
+    function exportToExcel() {
         var base;
 
-        switch (table) {
+        switch (activeTable) {
         case 'Bing':
             base = Constants.API_URL_BING_ENTRIES;
             break;
@@ -391,11 +380,11 @@ const TableScreen = (props) => {
             base = Constants.API_URL_ORDER_ENTRIES;
             break;
         default:
-            alert(`Error: Table with name "${table}" does not exist`)
+            alert(`Error: Table with name "${activeTable}" does not exist`)
             return;
         }
 
-        let instance = axios.create({  baseURL: base });  
+        let instance = axios.create({ baseURL: base });  
         let options = { 
           url: 'ExportToExcel',
           method: 'GET',

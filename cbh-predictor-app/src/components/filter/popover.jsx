@@ -221,7 +221,7 @@ const PopoverButton = (props) => {
     }*/
 
     return(
-        <OverlayTrigger trigger="click" placement="left" overlay={FilterOverlay(handleChange, handleChangeFiltertype, handleSubmit, filtertype, filter)}>
+        <OverlayTrigger trigger="click" placement="left" rootClose="true" overlay={FilterOverlay(handleChange, handleChangeFiltertype, handleSubmit, filtertype, filter)}>
             <button className={styles.button_popover}>+</button>
         </OverlayTrigger>
     )

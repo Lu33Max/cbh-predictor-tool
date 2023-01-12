@@ -1,25 +1,59 @@
+import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
+import Constants from '../../utilities/Constants';
+import styles from "./table.module.css"
 
-const popover = (
-  <Popover id="popover-basic">
-    <Popover.Header as="h3">Sort</Popover.Header>
-    <Popover.Body>
-      <Button>Asc</Button>
-      <Button onClick={() => handleDesc()}>Desc</Button>
-    </Popover.Body>
-  </Popover>
-);
+const PopoverButton = (props) => {
+  function handleSubmit(asc) {
+    let url
 
-function handleDesc(){
-  
-}
+    console.log(props.type)
 
-const PopoverButton = ({text}) => (
-    <OverlayTrigger trigger="click" placement="bottom" overlay={popover}>
-        <Button variant="success">{text}</Button>
+    switch (props.type) {
+      case 'Bing':
+        url = `${Constants.API_URL_BING_ENTRIES}/SortByColumn/${props.col}/`
+        break;
+      case 'Google':
+        url = `${Constants.API_URL_GOOGLE_ENTRIES}/SortByColumn/${props.col}/`
+        break;
+      case 'Lead':
+        url = `${Constants.API_URL_LEAD_ENTRIES}/SortByColumn/${props.col}/`
+        break;
+      case 'Order':
+        url = `${Constants.API_URL_ORDER_ENTRIES}/SortByColumn/${props.col}/`
+        break;
+      default:
+        break;
+    }
+
+    if(asc) url += "ascending"
+    else url += "descending"
+
+    console.log(url)
+
+    axios.get(url)
+    .then(res => {
+        props.setEntries(res.data);
+    })
+    .catch(error => {
+      alert(error)
+    })
+  }
+
+  return(
+    <OverlayTrigger trigger="click" placement="bottom" rootClose="true" overlay={
+      <Popover id="popover-basic">
+        <Popover.Body>
+          <button className={styles.order_button} onClick={() => handleSubmit(true)}>Asc</button>
+          <button className={styles.order_button} onClick={() => handleSubmit(false)}>Desc</button>
+        </Popover.Body>
+      </Popover>
+    }>
+      <button className={styles.header_button}>{props.text}</button>
     </OverlayTrigger>
-);
+  )
+};
 
 export default PopoverButton;

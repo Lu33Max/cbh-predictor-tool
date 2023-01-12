@@ -42,7 +42,7 @@ namespace CBHPredictorWebAPI.Controllers
             return searchTerm;
         }
 
-        [HttpGet("SortByColumn")]
+        [HttpGet("SortByColumn/{col}/{order}")]
         public async Task<ActionResult<IEnumerable<BingSearchTerm>>> SortByColumn(BSearchTerms col, Order order)
         {
             if (order == Order.ascending)

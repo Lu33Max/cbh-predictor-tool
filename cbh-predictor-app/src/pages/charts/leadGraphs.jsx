@@ -133,7 +133,7 @@ function truncateTimeMonth(str) {
 } 
 
 //// RENDER VIEW ////
-const LeadChart = (props) => {
+const LeadChart = () => {
     const [minField, setMinField] = useState(10)
     const [showOtherFields, setShowOtherFields] = useState(false)
     const [showOthers, setShowOthers] = useState(true)

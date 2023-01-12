@@ -55,7 +55,7 @@ h3 {
   background-color: #000020;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 4px 20px rgb(2, 4, 2);
+  box-shadow: 0 3px 20px rgb(2, 4, 2);
 }
 
 .menu_container {

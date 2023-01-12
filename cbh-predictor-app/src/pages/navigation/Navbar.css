@@ -66,11 +66,12 @@
 
 .nav_head a:hover,
 .nav_text a:hover {
-    background-color: #000080;
+    background-color: #2c3e50;
 }
 
 .nav_menu_items {
     width: 100%;
+    overflow-y: auto;
 }
 
 .navbar_toggle {

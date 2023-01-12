@@ -253,21 +253,21 @@ function GetCustomBar(entries, terms){
     return(barData)
 }
 
-function GetCustomBump(entries, terms){
-    const [BumpData, setBumpData] = useState()
+function GetCustomLine(entries, terms){
+    const [LineData, setLineData] = useState()
 
     useEffect(() => {
-        var newBumpData = []
+        var newLineData = []
 
         entries.map(function(entry){
             if(terms.find(e => e === entry.terms)){
-                if(newBumpData.find(e => e.id === entry.terms)){
-                    newBumpData[newBumpData.findIndex(e => e.id === entry.terms)].data.push({
+                if(newLineData.find(e => e.id === entry.terms)){
+                    newLineData[newLineData.findIndex(e => e.id === entry.terms)].data.push({
                         x: entry.date,
                         y: entry.impressions
                     })
                 } else {
-                    newBumpData.push({
+                    newLineData.push({
                         id: entry.terms,
                         data: [{
                             x: entry.date,
@@ -277,14 +277,14 @@ function GetCustomBump(entries, terms){
                 }
             }
         })
-        setBumpData(newBumpData)
+        setLineData(newLineData)
     }, [entries, terms])
 
-    return(BumpData)
+    return(LineData)
 }
 
 //// RENDER VIEW ////
-const BingChart = (props) => {
+const BingChart = () => {
     const [minImpr, setMinImpr] = useState(5)
     const [minClicks, setMinClicks] = useState(3)
     const [showOthers, setShowOthers] = useState(true)
@@ -328,8 +328,6 @@ const BingChart = (props) => {
                 return
         }
     }
-
-    console.log(latestDate)
 
     return(
         <div className={styles.body}>
@@ -407,7 +405,7 @@ const BingChart = (props) => {
                     <BarChart data={GetCustomBar(allEntries, terms)} scheme={primaryScheme} keys={terms} index={"date"} xAxis={"dates"} yAxis={""}/>
                 </div>
                 <div className={styles.wrapper_right_bottom}>
-                    <LineChart data={GetCustomBump(allEntries, terms)} scheme={primaryScheme}/>
+                    <LineChart data={GetCustomLine(allEntries, terms)} scheme={primaryScheme}/>
                 </div>
             </div>
         </div>

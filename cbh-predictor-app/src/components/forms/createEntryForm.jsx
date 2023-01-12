@@ -17,14 +17,15 @@ const CreateEntryForm = (props) => {
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();
+        const months = [{name: "Jan", index: "01"},{name: "Feb", index: "02"},{name: "Mar", index: "03"},{name: "Apr", index: "04"},{name: "May", index: "05"},{name: "Jun", index: "06"},
+        {name: "Jul", index: "07"},{name: "Aug", index: "08"},{name: "Sep", index: "09"},{name: "Oct", index: "10"},{name: "Nov", index: "11"},{name: "Dec", index: "12"}]
 
         const entryToCreate = {
             id: formData.id,
             terms: formData.terms,
             impressions: formData.impressions,
             clicks: formData.clicks,
-            month: formData.month,
-            year: formData.year
+            date: formData.year + "-" + months[months.findIndex(e => e.name === formData.month)].index
         };
 
         let url;
@@ -161,7 +162,7 @@ const CreateEntryForm = (props) => {
 
 const SearchTermForm = (props) => {
     return(
-        <form className="w-100 px-5">
+        <form className={styles.body}>
             <div className="mt-5">
                 <label className="h3 form-label">Entry terms</label>
                 <input value={props.formData.terms || ''} name="terms" type="text" className="form-control" onChange={props.handleChange} />
@@ -195,7 +196,7 @@ const SearchTermForm = (props) => {
 
 const LeadEntryForm = (props) => {
     return (
-        <form className="w-100 px-5">
+        <form className={styles.body}>
             <div className="mt-5">
                 <label className="h3 form-label">Entry leadID</label>
                 <input value={props.formData.leadID} name="leadID" type="text" className="form-control" onChange={props.handleChange} />
@@ -269,7 +270,7 @@ const LeadEntryForm = (props) => {
 
 const OrderEntryForm = (props) => {
     return(
-        <form className="w-100 px-5">
+        <form className={styles.body}>
             <div className="mt-5">
                 <label className="h3 form-label">Entry customerID</label>
                 <input value={props.formData.customerID} name="customerID" type="text" className="form-control" onChange={props.handleChange} />

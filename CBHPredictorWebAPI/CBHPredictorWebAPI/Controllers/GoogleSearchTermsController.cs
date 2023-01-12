@@ -43,7 +43,7 @@ namespace CBHPredictorWebAPI.Controllers
             return searchTerm;
         }
 
-        [HttpGet("SortByColumn")]
+        [HttpGet("SortByColumn/{col}/{order}")]
         public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> SortByColumn(GSearchTerms col, Order order)
         {
             if (order == Order.ascending)

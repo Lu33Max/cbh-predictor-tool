@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Constants from '../../utilities/Constants';
-import styles from "./loginForm.module.css"
+import styles from "./forms.module.css"
 
 const LoginForm = (props) => {
     const [formData, setFormData] = useState([])
@@ -39,7 +39,7 @@ const LoginForm = (props) => {
     };
 
     return (
-        <div className={styles.body}>
+        <div className={styles.body} style={{paddingTop: "10%"}}>
             <form>
                 <h1>Login</h1>
         

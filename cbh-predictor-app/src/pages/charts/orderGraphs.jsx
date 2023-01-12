@@ -263,7 +263,7 @@ function truncateTimeMonth(str) {
 } 
 
 //// RENDER VIEW ////
-const OrderChart = (props) => {
+const OrderChart = () => {
     const [minMatrix, setMinMatrix] = useState(150)
     const [maxMatrix, setMaxMatrix] = useState(7000)
     const [minParams, setMinParams] = useState(150)
