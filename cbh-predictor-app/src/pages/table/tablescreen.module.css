@@ -72,7 +72,6 @@
   width: 6vw;
   margin-left: .5vw;
   font-size: 25px;
-  border: 2px;
   text-align: center;
   translate: 0 30%;
 }
@@ -231,6 +230,16 @@ button {
 
 .button_popover:hover {
   background-color: rgb(137, 208, 86);
+}
+
+.col_select {
+  width: 10vw;
+  font-size: 20px;
+  border: 2px solid;
+  text-align: center;
+  padding: 2px 0;
+  margin-top: 1.5vh;
+  translate: -2px;
 }
 
 /* Dropdown Button */

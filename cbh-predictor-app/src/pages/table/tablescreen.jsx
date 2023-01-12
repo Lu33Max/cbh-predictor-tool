@@ -189,7 +189,7 @@ const TableScreen = (props) => {
                                             {showFilter()}
                                         </div>
                                         <button onClick={() => setAndRelation(!andRelation)} className={styles.button_relation}>{(andRelation) ? "and" : "or"}</button>
-                                        <PopoverButton addFilter={addFilter}/>  
+                                        <PopoverButton addFilter={addFilter} table={activeTable}/>  
                                     </div>
                                     <div className={styles.container}>
                                         <Table data={entries} rowsPerPage={rows > 0 ? rows : 1} type={activeTable} setEntries={setAllEntries} deleteEntry={deleteSingleEntry} updateEntry={updateEntry}/>
