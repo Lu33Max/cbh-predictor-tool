@@ -1,6 +1,10 @@
 using CBHPredictorWebAPI.Data;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using CBHPredictorWebAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CBHPredictorWebAPI
@@ -24,11 +28,31 @@ namespace CBHPredictorWebAPI
             });
 
             // Add services to the container.
-
+            builder.Services.AddTransient<ITokenService, TokenService>();
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme= JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
 
             builder.Services.Configure<CookiePolicyOptions>(options =>
             {
@@ -48,7 +72,31 @@ namespace CBHPredictorWebAPI
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer"
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                        }, new List<string>()
+                    }
+                });
+            });
 
             //Dependency Injection
             builder.Services.AddDbContext<CBHDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
@@ -65,16 +113,13 @@ namespace CBHPredictorWebAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseSession();
 
             app.UseHttpsRedirection();
-
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseSession();
             app.UseCors("CORSPolicy");
-
             app.MapControllers();
 
             app.Run();

@@ -1,12 +1,14 @@
 ﻿using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using ExcelDataReader;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace CBHPredictorWebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ExcelReadController : ControllerBase

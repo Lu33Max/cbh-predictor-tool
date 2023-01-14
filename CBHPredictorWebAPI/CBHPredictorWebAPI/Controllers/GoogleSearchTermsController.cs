@@ -4,9 +4,11 @@ using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
 using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CBHPredictorWebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class GoogleSearchTermsController : ControllerBase

@@ -9,6 +9,8 @@ import PopoverButton from "../../components/filter/popover";
 import Constants from "../../utilities/Constants"
 import styles from "./tablescreen.module.css"
 import { useNavigate } from "react-router-dom";
+import AuthVerify from "../../services/authVerify";
+import authService from "../../services/auth.service";
 
 const TableScreen = (props) => {
     const [entries, setEntries] = useState([])
@@ -20,7 +22,14 @@ const TableScreen = (props) => {
     const [rows, setRows] = useState(100)
     const [filters, setFilters] = useState([])
     const [andRelation, setAndRelation] = useState(true)
+
+    const user = authService.getCurrentUser()
     const navigate = useNavigate()
+
+    useEffect(() => {
+        if(!AuthVerify()) navigate("/login")
+        else axios.defaults.headers.common = {'Authorization': `Bearer ${user.token}`}
+    },[])
 
     useEffect(() => {
         setActiveTable(props.table)
@@ -287,14 +296,18 @@ const TableScreen = (props) => {
             return;
         }
 
-        axios.get(url)
-        .then(res => {
-            setAllEntries(res.data)
-        })
-        .catch(error => {
-            console.log(error)
-            alert(error)
-        })
+        if(AuthVerify()){
+            axios.get(url)
+            .then(res => {
+                setAllEntries(res.data)
+            })
+            .catch(error => {
+                console.log(error)
+                alert(error)
+            })
+        } else {
+            navigate("/login")
+        }
     }
 
     function deleteAllEntries(){
@@ -318,16 +331,20 @@ const TableScreen = (props) => {
             return;
         }
     
-        axios.delete(url)
-        .then(res => {
-            console.log(res)
-            alert('Entry successfully deleted.');
-            getAllEntries();
-        })
-        .catch(error => {
-            console.log(error)
-            alert(error)
-        })
+        if(AuthVerify()){
+            axios.delete(url)
+            .then(res => {
+                console.log(res)
+                alert('Entry successfully deleted.');
+                getAllEntries();
+            })
+            .catch(error => {
+                console.log(error)
+                alert(error)
+            })
+        } else {
+            navigate("/login")
+        }
     }
 
     function deleteSingleEntry(id){
@@ -350,6 +367,8 @@ const TableScreen = (props) => {
             alert(`Error: Table with name "${activeTable}" does not exist`)
             return;
         }
+
+        AuthVerify()
 
         axios.delete(url)
         .then(res => {
@@ -384,23 +403,27 @@ const TableScreen = (props) => {
             return;
         }
 
-        let instance = axios.create({ baseURL: base });  
-        let options = { 
-          url: 'ExportToExcel',
-          method: 'GET',
-          responseType: 'blob'
-        };
-        return instance.request(options)
-          .then(response => { 
-            let filename = response.headers['content-disposition']
-              .split(';')
-              .find((n) => n.includes('filename='))
-              .replace('filename=', '')
-              .trim();      
-            let url = window.URL
-              .createObjectURL(new Blob([response.data]));     
-            saveAs(url, filename);    
-        });
+        if(AuthVerify()){
+            let instance = axios.create({ baseURL: base });  
+            let options = { 
+            url: 'ExportToExcel',
+            method: 'GET',
+            responseType: 'blob'
+            };
+            return instance.request(options)
+            .then(response => { 
+                let filename = response.headers['content-disposition']
+                .split(';')
+                .find((n) => n.includes('filename='))
+                .replace('filename=', '')
+                .trim();      
+                let url = window.URL
+                .createObjectURL(new Blob([response.data]));     
+                saveAs(url, filename);    
+            });
+        } else {
+            navigate("/login")
+        }
     }
 }
 

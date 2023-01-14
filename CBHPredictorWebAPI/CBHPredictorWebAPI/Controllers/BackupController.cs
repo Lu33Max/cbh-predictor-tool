@@ -1,4 +1,5 @@
 ﻿using CBHPredictorWebAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -7,6 +8,7 @@ using System.Drawing;
 
 namespace CBHPredictorWebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BackupController : Controller

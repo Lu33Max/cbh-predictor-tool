@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CBHPredictorWebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BingSearchTermsController : ControllerBase

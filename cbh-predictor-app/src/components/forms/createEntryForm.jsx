@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Constants from '../../utilities/Constants';
+import axios from 'axios';
 import styles from "./forms.module.css"
 
 const CreateEntryForm = (props) => {
@@ -32,23 +33,15 @@ const CreateEntryForm = (props) => {
         if(props.table === 'Bing') url = Constants.API_URL_BING_ENTRIES;
         else url = Constants.API_URL_GOOGLE_ENTRIES
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(entryToCreate)
+        axios.post(url, entryToCreate)
+        .then(res => {
+            console.log(res)
+            props.onEntryCreated(entryToCreate);
         })
-        .then(response => response.json())
-        .then(responseFromServer => {
-            console.log(responseFromServer);
+        .catch(err => {
+            console.log(err)
+            alert(err)
         })
-        .catch((error) => {
-            console.log(error);
-            alert(error);
-        });
-
-        props.onEntryCreated(entryToCreate);
     };
 
     const handleLeadSubmit = (e) => {
@@ -73,23 +66,15 @@ const CreateEntryForm = (props) => {
 
         const url = Constants.API_URL_LEAD_ENTRIES;
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(entryToCreate)
+        axios.post(url, entryToCreate)
+        .then(res => {
+            console.log(res)
+            props.onEntryCreated(entryToCreate);
         })
-            .then(response => response.json())
-            .then(responseFromServer => {
-                console.log(responseFromServer);
-            })
-            .catch((error) => {
-                console.log(error);
-                alert(error);
-            });
-
-        props.onEntryCreated(entryToCreate);
+        .catch(err => {
+            console.log(err)
+            alert(err)
+        })
     };
 
     const handleOrderSubmit = (e) => {
@@ -131,23 +116,15 @@ const CreateEntryForm = (props) => {
 
         const url = Constants.API_URL_ORDER_ENTRIES;
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(entryToCreate)
+        axios.post(url, entryToCreate)
+        .then(res => {
+            console.log(res)
+            props.onEntryCreated(entryToCreate);
         })
-        .then(response => response.json())
-        .then(responseFromServer => {
-            console.log(responseFromServer);
+        .catch(err => {
+            console.log(err)
+            alert(err)
         })
-        .catch((error) => {
-            console.log(error);
-            alert(error);
-        });
-
-        props.onEntryCreated(entryToCreate);
     };
 
     return(

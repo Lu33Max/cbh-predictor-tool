@@ -4,9 +4,11 @@ using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
 using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CBHPredictorWebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class LeadEntriesController : ControllerBase
@@ -31,7 +33,7 @@ namespace CBHPredictorWebAPI.Controllers
         // GET: api/LeadEntries/5
         // Gets one specific Entry in the LeadEntries Table by ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<LeadEntry>> GetLeadEntry(Guid id)
+        public async Task<ActionResult<LeadEntry>> GetLeadEntry([FromRoute]Guid id)
         {
             var leadEntry = await _context.LeadEntries.FindAsync(id);
 

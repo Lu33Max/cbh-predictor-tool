@@ -4,15 +4,18 @@ using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
 using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CBHPredictorWebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class OrderEntriesController : ControllerBase
     {
         private readonly CBHDBContext _context;
         public enum OrderColumns { customerID, orderID, orderDate, orderPrice, storageTemp, donorID, cbhSampleID, matrix, supplierID, supplierSampleID, productID, countryID, quantity , unit , age , gender , ethnicity , labParameter , resultNumerical , resultUnit , resultInterpretation , testMethod , testKitManufacturer , testSystemManufacturer , diagnosis , icd , histologicalDiagnosis , organ , collectionCountry , collectionDate }
+        public enum order { ascending, descending }
 
         public OrderEntriesController(CBHDBContext context)
         {
@@ -140,7 +143,7 @@ namespace CBHPredictorWebAPI.Controllers
                 orderEntry.lastEdited = DateTime.Now;
                 await _context.OrderEntries.AddAsync(orderEntry);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction("GetLeadEntry", new { id = orderEntry.id }, orderEntry);
+                return CreatedAtAction("GetOrderEntry", new { id = orderEntry.id }, orderEntry);
             }
             else
             {

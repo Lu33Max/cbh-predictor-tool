@@ -121,25 +121,6 @@ namespace CBHPredictorWebAPI.Migrations
                     b.ToTable("LeadEntries");
                 });
 
-            modelBuilder.Entity("CBHPredictorWebAPI.Models.LoginEntry", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("LoginEntries");
-                });
-
             modelBuilder.Entity("CBHPredictorWebAPI.Models.OrderEntry", b =>
                 {
                     b.Property<Guid>("id")
@@ -243,6 +224,41 @@ namespace CBHPredictorWebAPI.Migrations
                     b.HasKey("id");
 
                     b.ToTable("OrderEntries");
+                });
+
+            modelBuilder.Entity("CBHPredictorWebAPI.Models.UserModel", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("UserModels");
+
+                    b.HasData(
+                        new
+                        {
+                            id = new Guid("8196faf6-e95a-48e2-a269-1b5e34b3fb63"),
+                            Email = "email",
+                            Password = "password",
+                            UserName = "name"
+                        });
                 });
 #pragma warning restore 612, 618
         }

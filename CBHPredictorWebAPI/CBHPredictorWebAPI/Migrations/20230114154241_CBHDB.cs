@@ -67,19 +67,6 @@ namespace CBHPredictorWebAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LoginEntries",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    password = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LoginEntries", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OrderEntries",
                 columns: table => new
                 {
@@ -120,6 +107,27 @@ namespace CBHPredictorWebAPI.Migrations
                 {
                     table.PrimaryKey("PK_OrderEntries", x => x.id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "UserModels",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserModels", x => x.id);
+                });
+
+            migrationBuilder.InsertData(
+                table: "UserModels",
+                columns: new[] { "id", "Email", "Password", "RefreshToken", "RefreshTokenExpiryTime", "UserName" },
+                values: new object[] { new Guid("8196faf6-e95a-48e2-a269-1b5e34b3fb63"), "email", "password", null, null, "name" });
         }
 
         /// <inheritdoc />
@@ -135,10 +143,10 @@ namespace CBHPredictorWebAPI.Migrations
                 name: "LeadEntries");
 
             migrationBuilder.DropTable(
-                name: "LoginEntries");
+                name: "OrderEntries");
 
             migrationBuilder.DropTable(
-                name: "OrderEntries");
+                name: "UserModels");
         }
     }
 }

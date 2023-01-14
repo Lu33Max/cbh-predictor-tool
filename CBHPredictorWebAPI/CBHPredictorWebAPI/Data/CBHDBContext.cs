@@ -11,6 +11,17 @@ namespace CBHPredictorWebAPI.Data
         public DbSet<LeadEntry> LeadEntries { get; set; }
         public DbSet<GoogleSearchTerm> GoogleSearchTerms { get; set; }
         public DbSet<BingSearchTerm> BingSearchTerms { get; set; }
-        public DbSet<LoginEntry> LoginEntries { get; set; }
+        public DbSet<UserModel> UserModels { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserModel>().HasData(new UserModel
+            {
+                id = Guid.NewGuid(),
+                UserName = "name",
+                Email = "email",
+                Password = "password"
+            });
+        }
     }
 }

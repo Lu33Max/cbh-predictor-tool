@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import Constants from '../../utilities/Constants';
+import authService from '../../services/auth.service';
 import styles from "./forms.module.css"
 
-const LoginForm = (props) => {
+const LoginForm = () => {
     const [formData, setFormData] = useState([])
-
     const navigate = useNavigate()
 
     const handleChange = (e) => {
@@ -18,24 +17,16 @@ const LoginForm = (props) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const url = `${Constants.API_URL_LOGIN_ENTRIES}/SearchForEntry/${formData.email}/${formData.password}`
-
-        fetch(url, {
-            method: 'GET'
-        })
-        .then(response => response.json())
-        .then(responseFromServer => {
-            if(responseFromServer === true){
-                props.setLoggedIn(responseFromServer)
+        authService.login(formData.email, formData.password).then(
+            () => {
+                console.log("login successful")
                 navigate("/")
-            } else {
-                alert('Wrong Email or password. Try again.')
+            },
+            error => {
+                const resMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+                console.error(resMessage)
             }
-        })
-        .catch((error) => {
-            console.log(error);
-            alert(error);
-        });
+        )
     };
 
     return (

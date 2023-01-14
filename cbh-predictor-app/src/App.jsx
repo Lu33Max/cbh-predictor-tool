@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import axios from "axios";
+import Constants from "./utilities/Constants";
 
 import Header from "./pages/header/header";
 import HomeScreen from "./pages/home";
@@ -10,16 +12,17 @@ import LeadChart from "./pages/charts/leadGraphs";
 import OrderChart from "./pages/charts/orderGraphs";
 import TableScreen from "./pages/table/tablescreen";
 import NoPage from "./pages/nopage";
+import AuthVerify from "./services/authVerify";
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false)
+  const user = localStorage.getItem("user")
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Header />}>
-          <Route index element={loggedIn ? <HomeScreen loggedIn={loggedIn}/> : <Navigate replace to="/login"/>} />
-          <Route path="login" element={<LoginForm setLoggedIn={setLoggedIn}/>} />
+          <Route index element={<HomeScreen/>} />
+          <Route path="login" element={<LoginForm/>} />
           <Route path="charts/">
             <Route path="bing" element={<BingChart/>} />
             <Route path="google" element={<GoogleChart/>} />

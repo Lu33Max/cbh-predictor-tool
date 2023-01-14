@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Constants from '../../utilities/Constants';
+import axios from 'axios';
 import styles from "./forms.module.css"
 
 const FileUploadForm = (props) => {
@@ -44,22 +45,16 @@ const FileUploadForm = (props) => {
         }
 
 		formData.append('File', selectedFile);
-
-		fetch(
-			url,
-			{
-				method: 'POST',
-				body: formData,
-			}
-		)
-        .then((response) => response.json())
-        .then((result) => {
-            console.log('Success:', result);
+        
+        axios.post(url, formData)
+        .then(res => {
+            console.log(res)
             props.onFileUploaded(true);
         })
-        .catch((error) => {
-            console.error('Error:', error);
-        });  
+        .catch(err => {
+            console.log(err)
+            alert(err)
+        })
 	};
 
 	return(
