@@ -1,7 +1,5 @@
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import axios from "axios";
-import Constants from "./utilities/Constants";
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Header from "./pages/header/header";
 import HomeScreen from "./pages/home";
@@ -12,29 +10,22 @@ import LeadChart from "./pages/charts/leadGraphs";
 import OrderChart from "./pages/charts/orderGraphs";
 import TableScreen from "./pages/table/tablescreen";
 import NoPage from "./pages/nopage";
-import AuthVerify from "./services/authVerify";
 
 export default function App() {
-  const user = localStorage.getItem("user")
-
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Header />}>
           <Route index element={<HomeScreen/>} />
           <Route path="login" element={<LoginForm/>} />
-          <Route path="charts/">
-            <Route path="bing" element={<BingChart/>} />
-            <Route path="google" element={<GoogleChart/>} />
-            <Route path="lead" element={<LeadChart/>} />
-            <Route path="order" element={<OrderChart/>} />
-          </Route>
-          <Route path="table/">
-            <Route path="bing" element={<TableScreen table='Bing'/>} />
-            <Route path="google" element={<TableScreen table='Google'/>} />
-            <Route path="lead" element={<TableScreen table='Lead'/>} />
-            <Route path="order" element={<TableScreen table='Order'/>} />
-          </Route>
+          <Route path="charts/bing" element={<BingChart/>} />
+          <Route path="charts/google" element={<GoogleChart/>} />
+          <Route path="charts/lead" element={<LeadChart/>} />
+          <Route path="charts/order" element={<OrderChart/>} />
+          <Route path="table/bing" element={<TableScreen table='Bing'/>} />
+          <Route path="table/google" element={<TableScreen table='Google'/>} />
+          <Route path="table/lead" element={<TableScreen table='Lead'/>} />
+          <Route path="table/order" element={<TableScreen table='Order'/>} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>

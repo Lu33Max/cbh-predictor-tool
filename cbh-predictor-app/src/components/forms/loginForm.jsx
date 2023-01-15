@@ -17,7 +17,7 @@ const LoginForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        authService.login(formData.email, formData.password).then(
+        authService.login(formData.username, formData.password).then(
             () => {
                 console.log("login successful")
                 navigate("/")
@@ -35,8 +35,8 @@ const LoginForm = () => {
                 <h1>Login</h1>
         
                 <div className="mt-5">
-                    <label>E-Mail Adress</label>
-                    <input value={formData.email || ''} name="email" type="text" className="form-control" onChange={handleChange} />
+                    <label>Username</label>
+                    <input value={formData.username || ''} name="username" type="text" className="form-control" onChange={handleChange} />
                 </div>
         
                 <div className="mt-4">

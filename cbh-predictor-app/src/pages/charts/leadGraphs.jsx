@@ -3,8 +3,9 @@ import { PieChart } from "../../components/charts/pieChart";
 import { LineChart } from "../../components/charts/lineChart";
 import Constants from "../../utilities/Constants";
 import styles from "./graphs.module.css"
-import axios from "axios";
+import axiosApiInstance from "../../services/interceptor";
 import { useNavigate } from "react-router-dom";
+import authService from "../../services/auth.service";
 
 var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6','#a1e5ad','#82cc96','#62b37f','#429a6a','#188255','#429a6a','#62b37f','#82cc96','#a1e5ad','#c0ffc6','#abf4ab','#96e890','#83dc73','#71d055']
 var secondaryScheme = ['#d15454','#e16c7c','#ec86a1','#f4a2c3','#f9bee1','#ffd9fa','#e6b2e3','#cc8bce','#b066bb','#9140a8','#711496']
@@ -139,16 +140,16 @@ const LeadChart = () => {
     const [showOthers, setShowOthers] = useState(true)
     const [allEntries, setAllEntries] = useState([])
 
+    const user = authService.getCurrentUser()
     const navigate = useNavigate()
 
     useEffect(() => {
+        if(!user) navigate("/login")
+    },[])
+
+    useEffect(() => {
         const url = Constants.API_URL_LEAD_ENTRIES;
-
-        axios.get(url)
-        .then(res => {
-            setAllEntries(res.data);
-        })
-
+        getEntries(url)
     }, [])
 
     const onInputChange = (e) => {
@@ -195,6 +196,11 @@ const LeadChart = () => {
             </div>
         </div>
     )
+
+    async function getEntries(url){
+        const result = await axiosApiInstance.get(url)
+        setAllEntries(result.data)
+    }
 }
 
 export default LeadChart

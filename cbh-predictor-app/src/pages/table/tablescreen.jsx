@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
-import axios from "axios";
+import axiosApiInstance from "../../services/interceptor";
 import { saveAs } from "file-saver"
+import { useNavigate } from "react-router-dom";
+
 import Table from "../../components/table/table"
 import FileUploadForm from "../../components/forms/fileUploadForm"
 import CreateEntryForm from "../../components/forms/createEntryForm"
@@ -8,8 +10,7 @@ import UpdateEntryForm from "../../components/forms/updateEntryForm"
 import PopoverButton from "../../components/filter/popover";
 import Constants from "../../utilities/Constants"
 import styles from "./tablescreen.module.css"
-import { useNavigate } from "react-router-dom";
-import AuthVerify from "../../services/authVerify";
+
 import authService from "../../services/auth.service";
 
 const TableScreen = (props) => {
@@ -27,8 +28,7 @@ const TableScreen = (props) => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        if(!AuthVerify()) navigate("/login")
-        else axios.defaults.headers.common = {'Authorization': `Bearer ${user.token}`}
+        if(!user) navigate("/login")
     },[])
 
     useEffect(() => {
@@ -275,7 +275,7 @@ const TableScreen = (props) => {
     }
 
     //// SERVER REQUESTS ////
-    function getAllEntries(){
+    async function getAllEntries(){
         var url;
   
         switch (activeTable) {
@@ -296,21 +296,12 @@ const TableScreen = (props) => {
             return;
         }
 
-        if(AuthVerify()){
-            axios.get(url)
-            .then(res => {
-                setAllEntries(res.data)
-            })
-            .catch(error => {
-                console.log(error)
-                alert(error)
-            })
-        } else {
-            navigate("/login")
-        }
+        const result = await axiosApiInstance.get(url)
+        console.log(result)
+        setAllEntries(result.data)
     }
 
-    function deleteAllEntries(){
+    async function deleteAllEntries(){
         var url;
     
         switch (activeTable) {
@@ -331,23 +322,14 @@ const TableScreen = (props) => {
             return;
         }
     
-        if(AuthVerify()){
-            axios.delete(url)
-            .then(res => {
-                console.log(res)
-                alert('Entry successfully deleted.');
-                getAllEntries();
-            })
-            .catch(error => {
-                console.log(error)
-                alert(error)
-            })
-        } else {
-            navigate("/login")
+        const result = await axiosApiInstance.delete(url)
+        if(result.status === 200) {
+            alert("Entries successfully deleted")
+            getAllEntries()
         }
     }
 
-    function deleteSingleEntry(id){
+    async function deleteSingleEntry(id){
         var url;
 
         switch (activeTable) {
@@ -368,21 +350,14 @@ const TableScreen = (props) => {
             return;
         }
 
-        AuthVerify()
-
-        axios.delete(url)
-        .then(res => {
-            console.log(res)
-            alert('Entry successfully deleted.');
-            getAllEntries();
-        })
-        .catch(error => {
-            console.log(error)
-            alert(error)
-        })
+        const result = await axiosApiInstance.delete(url)
+        if(result.status === 200) {
+            alert("Entry successfully deleted")
+            getAllEntries()
+        }
     }
 
-    function exportToExcel() {
+    async function exportToExcel() {
         var base;
 
         switch (activeTable) {
@@ -403,27 +378,24 @@ const TableScreen = (props) => {
             return;
         }
 
-        if(AuthVerify()){
-            let instance = axios.create({ baseURL: base });  
-            let options = { 
+        const user = authService.getCurrentUser()
+        let options = { 
             url: 'ExportToExcel',
             method: 'GET',
-            responseType: 'blob'
-            };
-            return instance.request(options)
-            .then(response => { 
-                let filename = response.headers['content-disposition']
-                .split(';')
-                .find((n) => n.includes('filename='))
-                .replace('filename=', '')
-                .trim();      
-                let url = window.URL
-                .createObjectURL(new Blob([response.data]));     
-                saveAs(url, filename);    
-            });
-        } else {
-            navigate("/login")
-        }
+            responseType: 'blob',
+            headers: {"Authorization" : `Bearer ${user.token}`}
+        };
+        return axiosApiInstance.request(options)
+        .then(response => { 
+            let filename = response.headers['content-disposition']
+            .split(';')
+            .find((n) => n.includes('filename='))
+            .replace('filename=', '')
+            .trim();      
+            let url = window.URL
+            .createObjectURL(new Blob([response.data]));     
+            saveAs(url, filename);    
+        });
     }
 }
 

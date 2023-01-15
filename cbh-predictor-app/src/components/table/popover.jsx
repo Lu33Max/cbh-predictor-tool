@@ -1,5 +1,4 @@
-import axios from 'axios';
-import Button from 'react-bootstrap/Button';
+import axiosApiInstance from '../../services/interceptor';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import Constants from '../../utilities/Constants';
@@ -8,8 +7,6 @@ import styles from "./table.module.css"
 const PopoverButton = (props) => {
   function handleSubmit(asc) {
     let url
-
-    console.log(props.type)
 
     switch (props.type) {
       case 'Bing':
@@ -31,15 +28,7 @@ const PopoverButton = (props) => {
     if(asc) url += "ascending"
     else url += "descending"
 
-    console.log(url)
-
-    axios.get(url)
-    .then(res => {
-        props.setEntries(res.data);
-    })
-    .catch(error => {
-      alert(error)
-    })
+    getSorted(url, props)
   }
 
   return(
@@ -55,5 +44,12 @@ const PopoverButton = (props) => {
     </OverlayTrigger>
   )
 };
+
+async function getSorted(url, props){
+  const response = await axiosApiInstance.get(url)
+  if(response.status === 200){
+    props.setEntries(response.data)
+  }
+}
 
 export default PopoverButton;

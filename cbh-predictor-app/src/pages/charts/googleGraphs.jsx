@@ -6,10 +6,11 @@ import { BarChart } from "../../components/charts/barChart";
 import Constants from "../../utilities/Constants";
 import PopoverButton from "../../components/charts/popover";
 import styles from "./graphs.module.css"
-import axios from "axios";
+import axiosApiInstance from "../../services/interceptor";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
+import authService from "../../services/auth.service";
 
 var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6','#a1e5ad','#82cc96','#62b37f','#429a6a','#188255','#429a6a','#62b37f','#82cc96','#a1e5ad','#c0ffc6','#abf4ab','#96e890','#83dc73','#71d055']
 var secondaryScheme = ['#d15454','#e16c7c','#ec86a1','#f4a2c3','#f9bee1','#ffd9fa','#e6b2e3','#cc8bce','#b066bb','#9140a8','#711496']
@@ -295,26 +296,23 @@ const GoogleChart = () => {
     const [latestDate, setLatestDate] = useState([])
     const [terms, setTerms] = useState(["biobank","ffpe","ffpe tissue"])
 
+    const user = authService.getCurrentUser()
     const printRef = React.useRef()
     const navigate = useNavigate()
 
     useEffect(() => {
-        const url = Constants.API_URL_GOOGLE_ENTRIES;
-
-        axios.get(url)
-        .then(res => {
-            setAllEntries(res.data);
-        })
-    }, [])
+        if(!user) navigate("/login")
+    },[])
 
     useEffect(() => {
         const url = Constants.API_URL_GOOGLE_ENTRIES;
+        getEntries(url)
+    }, [])
 
+    useEffect(() => {
+        const url = `${Constants.API_URL_GOOGLE_ENTRIES}/GetCurrentMonth`
         if(allEntries.length > 0){
-            axios.get([url,'/GetCurrentMonth'].join(''))
-            .then(res => {
-                setLatestDate(res.data.split('-'))
-            })
+            getLatestDate(url)
         }
     },[allEntries])
 
@@ -448,6 +446,17 @@ const GoogleChart = () => {
               a !== item
             )
         );
+    }
+
+    async function getEntries(url){
+        const result = await axiosApiInstance.get(url)
+        console.log(result.data)
+        setAllEntries(result.data)
+    }
+    async function getLatestDate(url){
+        const result = await axiosApiInstance.get(url)
+        console.log(result.data)
+        setLatestDate(result.data.split('-'))
     }
 }
 

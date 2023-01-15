@@ -6,11 +6,10 @@ import { BarChart } from "../../components/charts/barChart";
 import Constants from "../../utilities/Constants";
 import PopoverButton from "../../components/charts/popover";
 import styles from "./graphs.module.css"
-import axios from "axios";
+import axiosApiInstance from "../../services/interceptor";
 import { useNavigate } from "react-router-dom";
 
 import authService from "../../services/auth.service";
-import { withRouter } from "../../utilities/with-router";
 
 var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6','#a1e5ad','#82cc96','#62b37f','#429a6a','#188255','#429a6a','#62b37f','#82cc96','#a1e5ad','#c0ffc6','#abf4ab','#96e890','#83dc73','#71d055']
 var secondaryScheme = ['#d15454','#e16c7c','#ec86a1','#f4a2c3','#f9bee1','#ffd9fa','#e6b2e3','#cc8bce','#b066bb','#9140a8','#711496']
@@ -287,7 +286,7 @@ function GetCustomLine(entries, terms){
 }
 
 //// RENDER VIEW ////
-const BingChart = (props) => {
+const BingChart = () => {
     const [minImpr, setMinImpr] = useState(5)
     const [minClicks, setMinClicks] = useState(3)
     const [showOthers, setShowOthers] = useState(true)
@@ -296,30 +295,22 @@ const BingChart = (props) => {
     const [terms, setTerms] = useState(["biobank","ffpe tissue","biorepository"])
 
     const user = authService.getCurrentUser()
+    const navigate = useNavigate()
 
-    if(user) axios.defaults.headers.common = {'Authorization': `Bearer ${user.token}`}
-    else props.router.navigate("/login")
+    useEffect(() => {
+        if(!user) navigate("/login")
+    },[])
 
     useEffect(() => {
         const url = Constants.API_URL_BING_ENTRIES;
-
-        axios.get(url)
-        .then(res => {
-            setAllEntries(res.data);
-        })
-
+        getEntries(url)
     }, [])
 
     useEffect(() => {
-        const url = Constants.API_URL_BING_ENTRIES;
-
+        const url = `${Constants.API_URL_BING_ENTRIES}/GetCurrentMonth`
         if(allEntries.length > 0){
-            axios.get([url,'/GetCurrentMonth'].join(''))
-            .then(res => {
-                setLatestDate(res.data.split('-'))
-            })
+            getLatestDate(url)
         }
-
     },[allEntries])
 
     const onInputChange = (e) => {
@@ -337,7 +328,7 @@ const BingChart = (props) => {
 
     return(
         <div className={styles.body}>
-            <button onClick={() => {props.router.navigate("/")}} className={styles.button_backarrow}>&#60;</button>
+            <button onClick={() => {navigate("/")}} className={styles.button_backarrow}>&#60;</button>
             {/* First Block */}
             <div className={styles.grid_container_3_items}>
                 <div className={styles.settings}>
@@ -438,6 +429,17 @@ const BingChart = (props) => {
             )
         );
     }
+
+    async function getEntries(url){
+        const result = await axiosApiInstance.get(url)
+        console.log(result.data)
+        setAllEntries(result.data)
+    }
+    async function getLatestDate(url){
+        const result = await axiosApiInstance.get(url)
+        console.log(result.data)
+        setLatestDate(result.data.split('-'))
+    }
 }
 
-export default withRouter(BingChart)
+export default BingChart

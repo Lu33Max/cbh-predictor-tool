@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Constants from '../../utilities/Constants';
+import axiosApiInstance from '../../services/interceptor';
 import styles from "./forms.module.css"
 
 const UpdateEntryForm = (props) => {
@@ -82,7 +83,7 @@ const UpdateEntryForm = (props) => {
         });
     };
 
-    const handleSearchSubmit = (e) => {
+    async function handleSearchSubmit(e) {
         e.preventDefault();
         const months = [{name: "Jan", index: "01"},{name: "Feb", index: "02"},{name: "Mar", index: "03"},{name: "Apr", index: "04"},{name: "May", index: "05"},{name: "Jun", index: "06"},
         {name: "Jul", index: "07"},{name: "Aug", index: "08"},{name: "Sep", index: "09"},{name: "Oct", index: "10"},{name: "Nov", index: "11"},{name: "Dec", index: "12"}]
@@ -99,26 +100,13 @@ const UpdateEntryForm = (props) => {
         if(props.table === 'Bing') url = `${Constants.API_URL_BING_ENTRIES}/${props.entry.id}`;
         else url = `${Constants.API_URL_GOOGLE_ENTRIES}/${props.entry.id}`;
 
-        fetch(url, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(entryToUpdate)
-        })
-        .then(response => response.json())
-        .then(responseFromServer => {
-            console.log(responseFromServer);
-        })
-        .catch((error) => {
-            console.log(error);
-            alert(error);
-        });
-
-        props.onEntryUpdated(entryToUpdate);
+        const result = await axiosApiInstance.put(url, entryToUpdate)
+        if(result.status === 200){
+            props.onEntryUpdated(entryToUpdate)
+        }
     };
 
-    const handleLeadSubmit = (e) => {
+    async function handleLeadSubmit(e) {
         e.preventDefault();
 
         const entryToUpdate = {
@@ -140,26 +128,13 @@ const UpdateEntryForm = (props) => {
 
         const url = `${Constants.API_URL_LEAD_ENTRIES}/${props.entry.id}`;
 
-        fetch(url, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(entryToUpdate)
-        })
-        .then(response => response.json())
-        .then(responseFromServer => {
-            console.log(responseFromServer);
-        })
-        .catch((error) => {
-            console.log(error);
-            alert(error);
-        });
-
-        props.onEntryUpdated(entryToUpdate);
+        const result = await axiosApiInstance.put(url, entryToUpdate)
+        if(result.status === 200){
+            props.onEntryUpdated(entryToUpdate)
+        }
     };
 
-    const handleOrderSubmit = (e) => {
+    async function handleOrderSubmit(e) {
         e.preventDefault();
 
         const entryToUpdate = {
@@ -198,23 +173,10 @@ const UpdateEntryForm = (props) => {
 
         const url = `${Constants.API_URL_ORDER_ENTRIES}/${props.entry.id}`;
 
-        fetch(url, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(entryToUpdate)
-        })
-        .then(response => response.json())
-        .then(responseFromServer => {
-            console.log(responseFromServer);
-        })
-        .catch((error) => {
-            console.log(error);
-            alert(error);
-        });
-
-        props.onEntryUpdated(entryToUpdate);
+        const result = await axiosApiInstance.put(url, entryToUpdate)
+        if(result.status === 200){
+            props.onEntryUpdated(entryToUpdate)
+        }
     };
 
     return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Constants from '../../utilities/Constants';
-import axios from 'axios';
+import axiosApiInstance from '../../services/interceptor';
 import styles from "./forms.module.css"
 
 const CreateEntryForm = (props) => {
@@ -16,7 +16,7 @@ const CreateEntryForm = (props) => {
         });
     };
 
-    const handleSearchSubmit = (e) => {
+    async function handleSearchSubmit(e) {
         e.preventDefault();
         const months = [{name: "Jan", index: "01"},{name: "Feb", index: "02"},{name: "Mar", index: "03"},{name: "Apr", index: "04"},{name: "May", index: "05"},{name: "Jun", index: "06"},
         {name: "Jul", index: "07"},{name: "Aug", index: "08"},{name: "Sep", index: "09"},{name: "Oct", index: "10"},{name: "Nov", index: "11"},{name: "Dec", index: "12"}]
@@ -33,18 +33,13 @@ const CreateEntryForm = (props) => {
         if(props.table === 'Bing') url = Constants.API_URL_BING_ENTRIES;
         else url = Constants.API_URL_GOOGLE_ENTRIES
 
-        axios.post(url, entryToCreate)
-        .then(res => {
-            console.log(res)
-            props.onEntryCreated(entryToCreate);
-        })
-        .catch(err => {
-            console.log(err)
-            alert(err)
-        })
+        const result = await axiosApiInstance.post(url, entryToCreate, {'Accept': 'application/json', 'Content-Type': 'application/json'})
+        if(result.status === 201){
+            props.onEntryCreated(entryToCreate)
+        }
     };
 
-    const handleLeadSubmit = (e) => {
+    async function handleLeadSubmit(e) {
         e.preventDefault();
 
         const entryToCreate = {
@@ -66,18 +61,13 @@ const CreateEntryForm = (props) => {
 
         const url = Constants.API_URL_LEAD_ENTRIES;
 
-        axios.post(url, entryToCreate)
-        .then(res => {
-            console.log(res)
-            props.onEntryCreated(entryToCreate);
-        })
-        .catch(err => {
-            console.log(err)
-            alert(err)
-        })
+        const result = await axiosApiInstance.post(url, entryToCreate, {'Accept': 'application/json', 'Content-Type': 'application/json'})
+        if(result.status === 201){
+            props.onEntryCreated(entryToCreate)
+        }
     };
 
-    const handleOrderSubmit = (e) => {
+    async function handleOrderSubmit(e) {
         e.preventDefault();
 
         const entryToCreate = {
@@ -116,15 +106,10 @@ const CreateEntryForm = (props) => {
 
         const url = Constants.API_URL_ORDER_ENTRIES;
 
-        axios.post(url, entryToCreate)
-        .then(res => {
-            console.log(res)
-            props.onEntryCreated(entryToCreate);
-        })
-        .catch(err => {
-            console.log(err)
-            alert(err)
-        })
+        const result = await axiosApiInstance.post(url, entryToCreate, {'Accept': 'application/json', 'Content-Type': 'application/json'})
+        if(result.status === 201){
+            props.onEntryCreated(entryToCreate)
+        }
     };
 
     return(
@@ -176,67 +161,67 @@ const LeadEntryForm = (props) => {
         <form className={styles.body}>
             <div className="mt-5">
                 <label className="h3 form-label">Entry leadID</label>
-                <input value={props.formData.leadID} name="leadID" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.leadID || ''} name="leadID" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry leadNo</label>
-                <input value={props.formData.leadNO} name="leadNO" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.leadNO || ''} name="leadNO" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry leadStatus</label>
-                <input value={props.formData.leadStatus} name="leadStatus" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.leadStatus || ''} name="leadStatus" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry leadDate</label>
-                <input value={props.formData.leadDate} name="leadDate" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.leadDate || ''} name="leadDate" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry organisationID</label>
-                <input value={props.formData.organisationID} name="organisationID" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.organisationID || ''} name="organisationID" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry countryID</label>
-                <input value={props.formData.countryID} name="countryID" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.countryID || ''} name="countryID" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry channel</label>
-                <input value={props.formData.channel} name="channel" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.channel || ''} name="channel" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry fieldOfInterest</label>
-                <input value={props.formData.fieldOfInterest} name="fieldOfInterest" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.fieldOfInterest || ''} name="fieldOfInterest" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry specificOfInterest</label>
-                <input value={props.formData.specificOfInterest} name="specificOfInterest" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.specificOfInterest || ''} name="specificOfInterest" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry paramOfInterest</label>
-                <input value={props.formData.paramOfInterest} name="paramOfInterest" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.paramOfInterest || ''} name="paramOfInterest" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry diagnosisOfInterest</label>
-                <input value={props.formData.diagnosisOfInterest} name="diagnosisOfInterest" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.diagnosisOfInterest || ''} name="diagnosisOfInterest" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry matrixOfInterest</label>
-                <input value={props.formData.matrixOfInterest} name="matrixOfInterest" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.matrixOfInterest || ''} name="matrixOfInterest" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry quantityOfInterest</label>
-                <input value={props.formData.quantityOfInterest} name="quantityOfInterest" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.quantityOfInterest || ''} name="quantityOfInterest" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <button onClick={props.handleSubmit} className={styles.button_green}>Submit</button>
@@ -250,152 +235,152 @@ const OrderEntryForm = (props) => {
         <form className={styles.body}>
             <div className="mt-5">
                 <label className="h3 form-label">Entry customerID</label>
-                <input value={props.formData.customerID} name="customerID" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.customerID || ''} name="customerID" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry orderID</label>
-                <input value={props.formData.orderID} name="orderID" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.orderID || ''} name="orderID" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-4">
                 <label className="h3 form-label">Entry orderDate</label>
-                <input value={props.formData.orderDate} name="orderDate" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.orderDate || ''} name="orderDate" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry orderPrice</label>
-                <input value={props.formData.orderPrice} name="orderPrice" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.orderPrice || ''} name="orderPrice" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry storageTemp</label>
-                <input value={props.formData.storageTemp} name="storageTemp" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.storageTemp || ''} name="storageTemp" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry donorID</label>
-                <input value={props.formData.donorID} name="donorID" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.donorID || ''} name="donorID" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry cbhSampleID</label>
-                <input value={props.formData.cbhSampleID} name="cbhSampleID" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.cbhSampleID || ''} name="cbhSampleID" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry matrix</label>
-                <input value={props.formData.matrix} name="matrix" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.matrix || ''} name="matrix" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry supplierID</label>
-                <input value={props.formData.supplierID} name="supplierID" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.supplierID || ''} name="supplierID" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry supplierSampleID</label>
-                <input value={props.formData.supplierSampleID} name="supplierSampleID" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.supplierSampleID || ''} name="supplierSampleID" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry productID</label>
-                <input value={props.formData.productID} name="productID" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.productID || ''} name="productID" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry countryID</label>
-                <input value={props.formData.countryID} name="countryID" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.countryID || ''} name="countryID" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry quantity</label>
-                <input value={props.formData.quantity} name="quantity" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.quantity || ''} name="quantity" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry unit</label>
-                <input value={props.formData.unit} name="unit" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.unit || ''} name="unit" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry age</label>
-                <input value={props.formData.age} name="age" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.age || ''} name="age" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry gender</label>
-                <input value={props.formData.gender} name="gender" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.gender || ''} name="gender" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry ethnicity</label>
-                <input value={props.formData.ethnicity} name="ethnicity" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.ethnicity || ''} name="ethnicity" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry labParamater</label>
-                <input value={props.formData.labParamater} name="labParamter" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.labParamater || ''} name="labParamter" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry resultNumerical</label>
-                <input value={props.formData.resultNumerical} name="resultNumerical" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.resultNumerical || ''} name="resultNumerical" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry resultUnit</label>
-                <input value={props.formData.resultUnit} name="terms" type="resultUnit" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.resultUnit || ''} name="terms" type="resultUnit" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry resultInterpretation</label>
-                <input value={props.formData.resultInterpretation} name="resultInterpretation" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.resultInterpretation || ''} name="resultInterpretation" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry testMethod</label>
-                <input value={props.formData.testMethod} name="testMethod" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.testMethod || ''} name="testMethod" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry testKitManufacturer</label>
-                <input value={props.formData.testKitManufacturer} name="testKitManufacturer" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.testKitManufacturer || ''} name="testKitManufacturer" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry testSystemManufacturer</label>
-                <input value={props.formData.testSystemManufaturer} name="testSystemManufacturer" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.testSystemManufaturer || ''} name="testSystemManufacturer" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry diagnosis</label>
-                <input value={props.formData.diagnosis} name="diagnosis" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.diagnosis || ''} name="diagnosis" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry icd</label>
-                <input value={props.formData.icd} name="icd" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.icd || ''} name="icd" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry histologicalDiagnosis</label>
-                <input value={props.formData.histologicalDiagnosis} name="histologicalDiagnosis" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.histologicalDiagnosis || ''} name="histologicalDiagnosis" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry organ</label>
-                <input value={props.formData.organ} name="organ" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.organ || ''} name="organ" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry collectionCountry</label>
-                <input value={props.formData.collectionCountry} name="collectionCountry" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.collectionCountry || ''} name="collectionCountry" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <div className="mt-5">
                 <label className="h3 form-label">Entry collectionDate</label>
-                <input value={props.formData.collectionDate} name="collectionDate" type="text" className="form-control" onChange={props.handleChange} />
+                <input value={props.formData.collectionDate || ''} name="collectionDate" type="text" className="form-control" onChange={props.handleChange} />
             </div>
 
             <button onClick={props.handleSubmit} className={styles.button_green}>Submit</button>

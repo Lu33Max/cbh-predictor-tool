@@ -1,10 +1,14 @@
-import AuthVerify from "../services/authVerify"
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import authService from "../services/auth.service"
 
 const HomeScreen = () => {
+    const user = authService.getCurrentUser()
     const navigate = useNavigate()
-    if(!AuthVerify()) navigate("/login")
-    console.log(AuthVerify())
+
+    useEffect(() => {
+        if(!user) navigate("/login")
+    },[])
 
     return(
         <h1>

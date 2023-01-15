@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Constants from '../../utilities/Constants';
-import axios from 'axios';
+import axiosApiInstance from '../../services/interceptor';
 import styles from "./forms.module.css"
 
 const FileUploadForm = (props) => {
@@ -21,7 +21,7 @@ const FileUploadForm = (props) => {
 		setIsFilePicked(true);
 	};
 
-	const handleSubmission = (e) => {
+	async function handleSubmission(e) {
         e.preventDefault();
 
 		const formData = new FormData();
@@ -46,15 +46,10 @@ const FileUploadForm = (props) => {
 
 		formData.append('File', selectedFile);
         
-        axios.post(url, formData)
-        .then(res => {
-            console.log(res)
-            props.onFileUploaded(true);
-        })
-        .catch(err => {
-            console.log(err)
-            alert(err)
-        })
+        const result = await axiosApiInstance.post(url, formData)
+        if(result.status === 200){
+            props.onFileUploaded(true)
+        }
 	};
 
 	return(
