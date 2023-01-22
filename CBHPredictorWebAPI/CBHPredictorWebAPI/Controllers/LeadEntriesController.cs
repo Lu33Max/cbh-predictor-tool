@@ -45,44 +45,11 @@ namespace CBHPredictorWebAPI.Controllers
             return leadEntry;
         }
 
-        [HttpGet("SortByColumn/{col}/{order}")]
-        public async Task<ActionResult<IEnumerable<LeadEntry>>> SortByColumn(LeadColumns col, Order order)
-        {
-            if (order == Order.ascending)
-            {
-                return await _context.LeadEntries.FromSqlRaw("SELECT * FROM LeadEntries ORDER BY [" + col + "] ASC").ToListAsync();
-            }
-            else
-            {
-                return await _context.LeadEntries.FromSqlRaw("SELECT * FROM LeadEntries ORDER BY [" + col + "] DESC").ToListAsync();
-            }
-        }
-
-        [HttpGet("CountRows")]
+        [HttpGet("count")]
         public async Task<int> CountRows()
         {
-            var command = new StringBuilder("SELECT * FROM LeadEntries WHERE ");
-            string? filter = HttpContext.Session.GetString("LeadFilter");
-
-            if (string.IsNullOrEmpty(filter))
-            {
-                List<LeadEntry> test = await _context.LeadEntries.ToListAsync();
-                return test.Count();
-            }
-            else
-            {
-                filter = filter.Remove(0, 1);
-                string[] filters = filter.Split(";");
-
-                filter = string.Join(" AND ", filters);
-
-                command.Append(filter);
-
-                List<LeadEntry> test = await _context.LeadEntries.FromSqlRaw(command.ToString()).ToListAsync(); ;
-                return test.Count();
-            }
+            return await _context.LeadEntries.CountAsync();
         }
-
 
         [HttpGet("ExportToExcel")]
         public async Task<IActionResult> ExportLeadEntriesToExcel()
@@ -171,139 +138,52 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         //-------------------------------------------------------------FILTER----------------------------------------------------------------------//
-        //---- Apply Filter ----//
-        [HttpGet("ApplyFilter/{relation}")]
-        public async Task<ActionResult<IEnumerable<LeadEntry>>> ApplyFilter(string relation)
+        [HttpPost("filter/{relation}/{sort}/{cols}")]
+        public async Task<ActionResult<IEnumerable<LeadEntry>>> FilterEntries([FromBody] string[][] filters, [FromRoute] bool relation, string sort, string cols)
         {
-            var command = new StringBuilder("SELECT * FROM LeadEntries WHERE ");
-            string? filter = HttpContext.Session.GetString("LeadFilter");
+            var command = new StringBuilder("");
 
-            if (!string.IsNullOrEmpty(filter))
+            if (!String.IsNullOrEmpty(cols) && cols != "null")
             {
-                filter = filter.Remove(0, 1);
-                string[] filters = filter.Split(";");
+                command.Append("SELECT " + cols + " FROM LeadEntries");
+            }
+            else
+            {
+                command.Append("SELECT * FROM LeadEntries");
+            }
 
-                if (relation.Equals("AND"))
+            if (filters.Length > 0)
+            {
+                string[] newFilters = new string[filters.Length];
+
+                for (int i = 0; i < filters.Length; i++)
                 {
-                    filter = string.Join(" AND ", filters);
+                    newFilters[i] = filters[i][0];
+                }
+
+                command.Append( "WHERE ");
+
+                if (relation)
+                {
+                    command.Append(string.Join(" AND ", newFilters));
                 }
                 else
                 {
-                    filter = string.Join(" OR ", filters);
+                    command.Append(string.Join(" OR ", newFilters));
                 }
-
-                command.Append(filter);
-                return await _context.LeadEntries.FromSqlRaw(command.ToString()).ToListAsync();
             }
 
-            return BadRequest();
-        }
-
-        //---- Add new Filter ----//
-        // Add Single Filter
-        [HttpPost("AddSingleFilter/{col}/{value}/{exact}")]
-        public string AddSingleFilter(string col, string value, bool exact)
-        {
-            string filter = CreateSingleFilterString(col, value, exact);
-            HttpContext.Session.SetString("LeadFilter", HttpContext.Session.GetString("LeadFilter") + ";" + filter);
-            return "{\"success\":1}";
-        }
-
-        // Add Range Filter
-        [HttpPost("AddRangeFilter/{col}/{fromVal}/{toVal}")]
-        public string AddRangeFilter(string col, string fromVal, string toVal)
-        {
-            string filter = CreateRangeFilterString(col, fromVal, toVal);
-            HttpContext.Session.SetString("LeadFilter", HttpContext.Session.GetString("LeadFilter") + ";" + filter);
-            return "{\"success\":1}";
-        }
-
-        // Add Comparing Filter
-        [HttpPost("AddCompareFilter/{col}/{value}/{before}")]
-        public string AddCompareFilter(string col, string value, bool before)
-        {
-            string filter = CreateCompareFilterString(col, value, before);
-            HttpContext.Session.SetString("LeadFilter", HttpContext.Session.GetString("LeadFilter") + ";" + filter);
-            return "{\"success\":1}";
-        }
-
-        //---- Remove existing Filter ----//
-        // Remove Single Filter
-        [HttpDelete("RemoveSingleFilter/{col}/{value}/{exact}")]
-        public string RemoveSingleFilter(string col, string value, bool exact)
-        {
-            string filter = ";" + CreateSingleFilterString(col, value, exact);
-            string? allFilters = HttpContext.Session.GetString("LeadFilter");
-
-            allFilters = allFilters.Replace(filter, "");
-
-            HttpContext.Session.SetString("LeadFilter", allFilters);
-
-            return "{\"success\":1}";
-        }
-
-        // Remove Range Filter
-        [HttpDelete("RemoveRangeFilter/{col}/{fromVal}/{toVal}")]
-        public string RemoveRangeFilter(string col, string fromVal, string toVal)
-        {
-            string filter = ";" + CreateRangeFilterString(col, fromVal, toVal);
-            string? allFilters = HttpContext.Session.GetString("LeadFilter");
-
-            allFilters = allFilters.Replace(filter, "");
-
-            HttpContext.Session.SetString("LeadFilter", allFilters);
-
-            return "{\"success\":1}";
-        }
-
-        // Remove Comparing Filter
-        [HttpDelete("RemoveCompareFilter/{col}/{value}/{before}")]
-        public string RemoveCompareFilter(string col, string value, bool before)
-        {
-            string filter = ";" + CreateCompareFilterString(col, value, before);
-            string? allFilters = HttpContext.Session.GetString("LeadFilter");
-
-            allFilters = allFilters.Replace(filter, "");
-
-            HttpContext.Session.SetString("LeadFilter", allFilters);
-
-            return "{\"success\":1}";
-        }
-
-        // Remove all Filter
-        [HttpDelete("RemoveAllFilter")]
-        public string RemoveAllFilter()
-        {
-            HttpContext.Session.SetString("LeadFilter", string.Empty);
-            return "{\"success\":1}";
-        }
-
-        //---- Create Filter Strings ----//
-        private string CreateSingleFilterString(string col, string value, bool exact)
-        {
-            if (exact)
+            if (!String.IsNullOrEmpty(sort) && sort != "null")
             {
-                return "[" + col + "] LIKE '" + value + "'";
+                command.Append(" " + sort);
+
+                if (!sort.Contains("leadID"))
+                {
+                    command.Append(", leadID ASC");
+                }
             }
-            else
-            {
-                return "[" + col + "] LIKE '%" + value + "%'";
-            }
-        }
-        private string CreateRangeFilterString(string col, string fromVal, string toVal)
-        {
-            return "[" + col + "] BETWEEN '" + fromVal + "' AND '" + toVal + "'";
-        }
-        private string CreateCompareFilterString(string col, string value, bool before)
-        {
-            if (before)
-            {
-                return "[" + col + "] < '" + value + "'";
-            }
-            else
-            {
-                return "[" + col + "] > '" + value + "'";
-            }
+
+            return await _context.LeadEntries.FromSqlRaw(command.ToString()).ToListAsync();
         }
 
         //-------------------------------------------------------------UTILITY---------------------------------------------------------------------//

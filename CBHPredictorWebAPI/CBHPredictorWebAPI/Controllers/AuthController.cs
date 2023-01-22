@@ -46,10 +46,7 @@ namespace CBHPredictorWebAPI.Controllers
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
 
-            _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-
-            System.Diagnostics.Debug.WriteLine(refreshToken);
 
             return Ok(new AuthenticatedResponse
             {

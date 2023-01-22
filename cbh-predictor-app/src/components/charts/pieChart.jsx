@@ -12,8 +12,11 @@ export const PieChart = (props) => {
             activeOuterRadiusOffset={8}
             borderWidth={0}
             arcLinkLabelsSkipAngle={10}
-            arcLinkLabelsTextColor="#000000"
-            arcLinkLabelsThickness={2}
+            arcLinkLabelsTextColor={{
+                from: 'color',
+                modifiers: [['darker', 1.2]],
+            }}
+            arcLinkLabelsThickness={3}
             arcLinkLabelsColor={{ from: 'color' }}
             arcLabelsSkipAngle={10}
             arcLabelsTextColor="#000000"

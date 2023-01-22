@@ -23,7 +23,6 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody]TokenApiModel tokenApiModel)
         {
-            System.Diagnostics.Debug.WriteLine("Hello");
             if (tokenApiModel is null)
             {
                 return BadRequest("Invalid client request 1");
@@ -33,7 +32,7 @@ namespace CBHPredictorWebAPI.Controllers
             string refreshToken = tokenApiModel.RefreshToken;
 
             var principal = _tokenService.GetPrincipalFromExpiredToken(accessToken);
-            var username = principal.Identity.Name; //this is mapped to the Name claim by default
+            var username = principal.Identity.Name;
 
             var user = await _context.UserModels.SingleOrDefaultAsync(u => u.UserName == username);
 
@@ -43,16 +42,13 @@ namespace CBHPredictorWebAPI.Controllers
                 return BadRequest("Invalid client request 2");
 
             var newAccessToken = _tokenService.GenerateAccessToken(principal.Claims);
-            var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-            user.RefreshToken = newRefreshToken;
-            _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return Ok(new AuthenticatedResponse()
             {
                 Token = newAccessToken,
-                RefreshToken = newRefreshToken
+                RefreshToken = tokenApiModel.RefreshToken
             });
         }
 

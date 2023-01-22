@@ -20,7 +20,6 @@ axiosApiInstance.interceptors.response.use((response) => {
     return response
 }, async function(error) {
     const originalRequest = error.config
-    console.log(error)
     if((error.response.status === 403 || error.response.status === 401) && !originalRequest._retry) {
         originalRequest._retry = true
         const accessToken = await tryRefreshingTokens()
@@ -38,7 +37,6 @@ async function tryRefreshingTokens() {
     .then(response => {
         if (response.data.token && response.data.refreshToken) {
             localStorage.setItem("user", JSON.stringify(response.data));
-            console.log(response.data)
         }
         return response.data.token;
     })

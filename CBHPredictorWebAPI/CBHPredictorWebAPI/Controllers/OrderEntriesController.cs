@@ -3,8 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
-using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq.Dynamic.Core;
+using CBHPredictorWebAPI.Models.OrderModels;
+using System.Collections;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -45,42 +47,109 @@ namespace CBHPredictorWebAPI.Controllers
             return orderEntry;
         }
 
-        [HttpGet("SortByColumn/{col}/{order}")]
-        public async Task<ActionResult<IEnumerable<OrderEntry>>> SortByColumn(OrderColumns col, Order order)
-        {
-            if (order == Order.ascending)
-            {
-                return await _context.OrderEntries.FromSqlRaw("SELECT * FROM OrderEntries ORDER BY [" + col + "] ASC").ToListAsync();
-            }
-            else
-            {
-                return await _context.OrderEntries.FromSqlRaw("SELECT * FROM OrderEntries ORDER BY [" + col + "] DESC").ToListAsync();
-            }
-        }
-
-        [HttpGet("CountRows")]
+        [HttpGet("count")]
         public async Task<int> CountRows()
         {
-            var command = new StringBuilder("SELECT * FROM OrderEntries WHERE ");
-            string? filter = HttpContext.Session.GetString("OrderFilter");
+            return await _context.OrderEntries.CountAsync();
+        }
 
-            if (string.IsNullOrEmpty(filter))
+        [HttpGet("order-count")]
+        public async Task<int> CountOrders()
+        {
+            return await _context.OrderEntries.Select(e => e.orderID).Distinct().CountAsync();
+        }
+
+        [HttpGet("price-count")]
+        public async Task<ActionResult<IEnumerable<OrderPriceResponse>>> CountDistinctPrices()
+        {
+            return await _context.OrderEntries.GroupBy(e => e.orderPrice).Select(o => new OrderPriceResponse()
+                {
+                    id = o.Key + "specimen",
+                    group = "specimen",
+                    price = o.Key,
+                    volume = o.Distinct().Count()
+                }
+            ).OrderBy(e => e.price).ToListAsync();
+        }
+
+        [HttpGet("orderprice-count")]
+        public async Task<ActionResult<IEnumerable<OrderPriceResponse>>> CountPricePerOrder()
+        {
+            List<OrderPriceResponse> prices = await _context.OrderEntries.GroupBy(e => e.orderPrice).Select(o => new OrderPriceResponse()
+                {
+                    id = o.Key + "order",
+                    group = "order",
+                    price = o.Key,
+                    volume = o.Distinct().Count()
+                }
+            ).OrderBy(e => e.price).ToListAsync();
+
+            return prices.GroupBy(e => e.price).Select(o => new OrderPriceResponse()
+                {
+                    id = o.Key + "order",
+                    group = "order",
+                    price = o.Key,
+                    volume = o.Distinct().Count()
+                }
+            ).OrderBy(e => e.price).ToList();
+        }
+
+        [HttpGet("date-count")]
+        public async Task<ActionResult<IEnumerable<OrderDateResponse>>> CountDistinctDates()
+        {
+            List<OrderEntry> orderlist = await _context.OrderEntries.OrderBy(e => e.orderDate).ToListAsync();
+
+            var date = "0";
+            var index = -1;
+            List<OrderDateResponse> response = new List<OrderDateResponse>();
+
+            foreach(OrderEntry entry in orderlist) 
             {
-                List<OrderEntry> unfilteredRows = await _context.OrderEntries.ToListAsync();
-                return unfilteredRows.Count();
+                if(entry.orderDate.ToString().Remove(10) == date)
+                {
+                    response[index].value++;
+                } 
+                else
+                {
+                    response.Add(new OrderDateResponse() { day = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM-dd"), value = 1 });
+                    date = entry.orderDate.ToString().Remove(10);
+                    index++;
+                }
             }
-            else
+
+            return response;
+        }
+
+        [HttpGet("month-count")]
+        public async Task<ActionResult<IEnumerable<MonthValueResponse>>> CountDistinctMonths()
+        {
+            List<OrderEntry> orderlist = await _context.OrderEntries.OrderByDescending(e => e.orderDate).ThenBy(e => e.orderID).ToListAsync();
+
+            var date = "0";
+            var orderID = 0;
+            var index = -1;
+            List<MonthValueResponse> response = new List<MonthValueResponse>();
+
+            foreach (OrderEntry entry in orderlist)
             {
-                filter = filter.Remove(0, 1);
-                string[] filters = filter.Split(";");
-
-                filter = string.Join(" AND ", filters);
-
-                command.Append(filter);
-                List<OrderEntry> fitleredRows = await _context.OrderEntries.FromSqlRaw(command.ToString()).ToListAsync();
-
-                return fitleredRows.Count();
+                if (Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM") == date)
+                {
+                    if(entry.orderID != orderID)
+                    {
+                        response[index].value++;
+                        orderID = entry.orderID ?? 0;
+                    }
+                }
+                else
+                {
+                    response.Add(new MonthValueResponse() { month = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM"), value = 1 });
+                    date = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM");
+                    orderID = entry.orderID ?? 0;
+                    index++;
+                }
             }
+
+            return response;
         }
 
         [HttpGet("ExportToExcel")]
@@ -172,139 +241,52 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         //-------------------------------------------------------------FILTER----------------------------------------------------------------------//
-        //---- Apply Filter ----//
-        [HttpGet("ApplyFilter/{relation}")]
-        public async Task<ActionResult<IEnumerable<OrderEntry>>> ApplyFilter(string relation)
+        [HttpPost("filter/{relation}/{sort}/{cols}")]
+        public async Task<ActionResult<IEnumerable<OrderEntry>>> FilterEntries([FromBody] string[][] filters, [FromRoute] bool relation, string sort, string cols)
         {
-            var command = new StringBuilder("SELECT * FROM OrderEntries WHERE ");
-            string? filter = HttpContext.Session.GetString("OrderFilter");
+            var command = new StringBuilder("");
 
-            if (!string.IsNullOrEmpty(filter))
+            if (!String.IsNullOrEmpty(cols) && cols != "null")
             {
-                filter = filter.Remove(0, 1);
-                string[] filters = filter.Split(";");
+                command.Append("SELECT " + cols + " FROM OrderEntries");
+            }
+            else
+            {
+                command.Append("SELECT * FROM OrderEntries");
+            }
 
-                if (relation.Equals("AND"))
+            if (filters.Length > 0)
+            {
+                string[] newFilters = new string[filters.Length];
+
+                for (int i = 0; i < filters.Length; i++)
                 {
-                    filter = string.Join(" AND ", filters);
+                    newFilters[i] = filters[i][0];
+                }
+
+                command.Append(" WHERE ");
+
+                if (relation)
+                {
+                    command.Append(string.Join(" AND ", newFilters));
                 }
                 else
                 {
-                    filter = string.Join(" OR ", filters);
+                    command.Append(string.Join(" OR ", newFilters));
                 }
-
-                command.Append(filter);
-                return await _context.OrderEntries.FromSqlRaw(command.ToString()).ToListAsync();
             }
 
-            return BadRequest();
-        }
-
-        //---- Add new Filter ----//
-        // Add Single Filter
-        [HttpPost("AddSingleFilter/{col}/{value}/{exact}")]
-        public string AddSingleFilter(string col, string value, bool exact)
-        {
-            string filter = CreateSingleFilterString(col, value, exact);
-            HttpContext.Session.SetString("OrderFilter", HttpContext.Session.GetString("OrderFilter") + ";" + filter);
-            return "{\"success\":1}";
-        }
-
-        // Add Range Filter
-        [HttpPost("AddRangeFilter/{col}/{fromVal}/{toVal}")]
-        public string AddRangeFilter(string col, string fromVal, string toVal)
-        {
-            string filter = CreateRangeFilterString(col, fromVal, toVal);
-            HttpContext.Session.SetString("OrderFilter", HttpContext.Session.GetString("OrderFilter") + ";" + filter);
-            return "{\"success\":1}";
-        }
-
-        // Add Comparing Filter
-        [HttpPost("AddCompareFilter/{col}/{value}/{before}")]
-        public string AddCompareFilter(string col, string value, bool before)
-        {
-            string filter = CreateCompareFilterString(col, value, before);
-            HttpContext.Session.SetString("OrderFilter", HttpContext.Session.GetString("OrderFilter") + ";" + filter);
-            return "{\"success\":1}";
-        }
-
-        //---- Remove existing Filter ----//
-        // Remove Single Filter
-        [HttpDelete("RemoveSingleFilter/{col}/{value}/{exact}")]
-        public string RemoveSingleFilter(string col, string value, bool exact)
-        {
-            string filter = ";" + CreateSingleFilterString(col, value, exact);
-            string? allFilters = HttpContext.Session.GetString("OrderFilter");
-
-            allFilters = allFilters.Replace(filter, "");
-
-            HttpContext.Session.SetString("OrderFilter", allFilters);
-
-            return "{\"success\":1}";
-        }
-
-        // Remove Range Filter
-        [HttpDelete("RemoveRangeFilter/{col}/{fromVal}/{toVal}")]
-        public string RemoveRangeFilter(string col, string fromVal, string toVal)
-        {
-            string filter = ";" + CreateRangeFilterString(col, fromVal, toVal);
-            string? allFilters = HttpContext.Session.GetString("OrderFilter");
-
-            allFilters = allFilters.Replace(filter, "");
-
-            HttpContext.Session.SetString("OrderFilter", allFilters);
-
-            return "{\"success\":1}";
-        }
-
-        // Remove Comparing Filter
-        [HttpDelete("RemoveCompareFilter/{col}/{value}/{before}")]
-        public string RemoveCompareFilter(string col, string value, bool before)
-        {
-            string filter = ";" + CreateCompareFilterString(col, value, before);
-            string? allFilters = HttpContext.Session.GetString("OrderFilter");
-
-            allFilters = allFilters.Replace(filter, "");
-
-            HttpContext.Session.SetString("OrderFilter", allFilters);
-
-            return "{\"success\":1}";
-        }
-
-        // Remove all Filter
-        [HttpDelete("RemoveAllFilter")]
-        public string RemoveAllFilter()
-        {
-            HttpContext.Session.SetString("OrderFilter", string.Empty);
-            return "{\"success\":1}";
-        }
-
-        //---- Create Filter Strings ----//
-        private string CreateSingleFilterString(string col, string value, bool exact)
-        {
-            if (exact)
+            if (!String.IsNullOrEmpty(sort) && sort != "null")
             {
-                return "[" + col + "] LIKE '" + value + "'";
+                command.Append(" " + sort);
+
+                if (!sort.Contains("orderID"))
+                {
+                    command.Append(", orderID ASC");
+                }
             }
-            else
-            {
-                return "[" + col + "] LIKE '%" + value + "%'";
-            }
-        }
-        private string CreateRangeFilterString(string col, string fromVal, string toVal)
-        {
-            return "[" + col + "] BETWEEN '" + fromVal + "' AND '" + toVal + "'";
-        }
-        private string CreateCompareFilterString(string col, string value, bool before)
-        {
-            if (before)
-            {
-                return "[" + col + "] < '" + value + "'";
-            }
-            else
-            {
-                return "[" + col + "] > '" + value + "'";
-            }
+
+            return await _context.OrderEntries.FromSqlRaw(command.ToString()).ToListAsync();
         }
 
         //-------------------------------------------------------------UTILITY---------------------------------------------------------------------//

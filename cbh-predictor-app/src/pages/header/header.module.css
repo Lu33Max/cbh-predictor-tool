@@ -29,6 +29,7 @@ main {
   height: 100vh;
   padding-top: 10vh;
   font-family: 'poppins';
+  overflow-x: hidden;
 }
 
 div {

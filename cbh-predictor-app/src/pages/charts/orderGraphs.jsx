@@ -272,8 +272,8 @@ const OrderChart = () => {
     const [minDiagnoses, setMinDiagnoses] = useState(150)
     const [maxDiagnoses, setMaxDiagnoses] = useState(800)
     const [minSampleSize, setMinSampleSize] = useState(250)
-    const [showOthers1, setShowOthers1] = useState(false)
-    const [showOthers2, setShowOthers2] = useState(false)    
+    const [showOthers1, setShowOthers1] = useState(true)
+    const [showOthers2, setShowOthers2] = useState(true)    
     const [allEntries, setAllEntries] = useState([])
 
     const user = authService.getCurrentUser()
@@ -329,7 +329,7 @@ const OrderChart = () => {
                         <option>All Time</option>
                     </select>
                     Show Others
-                    <input type="checkbox" onChange={() => setShowOthers1(!showOthers1)}></input>
+                    <input type="checkbox" defaultChecked onChange={() => setShowOthers1(!showOthers1)}></input>
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Frequent Matrices</h3>
@@ -358,7 +358,7 @@ const OrderChart = () => {
                         <option>All Time</option>
                     </select>
                     Show Others
-                    <input type="checkbox" onChange={() => setShowOthers2(!showOthers2)}></input>
+                    <input type="checkbox" defaultChecked onChange={() => setShowOthers2(!showOthers2)}></input>
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Lab Parameters</h3>
@@ -367,7 +367,7 @@ const OrderChart = () => {
                 </div>
                 <div className={styles.middle_wrapper}>
                     <h3>Lab Results (in %)</h3>
-                    <PieChart data={GetLabResult(allEntries, showOthers2)} scheme={primaryScheme}/>
+                    <PieChart data={GetLabResult(allEntries, showOthers2)} scheme={secondaryScheme}/>
                 </div>
             </div>
             {/* Third Block */}

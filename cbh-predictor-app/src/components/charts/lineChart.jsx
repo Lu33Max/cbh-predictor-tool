@@ -1,4 +1,5 @@
 import { ResponsiveLine } from '@nivo/line'
+import { linearGradientDef } from '@nivo/core'
 
 export const LineChart = (props) => {
     return(
@@ -15,6 +16,9 @@ export const LineChart = (props) => {
             stacked: false,
             reverse: false
         }}
+        lineWidth={3}
+        enableArea={true}
+        areaOpacity={0.1}
         yFormat=" >-.2f"
         axisTop={null}
         axisRight={null}
@@ -42,6 +46,13 @@ export const LineChart = (props) => {
         pointBorderColor={{ from: 'serieColor' }}
         pointLabelYOffset={-12}
         useMesh={true}
+        /*defs={[
+            linearGradientDef('gradientA', [
+                { offset: 0, color: 'inherit' },
+                { offset: 100, color: 'inherit', opacity: 0 },
+            ]),
+        ]}
+        fill={[{ match: '*', id: 'gradientA' }]}*/
         legends={[
             {
                 anchor: 'bottom-right',

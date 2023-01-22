@@ -47,7 +47,7 @@ table td {
 }
 
 .header_button {
-  background-color: #6cB23B;
+  background-color: #76c240;
   padding: 5px 12px;
   font-weight: 500;
   font-size: 14px;
@@ -55,7 +55,7 @@ table td {
 }
 
 .header_button:hover {
-  background-color: #7bc248;
+  background-color: rgb(136, 212, 81);
 }
 
 .sort_header {

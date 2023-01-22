@@ -3,7 +3,7 @@ import Popover from 'react-bootstrap/Popover';
 import styles from "../../pages/table/tablescreen.module.css"
 import { useState } from 'react';
 
-function FilterOverlay (handleChange,handleChangeFiltertype, handleSubmit, filtertype, filter, table) {
+function FilterOverlay (handleChange, handleChangeFiltertype, handleSubmit, filtertype, filter, table) {
     return (
         <Popover id="popover-basic">
             <Popover.Header><h5>Filter</h5></Popover.Header>
@@ -18,7 +18,7 @@ function FilterOverlay (handleChange,handleChangeFiltertype, handleSubmit, filte
                         <h5>Column:</h5>
                         <select className={styles.col_select} onChange={handleChange} name="col" type="text">
                             <option value="" selected disabled hidden>Choose here</option>
-                            <option value="terms">Search Term</option>
+                            <option value="terms" name="Search Term">Search Term</option>
                             <option value="impressions">Impressions</option>
                             <option value="clicks">Clicks</option>
                             <option value="date">Date</option>
@@ -170,15 +170,20 @@ const PopoverButton = (props) => {
     };
 
     const handleSubmit = () => {
-        var newFilter
-        console.log(filter.col + filter.value)
+        var newFilter = []
         switch(filtertype){
             case "single":
                 if(!filter.col || !filter.value){
                     alert("All inputs have to be valid")
                     return
                 } else {
-                    newFilter = { type: "single", val1: filter.col, val2: filter.value, val3: filter.exact }
+                    if(filter.exact) {
+                        newFilter[0] = filter.col + " LIKE '" + filter.value + "'"
+                        newFilter[1] = filter.col + " = " + filter.value
+                    } else {
+                        newFilter[0] = filter.col + " LIKE '%" + filter.value + "%'"
+                        newFilter[1] = filter.col + ` = "` + filter.value + `"`
+                    }
                 }
                 break
             case "range":
@@ -186,7 +191,8 @@ const PopoverButton = (props) => {
                     alert("All inputs have to be valid")
                     return
                 } else {
-                    newFilter = {type: "range", val1: filter.col, val2: filter.fromVal, val3: filter.toVal }
+                    newFilter[0] = filter.col + " BETWEEN '" + filter.fromVal + "' AND '" + filter.toVal + "'"
+                    newFilter[1] = filter.fromVal + " < " + filter.col + " < " + filter.toVal
                 }
                 break
             case "compare":
@@ -194,7 +200,13 @@ const PopoverButton = (props) => {
                     alert("All inputs have to be valid")
                     return
                 } else {
-                    newFilter = { type: "compare", val1: filter.col, val2: filter.value, val3: filter.before }
+                    if(filter.before) {
+                        newFilter[0] = filter.col + " < '" + filter.value +"'"
+                        newFilter[1] = filter.col + " < " + filter.value
+                    } else {
+                        newFilter[0] = filter.col + " > '" + filter.value +"'"
+                        newFilter[1] = filter.col + " > " + filter.value
+                    }
                 }
                 break
             default:
@@ -205,87 +217,6 @@ const PopoverButton = (props) => {
         props.addFilter(newFilter)
         setFilter(initialFilter)
     }
-
-    /*const handleSubmit = () => {
-
-        var url
-        switch (table) {
-            case 'Bing':
-                url = `${Constants.API_URL_BING_ENTRIES}`;
-                break;
-            case 'Google':
-                url = `${Constants.API_URL_GOOGLE_ENTRIES}`;
-                break;
-            case 'Lead':
-                url = `${Constants.API_URL_LEAD_ENTRIES}`;
-                break;
-            case 'Order':
-                url = `${Constants.API_URL_ORDER_ENTRIES}`;
-                break;
-            default:
-                alert(`Error: Table with name "${table}" does not exist`)
-                return;
-        }
-        
-        switch (filtertype) {
-            case "single":
-                url = url + `/AddSingleFilter/${filter.col}/${filter.value}/${filter.exact}`;
-                break;
-            case "range":
-                url = url + `/AddRangeFilter/${filter.col}/${filter.fromVal}/${filter.toVal}`;
-                break;
-            case "compare":
-                url = url + `/AddCompareFilter/${filter.col}/${filter.value}/${filter.before}`;
-                break;        
-            default:
-                break;
-        }
-    
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-        .then(response => response.json())
-        .then(responseFromServer => {
-            console.log(responseFromServer);
-        })
-        .catch((error) => {
-            console.log(error);
-            alert(error);
-        });
-
-        switch (table) {
-            case 'Bing':
-                url = `${Constants.API_URL_BING_ENTRIES}/ApplyFilter/AND`;
-                break;
-            case 'Google':
-                url = `${Constants.API_URL_GOOGLE_ENTRIES}/ApplyFilter/AND`;
-                break;
-            case 'Lead':
-                url = `${Constants.API_URL_LEAD_ENTRIES}/ApplyFilter/AND`;
-                break;
-            case 'Order':
-                url = `${Constants.API_URL_ORDER_ENTRIES}/ApplyFilter/AND`;
-                break;
-            default:
-                alert(`Error: Table with name "${table}" does not exist`)
-                return;
-        }
-
-        fetch(url, {
-            method: 'GET'
-        })
-        .then(response => response.json())
-        .then(entriesFromServer => {
-            setEntries(entriesFromServer);
-        })
-        .catch((error) => {
-            console.log(error);
-            alert(error);
-        });
-    }*/
 
     return(
         <OverlayTrigger trigger="click" placement="left" rootClose="true" overlay={FilterOverlay(handleChange, handleChangeFiltertype, handleSubmit, filtertype, filter, props.table)}>

@@ -22,6 +22,7 @@ const TableScreen = (props) => {
     const [entryToUpdate, setEntryToUpdate ] = useState(null)
     const [rows, setRows] = useState(100)
     const [filters, setFilters] = useState([])
+    const [sort, setSort] = useState(null)
     const [andRelation, setAndRelation] = useState(true)
 
     const user = authService.getCurrentUser()
@@ -33,137 +34,61 @@ const TableScreen = (props) => {
 
     useEffect(() => {
         setActiveTable(props.table)
+
+        switch(props.table){
+            case 'Bing':
+            case 'Google':
+                setSort("ORDER BY terms ASC")
+                break
+            case 'Lead':
+                setSort("ORDER BY leadID ASC")
+                break
+            case 'Order':
+                setSort("ORDER BY orderID ASC")
+                break
+            default:
+                break
+        }
     },[props.table])
 
     useEffect(() => {
+        applyFilters()
         getAllEntries()
     },[activeTable])
 
-    useEffect(() => {
-        if(Object.keys(filters).length !== 0){
-
-            var newEntries = []
-            var filtered = []
-
-            for(var i = 0; i < filters.length; i++){
-                if(i === 0 || !andRelation){
-                    switch (filters[i].type){
-                        case "single":
-                            for(var j = 0; j < allEntries.length; j++){
-                                if(filters[i].val3 === true){
-                                    if(allEntries[j][filters[i].val1] == filters[i].val2){
-                                        if(!newEntries.find(e => e.id === allEntries[j].id)){
-                                            newEntries.push(allEntries[j])
-                                        }
-                                    }
-                                } else {
-                                    if((allEntries[j][filters[i].val1] + "").toLowerCase().includes(filters[i].val2)){
-                                        if(!newEntries.find(e => e.id === allEntries[j].id)){
-                                            newEntries.push(allEntries[j])
-                                        }
-                                    }
-                                }
-                            }
-                            break
-                        case "range":
-                            for(var k = 0; k < allEntries.length; k++){
-                                if(allEntries[k][filters[i].val1] >= filters[i].val2 && allEntries[k][filters[i].val1] <= filters[i].val3){
-                                    if(!newEntries.find(e => e.id === allEntries[k].id)){
-                                        newEntries.push(allEntries[k])
-                                    }
-                                }
-                            }
-                            break
-                        case "compare":
-                            for(var l = 0; l < allEntries.length; l++){
-                                if(filters[i].val3){
-                                    if(allEntries[l][filters[i].val1] <= filters[i].val2){
-                                        if(!newEntries.find(e => e.id === allEntries[l].id)){
-                                            newEntries.push(allEntries[l])
-                                        }
-                                    }
-                                } else {
-                                    if(allEntries[l][filters[i].val1] >= filters[i].val2){
-                                        if(!newEntries.find(e => e.id === allEntries[l].id)){
-                                            newEntries.push(allEntries[l])
-                                        }
-                                    }
-                                }
-                            }
-                            break
-                        default:
-                            alert(`Error: Filtertype ${filters[i].type} not found`)
-                            return
-                    }
-                } else {
-                    newEntries = []
-                    switch (filters[i].type){
-                        case "single":
-                            for(var m = 0; m < filtered.length; m++){
-                                if(filters[i].val3 === true){
-                                    if(filtered[m][filters[i].val1] == filters[i].val2){
-                                        if(!newEntries.find(e => e.id === filtered[m].id)){
-                                            newEntries.push(filtered[m])
-                                        }
-                                    }
-                                } else {
-                                    if((filtered[m][filters[i].val1] + "").toLowerCase().includes(filters[i].val2)){
-                                        if(!newEntries.find(e => e.id === filtered[m].id)){
-                                            newEntries.push(filtered[m])
-                                        }
-                                    }
-                                }
-                            }
-                            break
-                        case "range":
-                            for(var n = 0; n < filtered.length; n++){
-                                if(filtered[n][filters[i].val1] >= filters[i].val2 && filtered[n][filters[i].val1] <= filters[i].val3){
-                                    if(!newEntries.find(e => e.id === filtered[n].id)){
-                                        newEntries.push(filtered[n])
-                                    }
-                                }
-                            }
-                            break
-                        case "compare":
-                            for(var o = 0; o < filtered.length; o++){
-                                if(filters[i].val3){
-                                    if(filtered[o][filters[i].val1] <= filters[i].val2){
-                                        if(!newEntries.find(e => e.id === filtered[o].id)){
-                                            newEntries.push(filtered[o])
-                                        }
-                                    }
-                                } else {
-                                    if(filtered[o][filters[i].val1] >= filters[i].val2){
-                                        if(!newEntries.find(e => e.id === filtered[o].id)){
-                                            newEntries.push(filtered[o])
-                                        }
-                                    }
-                                }
-                            }
-                            break
-                        default:
-                            alert(`Error: Filtertype ${filters[i].type} not found`)
-                            return
-                    }
-                }
-                filtered = newEntries
-            }
-
-            if(andRelation && filters.length > 1) {
-                setEntries(filtered)
-            } else {
-                setEntries(newEntries)
-            }
-            
-        } else {
-            setEntries(allEntries)
+    const applyFilters = async () => {
+        let url
+        switch(activeTable){
+            case "Bing":
+                url = `${Constants.API_URL_BING_ENTRIES}/filter/${andRelation}/${sort}/null`
+                break
+            case "Google":
+                url = `${Constants.API_URL_GOOGLE_ENTRIES}/filter/${andRelation}/${sort}/null`
+                break
+            case "Lead":
+                url = `${Constants.API_URL_LEAD_ENTRIES}/filter/${andRelation}/${sort}/null`
+                break
+            case "Order":
+                url = `${Constants.API_URL_ORDER_ENTRIES}/filter/${andRelation}/${sort}/null`
+                break
+            default:
+                alert(`Error: Table with name "${activeTable}" does not exist`)
+                return;
         }
 
-    },[filters, allEntries, andRelation])
+        const result = await axiosApiInstance.post(url, filters, {'Content-Type': 'application/json'})
+        if(result.status === 200){
+            setEntries(result.data)
+        }
+    }
+
+    useEffect(() => {
+        applyFilters()
+    }, [filters, andRelation, sort])
 
     const handleRowChange = (e) => {
         setRows(e.target.value)
-        getAllEntries()
+        applyFilters()
     };
 
     const DelButton = (props) => {
@@ -200,8 +125,8 @@ const TableScreen = (props) => {
                                         <button onClick={() => setAndRelation(!andRelation)} className={styles.button_relation}>{(andRelation) ? "and" : "or"}</button>
                                         <PopoverButton addFilter={addFilter} table={activeTable}/>  
                                     </div>
-                                    <div className={styles.container}>
-                                        <Table data={entries} rowsPerPage={rows > 0 ? rows : 1} type={activeTable} setEntries={setAllEntries} deleteEntry={deleteSingleEntry} updateEntry={updateEntry}/>
+                                    <div>
+                                        <Table data={entries} rowsPerPage={rows > 0 ? rows : 1} type={activeTable} setEntries={setAllEntries} deleteEntry={deleteSingleEntry} updateEntry={updateEntry} applySort={applySort}/>
                                     </div>
                                 </div>
                             )}
@@ -217,27 +142,8 @@ const TableScreen = (props) => {
     function showFilter(){
         return(
             <>
-                {filters.map((filter) => (
-                    <>
-                        {(filter.type === 'single') && (
-                            <>
-                                {(filter.val3) && (
-                                    <label>{filter.val1} = {filter.val2}<DelButton index={filter}/></label>
-                                )}
-                                {(!filter.val3) && (
-                                    <label>{filter.val1} = "{filter.val2}"<DelButton index={filter}/></label>
-                                )}
-                            </>
-                        )}
-                        {(filter.type === 'range') && (
-                            <label>{filter.val2} &#60; {filter.val1} &#60; {filter.val3}<DelButton index={filter}/></label>
-                        )}
-                        {(filter.type === 'compare') && (
-                            <>
-                                {(filter.val3) ? (<label>{filter.val1} &#60; {filter.val2}<DelButton index={filter}/></label>) : (<label>{filter.val1} &#62; {filter.val2}<DelButton index={filter}/></label>)}
-                            </>
-                        )}
-                    </>
+                {filters.map((filter, index) => (
+                    <label>{filter[1]}&nbsp;{<button onClick={() => {removeFilter(index)}}>X</button>}</label>
                 ))}
             </>
         )
@@ -245,24 +151,23 @@ const TableScreen = (props) => {
     function addFilter(newFilter){
         setFilters([newFilter, ...filters])
     }
-    function removeFilter(index){
-        setFilters(
-            filters.filter(
-                a => a !== index
-            )
-        )
+    function removeFilter(i){
+        setFilters(filters.filter((a,index)=> index !== i))
+    }
+    function applySort(sort){
+        setSort(sort)
     }
 
     //// INTERNAL METHODS ////
     function onFileUploaded(created){
         if(created) alert(`Sucessfully uploaded the file contents to "${activeTable}" Table.`)
         setShowFileUpload(false)
-        getAllEntries()
+        applyFilters()
     }
     function onEntryCreated(created){
         if (created !== null) alert(`Entry succesfully created.`);
         setShowCreateForm(false)
-        getAllEntries();
+        applyFilters();
     }
     function updateEntry(entry){
         setEntryToUpdate(entry)
@@ -271,7 +176,7 @@ const TableScreen = (props) => {
         setEntryToUpdate(null);
         if (updatedEntry === null) return;
         alert(`Entry successfully updated.`);
-        getAllEntries();
+        applyFilters();
     }
 
     //// SERVER REQUESTS ////
@@ -297,8 +202,9 @@ const TableScreen = (props) => {
         }
 
         const result = await axiosApiInstance.get(url)
-        console.log(result)
-        setAllEntries(result.data)
+        if(result.status === 200) {
+            setAllEntries(result.data)
+        }
     }
 
     async function deleteAllEntries(){
@@ -325,7 +231,7 @@ const TableScreen = (props) => {
         const result = await axiosApiInstance.delete(url)
         if(result.status === 200) {
             alert("Entries successfully deleted")
-            getAllEntries()
+            applyFilters()
         }
     }
 
@@ -353,7 +259,7 @@ const TableScreen = (props) => {
         const result = await axiosApiInstance.delete(url)
         if(result.status === 200) {
             alert("Entry successfully deleted")
-            getAllEntries()
+            applyFilters()
         }
     }
 
@@ -378,12 +284,11 @@ const TableScreen = (props) => {
             return;
         }
 
-        const user = authService.getCurrentUser()
         let options = { 
-            url: 'ExportToExcel',
+            url: '/ExportToExcel',
             method: 'GET',
+            baseURL: base,
             responseType: 'blob',
-            headers: {"Authorization" : `Bearer ${user.token}`}
         };
         return axiosApiInstance.request(options)
         .then(response => { 

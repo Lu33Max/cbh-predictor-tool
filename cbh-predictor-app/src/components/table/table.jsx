@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import useTable from "../../hooks/useTable";
 import styles from "./table.module.css";
 import TableFooter from "./footer";
@@ -19,7 +18,7 @@ const Table = (props) => {
 
   function popover(text, col){
     return(
-      <PopoverButton text={text} col={col} setEntries={props.setEntries} type={props.type}/>
+      <PopoverButton text={text} col={col} setEntries={props.setEntries} applySort={props.applySort} type={props.type}/>
     )
   }
 

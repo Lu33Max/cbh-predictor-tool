@@ -24,7 +24,7 @@ const PopoverButton = (props) => {
     }
 
     return(
-        <OverlayTrigger trigger="click" placement="bottom" overlay={
+        <OverlayTrigger trigger="click" placement="bottom" rootClose="true" overlay={
             <Popover id="popover-basic">
                 <Popover.Header as="h3">Add new term</Popover.Header>
                 <Popover.Body>

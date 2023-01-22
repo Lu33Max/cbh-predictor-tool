@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Header from "./pages/header/header";
-import HomeScreen from "./pages/home";
+import HomeScreen from "./pages/home/home";
 import LoginForm from "./components/forms/loginForm";
 import BingChart from "./pages/charts/bingGraphs";
 import GoogleChart from "./pages/charts/googleGraphs";

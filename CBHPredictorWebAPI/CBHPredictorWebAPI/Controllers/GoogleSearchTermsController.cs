@@ -5,6 +5,7 @@ using CBHPredictorWebAPI.Models;
 using System.Text;
 using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -45,83 +46,84 @@ namespace CBHPredictorWebAPI.Controllers
             return searchTerm;
         }
 
-        [HttpGet("SortByColumn/{col}/{order}")]
-        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> SortByColumn(GSearchTerms col, Order order)
-        {
-            if (order == Order.ascending)
-            {
-                return await _context.GoogleSearchTerms.FromSqlRaw("SELECT * FROM GoogleSearchTerms ORDER BY [" + col + "] ASC").ToListAsync();
-            }
-            else
-            {
-                return await _context.GoogleSearchTerms.FromSqlRaw("SELECT * FROM GoogleSearchTerms ORDER BY [" + col + "] DESC").ToListAsync();
-            }
-        }
-
-
-        [HttpGet("CountRows")]
+        [HttpGet("count")]
         public async Task<int> CountRows()
         {
-            var command = new StringBuilder("SELECT * FROM GoogleSearchTerms WHERE ");
-            string? filter = HttpContext.Session.GetString("GoogleFilter");
-
-            if (string.IsNullOrEmpty(filter))
-            {
-                List<GoogleSearchTerm> unfilteredRows = await _context.GoogleSearchTerms.ToListAsync();
-                return unfilteredRows.Count();
-            }
-            else
-            {
-                filter = filter.Remove(0, 1);
-                string[] filters = filter.Split(";");
-
-                filter = string.Join(" AND ", filters);
-
-                command.Append(filter);
-                List<GoogleSearchTerm> fitleredRows = await _context.GoogleSearchTerms.FromSqlRaw(command.ToString()).ToListAsync();
-
-                return fitleredRows.Count();
-            }
+            return await _context.GoogleSearchTerms.CountAsync();
         }
 
-        [HttpGet("GetCurrentMonth")]
-        public string selectCurrentMonth()
+        [HttpGet("impressions")]
+        public async Task<ActionResult<IEnumerable<MonthValueResponse>>> CountImpressions()
         {
-            int _latestMonth = DateTime.Now.Month;
-            string latestMonth = _latestMonth.ToString();
-            int latestYear = DateTime.Now.Year;
+            List<GoogleSearchTerm> termlist = await _context.GoogleSearchTerms.OrderByDescending(e => e.date).ToListAsync();
 
-            if(_latestMonth <= 9)
+            var date = "0";
+            var index = -1;
+            List<MonthValueResponse> response = new List<MonthValueResponse>();
+
+            foreach (GoogleSearchTerm term in termlist)
             {
-                latestMonth = "0" + _latestMonth;
-            }
-
-            string latestDate = latestYear + "-" + latestMonth;
-
-            while (!_context.GoogleSearchTerms.Any(e => e.date == latestDate))
-            {
-                if (_latestMonth != 0)
+                if (term.date == date)
                 {
-                    _latestMonth--;
-                    latestMonth = _latestMonth.ToString();
-
-                    if (_latestMonth <= 9)
-                    {
-                        latestMonth = "0" + _latestMonth;
-                    }
-
-                    latestDate = latestYear + "-" + latestMonth.ToString();
+                    response[index].value += term.impressions;
                 }
                 else
                 {
-                    latestYear--;
-                    _latestMonth = 12;
-                    latestMonth = _latestMonth.ToString();
-                    latestDate = latestYear + "-" + latestMonth.ToString();
+                    response.Add(new MonthValueResponse() { month = term.date, value = term.impressions });
+                    date = term.date;
+                    index++;
                 }
             }
 
-            return latestDate;
+            return response;
+        }
+
+        [HttpGet("clicks")]
+        public async Task<ActionResult<IEnumerable<MonthValueResponse>>> CountClicks()
+        {
+            List<GoogleSearchTerm> termlist = await _context.GoogleSearchTerms.OrderByDescending(e => e.date).ToListAsync();
+
+            var date = "0";
+            var index = -1;
+            List<MonthValueResponse> response = new List<MonthValueResponse>();
+
+            foreach (GoogleSearchTerm term in termlist)
+            {
+                if (term.date == date)
+                {
+                    response[index].value += term.clicks;
+                }
+                else
+                {
+                    response.Add(new MonthValueResponse() { month = term.date, value = term.clicks });
+                    date = term.date;
+                    index++;
+                }
+            }
+
+            return response;
+        }
+
+        [HttpGet("GetCurrentMonth")]
+        public async Task<string> SelectCurrentMonth()
+        {
+            return await _context.GoogleSearchTerms.MaxAsync(e => e.date);
+        }
+
+        [HttpGet("dates")]
+        public async Task<List<string>> GetAllDates()
+        {
+            List<GoogleSearchTerm> temp = await _context.GoogleSearchTerms.GroupBy(e => e.date).Select(e => e.First()).ToListAsync();
+            List<string> dates = new List<string>();
+
+            foreach (GoogleSearchTerm term in temp)
+            {
+                dates.Add(term.date);
+            }
+
+            dates.Reverse();
+
+            return dates;
         }
 
         [HttpGet("ExportToExcel")]
@@ -129,7 +131,7 @@ namespace CBHPredictorWebAPI.Controllers
         {
             try
             {
-                List<GoogleSearchTerm> sheet = await _context.GoogleSearchTerms.OrderBy(e => e.terms).ToListAsync();
+                List<GoogleSearchTerm> sheet = await _context.GoogleSearchTerms.OrderBy(e => e.date).ThenBy(e => e.terms).ToListAsync();
                 FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "GoogleSearchTerms.xlsx");
                 return fr;
             }
@@ -202,139 +204,52 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         //-------------------------------------------------------------FILTER----------------------------------------------------------------------//
-        //---- Apply Filter ----//
-        [HttpGet("ApplyFilter/{relation}")]
-        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> ApplyFilter(string relation)
+        [HttpPost("filter/{relation}/{sort}/{cols}")]
+        public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> FilterEntries([FromBody] string[][] filters, [FromRoute] bool relation, string sort, string cols)
         {
-            var command = new StringBuilder("SELECT * FROM GoogleSearchTerms WHERE ");
-            string? filter = HttpContext.Session.GetString("GoogleFilter");
+            var command = new StringBuilder("");
 
-            if (!string.IsNullOrEmpty(filter))
+            if (!String.IsNullOrEmpty(cols) && cols != "null")
             {
-                filter = filter.Remove(0, 1);
-                string[] filters = filter.Split(";");
+                command.Append("SELECT " + cols + " FROM GoogleSearchTerms");
+            }
+            else
+            {
+                command.Append("SELECT * FROM GoogleSearchTerms");
+            }
 
-                if (relation.Equals("AND"))
+            if (filters.Length > 0)
+            {
+                string[] newFilters = new string[filters.Length];
+
+                for (int i = 0; i < filters.Length; i++)
                 {
-                    filter = string.Join(" AND ", filters);
+                    newFilters[i] = filters[i][0];
+                }
+
+                command.Append(" WHERE ");
+
+                if (relation)
+                {
+                    command.Append(string.Join(" AND ", newFilters));
                 }
                 else
                 {
-                    filter = string.Join(" OR ", filters);
+                    command.Append(string.Join(" OR ", newFilters));
                 }
-
-                command.Append(filter);
-                return await _context.GoogleSearchTerms.FromSqlRaw(command.ToString()).ToListAsync();
             }
 
-            return BadRequest();
-        }
-
-        //---- Add new Filter ----//
-        // Add Single Filter
-        [HttpPost("AddSingleFilter/{col}/{value}/{exact}")]
-        public string AddSingleFilter(string col, string value, bool exact)
-        {
-            string filter = CreateSingleFilterString(col, value, exact);
-            HttpContext.Session.SetString("GoogleFilter", HttpContext.Session.GetString("GoogleFilter") + ";" + filter);
-            return "{\"success\":1}";
-        }
-
-        // Add Range Filter
-        [HttpPost("AddRangeFilter/{col}/{fromVal}/{toVal}")]
-        public string AddRangeFilter(string col, string fromVal, string toVal)
-        {
-            string filter = CreateRangeFilterString(col, fromVal, toVal);
-            HttpContext.Session.SetString("GoogleFilter", HttpContext.Session.GetString("GoogleFilter") + ";" + filter);
-            return "{\"success\":1}";
-        }
-
-        // Add Comparing Filter
-        [HttpPost("AddCompareFilter/{col}/{value}/{before}")]
-        public string AddCompareFilter(string col, string value, bool before)
-        {
-            string filter = CreateCompareFilterString(col, value, before);
-            HttpContext.Session.SetString("GoogleFilter", HttpContext.Session.GetString("GoogleFilter") + ";" + filter);
-            return "{\"success\":1}";
-        }
-
-        //---- Remove existing Filter ----//
-        // Remove Single Filter
-        [HttpDelete("RemoveSingleFilter/{col}/{value}/{exact}")]
-        public string RemoveSingleFilter(string col, string value, bool exact)
-        {
-            string filter = ";" + CreateSingleFilterString(col, value, exact);
-            string? allFilters = HttpContext.Session.GetString("GoogleFilter");
-
-            allFilters = allFilters.Replace(filter, "");
-
-            HttpContext.Session.SetString("GoogleFilter", allFilters);
-
-            return "{\"success\":1}";
-        }
-
-        // Remove Range Filter
-        [HttpDelete("RemoveRangeFilter/{col}/{fromVal}/{toVal}")]
-        public string RemoveRangeFilter(string col, string fromVal, string toVal)
-        {
-            string filter = ";" + CreateRangeFilterString(col, fromVal, toVal);
-            string? allFilters = HttpContext.Session.GetString("GoogleFilter");
-
-            allFilters = allFilters.Replace(filter, "");
-
-            HttpContext.Session.SetString("GoogleFilter", allFilters);
-
-            return "{\"success\":1}";
-        }
-
-        // Remove Comparing Filter
-        [HttpDelete("RemoveCompareFilter/{col}/{value}/{before}")]
-        public string RemoveCompareFilter(string col, string value, bool before)
-        {
-            string filter = ";" + CreateCompareFilterString(col, value, before);
-            string? allFilters = HttpContext.Session.GetString("GoogleFilter");
-
-            allFilters = allFilters.Replace(filter, "");
-
-            HttpContext.Session.SetString("GoogleFilter", allFilters);
-
-            return "{\"success\":1}";
-        }
-
-        // Remove all Filter
-        [HttpDelete("RemoveAllFilter")]
-        public string RemoveAllFilter()
-        {
-            HttpContext.Session.SetString("GoogleFilter", string.Empty);
-            return "{\"success\":1}";
-        }
-
-        //---- Create Filter Strings ----//
-        private string CreateSingleFilterString(string col, string value, bool exact)
-        {
-            if (exact)
+            if (!String.IsNullOrEmpty(sort) && sort != "null")
             {
-                return "[" + col + "] LIKE '" + value + "'";
+                command.Append(" " + sort);
+
+                if (!sort.Contains("terms"))
+                {
+                    command.Append(", terms ASC");
+                }
             }
-            else
-            {
-                return "[" + col + "] LIKE '%" + value + "%'";
-            }
-        }
-        private string CreateRangeFilterString(string col, string fromVal, string toVal)
-        {
-            return "[" + col + "] BETWEEN '" + fromVal + "' AND '" + toVal + "'";
-        }
-        private string CreateCompareFilterString(string col, string value, bool before)
-        {
-            if (before)
-            {
-                return "[" + col + "] < '" + value + "'";
-            }
-            else
-            {
-                return "[" + col + "] > '" + value + "'";
-            }
+            
+            return await _context.GoogleSearchTerms.FromSqlRaw(command.ToString()).ToListAsync();
         }
 
         //-------------------------------------------------------------UTILITY---------------------------------------------------------------------//

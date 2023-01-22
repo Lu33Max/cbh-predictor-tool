@@ -1,6 +1,5 @@
 import React, {useState} from "react"
 import { Outlet } from "react-router-dom";
-import authService from "../../services/auth.service";
 import Navbar from "../navigation/Navbar";
 import styles from "./header.module.css"
 
