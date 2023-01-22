@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
-using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
 using Microsoft.AspNetCore.Authorization;
 
 namespace CBHPredictorWebAPI.Controllers
@@ -161,7 +160,7 @@ namespace CBHPredictorWebAPI.Controllers
                     newFilters[i] = filters[i][0];
                 }
 
-                command.Append( "WHERE ");
+                command.Append( " WHERE ");
 
                 if (relation)
                 {

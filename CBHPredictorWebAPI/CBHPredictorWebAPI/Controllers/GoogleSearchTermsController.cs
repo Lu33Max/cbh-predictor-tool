@@ -3,9 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CBHPredictorWebAPI.Data;
 using CBHPredictorWebAPI.Models;
 using System.Text;
-using static CBHPredictorWebAPI.Controllers.BingSearchTermsController;
 using Microsoft.AspNetCore.Authorization;
-using System.Linq;
 
 namespace CBHPredictorWebAPI.Controllers
 {

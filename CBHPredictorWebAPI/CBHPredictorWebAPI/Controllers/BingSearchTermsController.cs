@@ -247,9 +247,6 @@ namespace CBHPredictorWebAPI.Controllers
                 }
             }
 
-            System.Diagnostics.Debug.WriteLine("########################################################################################");
-            System.Diagnostics.Debug.WriteLine(command.ToString());
-            System.Diagnostics.Debug.WriteLine("########################################################################################");
             return await _context.BingSearchTerms.FromSqlRaw(command.ToString()).ToListAsync();
         }
 
