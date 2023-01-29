@@ -159,8 +159,7 @@ namespace CBHPredictorWebAPI.Controllers
                 List<OrderEntry> sheet = await _context.OrderEntries.OrderBy(e => e.cbhSampleID + 0).ToListAsync();
                 FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "OrderEntries.xlsx");
 
-                return fr;
-                
+                return fr;              
             }
             catch (Exception ex)
             {

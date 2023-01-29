@@ -19,10 +19,12 @@ const HomeScreen = () => {
     const [allCount, setAllCount] = useState(0)
     const [calendarData, setCalendarData] = useState([])
     const [swarmData, setSwarmData] = useState([])
-    const [funnelData, setFunnelData] = useState([[{id: "", value:1, label: ""}]])
+    const [funnelData, setFunnelData] = useState([[{id: "NaN", value: 1, label: "NaN"}]])
     const [dates, setDates] = useState([])
     const [activeDate, setActiveDate] = useState(0)
     const [cycle, setCycle] = useState(false)
+    const [bingTop, setBingTop] = useState(["NaN","NaN"])
+    const [googleTop, setGoogleTop] = useState(["NaN","NaN"])
 
     const user = authService.getCurrentUser()
     const navigate = useNavigate()
@@ -134,12 +136,44 @@ const HomeScreen = () => {
                                 Top Orders Last Month
                             </div>
                             <div className={styles.rb_bot_left}>
-                                B:&nbsp;&nbsp;#1 biorepository&nbsp;&nbsp;&thinsp;&thinsp;#2 ffpe tissue<br/>
-                                G:&thinsp;&thinsp;#1 ffpe&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#2 biobank
+                                <div style={{gridColumnStart: "1", gridColumnEnd: "2", gridRowStart: "1", gridRowEnd: "2", textAlign: "center", fontSize: "2.2vh"}}>
+                                    B:
+                                </div>
+                                <div style={{gridColumnStart: "2", gridColumnEnd: "3", gridRowStart: "1", gridRowEnd: "2", textAlign: "left", fontSize: "2.2vh"}}>
+                                    #1 {bingTop[0]}
+                                </div>
+                                <div style={{gridColumnStart: "3", gridColumnEnd: "4", gridRowStart: "1", gridRowEnd: "2", textAlign: "left", fontSize: "2.2vh"}}>
+                                    #2 {bingTop[1]}
+                                </div>
+                                <div style={{gridColumnStart: "1", gridColumnEnd: "2", gridRowStart: "2", gridRowEnd: "3", textAlign: "center", fontSize: "2.2vh"}}>
+                                    G:
+                                </div>
+                                <div style={{gridColumnStart: "2", gridColumnEnd: "3", gridRowStart: "2", gridRowEnd: "3", textAlign: "left", fontSize: "2.2vh"}}>
+                                    #1 {googleTop[0]}
+                                </div>
+                                <div style={{gridColumnStart: "3", gridColumnEnd: "4", gridRowStart: "2", gridRowEnd: "3", textAlign: "left", fontSize: "2.2vh"}}>
+                                    #2 {googleTop[1]}
+                                </div>
                             </div>
                             <div className={styles.rb_bot_right}>
-                                Diag:&nbsp;&nbsp;#1 healthy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#2 diabetes<br/>
-                                Para:&nbsp;&nbsp;#1 Procalcit... #2 ALP
+                                <div style={{gridColumnStart: "1", gridColumnEnd: "2", gridRowStart: "1", gridRowEnd: "2", textAlign: "left", fontSize: "2.2vh"}}>
+                                    Diag:
+                                </div>
+                                <div style={{gridColumnStart: "2", gridColumnEnd: "3", gridRowStart: "1", gridRowEnd: "2", textAlign: "left", fontSize: "2.2vh"}}>
+                                    #1 {orderCount == 0 ? "NaN" : "healthy"}
+                                </div>
+                                <div style={{gridColumnStart: "3", gridColumnEnd: "4", gridRowStart: "1", gridRowEnd: "2", textAlign: "left", fontSize: "2.2vh"}}>
+                                    #2 {orderCount == 0 ? "NaN" : "diabetes"}
+                                </div>
+                                <div style={{gridColumnStart: "1", gridColumnEnd: "2", gridRowStart: "2", gridRowEnd: "3", textAlign: "left", fontSize: "2.2vh"}}>
+                                    Para:
+                                </div>
+                                <div style={{gridColumnStart: "2", gridColumnEnd: "3", gridRowStart: "2", gridRowEnd: "3", textAlign: "left", fontSize: "2.2vh"}}>
+                                    #1 {orderCount == 0 ? "NaN" : "Procalcit..."}
+                                </div>
+                                <div style={{gridColumnStart: "3", gridColumnEnd: "4", gridRowStart: "2", gridRowEnd: "3", textAlign: "left", fontSize: "2.2vh"}}>
+                                    #2 {orderCount == 0 ? "NaN" : "ALP"}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -188,6 +222,35 @@ const HomeScreen = () => {
         if(resultSwarm1.status === 200 && resultSwarm2.status === 200){
             setSwarmData([...resultSwarm1.data, ...resultSwarm2.data])
         }
+
+        //// Top Terms ////
+        const urlBingTop = `${Constants.API_URL_BING_ENTRIES}/topterms`
+        const resultBingTop = await axiosApiInstance.get(urlBingTop)
+        if(resultBingTop.status === 200 && resultBingTop.data.length === 2){
+            if(resultBingTop.data[0].length > 10){
+                resultBingTop.data[0] = resultBingTop.data[0].slice(0, 10)
+                resultBingTop.data[0] += "..."
+            }
+            if(resultBingTop.data[1].length > 10){
+                resultBingTop.data[1] = resultBingTop.data[1].slice(0, 10)
+                resultBingTop.data[1] += "..."
+            }
+            setBingTop(resultBingTop.data)
+        }
+
+        const urlGoogleTop = `${Constants.API_URL_GOOGLE_ENTRIES}/topterms`
+        const resultGoogleTop = await axiosApiInstance.get(urlGoogleTop)
+        if(resultGoogleTop.status === 200 && resultGoogleTop.data.length === 2){
+            if(resultGoogleTop.data[0].length > 10){
+                resultGoogleTop.data[0] = resultGoogleTop.data[0].slice(0, 10)
+                resultGoogleTop.data[0] += "..."
+            }
+            if(resultGoogleTop.data[1].length > 10){
+                resultGoogleTop.data[1] = resultGoogleTop.data[1].slice(0, 10)
+                resultGoogleTop.data[1] += "..."
+            }
+            setGoogleTop(resultGoogleTop.data)
+        }
     }
 
     async function getFunnelData(){
@@ -208,25 +271,110 @@ const HomeScreen = () => {
             var newFunnel = []
             var newDates = []
 
-            let max = 6
-            while(max >= resultBingImpr.data.length || max >= resultGoogleImpr.data.length || max >= resultOrders.data.length){
-                max--
+            let bi = 0, bc = 0, gi = 0, gc = 0, o = 0
+
+            for(let i = 0; i < 6; i++){
+                if(bi < resultBingImpr.data.length && bc < resultBingClicks.data.length && gi < resultGoogleImpr.data.length && gc < resultGoogleClicks.data.length && o < resultOrders.data.length){
+                    if(resultBingImpr.data[bi].month === resultBingClicks.data[bc].month){
+                        if(resultGoogleImpr.data[gi].month === resultGoogleClicks.data[gc].month){
+                            if(resultBingImpr.data[bi].month === resultGoogleImpr.data[gi].month){
+                                if(resultBingImpr.data[bi].month === resultOrders.data[o].month){
+                                    newDates.push(resultBingImpr.data[i].month)
+                                    newFunnel.push([
+                                        {id: "impressions", value: (resultBingImpr.data[bi].value + resultGoogleImpr.data[gi].value) /10, label: (resultBingImpr.data[bi].value + resultGoogleImpr.data[gi].value)},
+                                        {id: "clicks", value: resultBingClicks.data[bc].value + resultGoogleClicks.data[gc].value, label: resultBingClicks.data[bc].value + resultGoogleClicks.data[gc].value},
+                                        {id: "orders", value: resultOrders.data[o].value * 5, label: resultOrders.data[i+1].value}
+                                    ])
+                                    bi++; bc++; gi++; gc++; o++;
+                                } else {
+                                    if(resultBingImpr.data[bi].month < resultOrders.data[o].month){
+                                        while(resultBingImpr.data[bi].month < resultOrders.data[o].month){
+                                            o++
+                                            if(!(o < resultOrders.data.length)){
+                                                break
+                                            }
+                                        }
+                                    }
+                                    if(resultBingImpr.data[bi].month > resultOrders.data[o].month){
+                                        while(resultBingImpr.data[bi].month > resultOrders.data[o].month){
+                                            bi++; bc++; gi++; gc++;
+                                            if(!(bi < resultBingImpr.data.length) || !(bc < resultBingClicks.data.length) || !(gi < resultGoogleImpr.data.length) || !(gc < resultGoogleClicks.data.length)){
+                                                break
+                                            }
+                                        }
+                                    }
+                                    i--
+                                }
+                            } else {
+                                if(resultBingImpr.data[bi].month < resultGoogleImpr.data[gi].month){
+                                    while(resultBingImpr.data[bi].month < resultGoogleImpr.data[gi].month){
+                                        gi++; gc++;
+                                        if(!(gi < resultGoogleImpr.data.length) || !(gc < resultGoogleClicks.data.length)){
+                                            break
+                                        }
+                                    }
+                                }
+                                if(resultBingImpr.data[bi].month > resultGoogleImpr.data[gi].month){
+                                    while(resultBingImpr.data[bi].month > resultGoogleImpr.data[gi].month){
+                                        bi++; bc++;
+                                        if(!(bi < resultBingImpr.data.length) || !(bc < resultBingClicks.data.length)){
+                                            break
+                                        }
+                                    }
+                                }
+                                i--
+                            }
+                        } else {
+                            if(resultGoogleImpr.data[gi].month < resultGoogleClicks.data[gc].month){
+                                while(resultGoogleImpr.data[gi].month < resultGoogleClicks.data[gc].month){
+                                    gc++
+                                    if(!(gc < resultGoogleClicks.data.length)){
+                                        break
+                                    }
+                                }
+                            }
+                            if(resultGoogleImpr.data[gi].month > resultGoogleClicks.data[gc].month){
+                                while(resultGoogleImpr.data[gi].month > resultGoogleClicks.data[gc].month){
+                                    gi++
+                                    if(!(gi < resultGoogleImpr.data.length)){
+                                        break
+                                    }
+                                }
+                            }
+                            i--
+                        }
+                    } else {
+                        if(resultBingImpr.data[bi].month < resultBingClicks.data[bc].month){
+                            while(resultBingImpr.data[bi].month < resultBingClicks.data[bc].month){
+                                bc++
+                                if(!(bc < resultBingClicks.data.length)){
+                                    break
+                                }
+                            }
+                        }
+                        if(resultBingImpr.data[bi].month > resultBingClicks.data[bc].month){
+                            while(resultBingImpr.data[bi].month > resultBingClicks.data[bc].month){
+                                bi++
+                                if(!(bi < resultBingImpr.data.length)){
+                                    break
+                                }
+                            }
+                        }
+                        i--
+                    }                  
+                } else {
+                    break
+                }
             }
 
-            for(let i = 0; i < max; i++){
-                newDates.push(resultBingImpr.data[i].month)
-                newFunnel.push([
-                    {id: "impressions", value: (resultBingImpr.data[i].value + resultGoogleImpr.data[i].value) /10, label: (resultBingImpr.data[i].value + resultGoogleImpr.data[i].value)},
-                    {id: "clicks", value: resultBingClicks.data[i].value + resultGoogleClicks.data[i].value, label: resultBingClicks.data[i].value + resultGoogleClicks.data[i].value},
-                    {id: "orders", value: resultOrders.data[i+1].value * 5, label: resultOrders.data[i+1].value}
-                ])
+            if(newDates.length > 0 && newFunnel.length > 0){
+                newDates.reverse()
+                newFunnel.reverse()
+                
+                setDates(newDates)
+                setFunnelData(newFunnel)
+                setCycle(true)
             }
-            newDates.reverse()
-            newFunnel.reverse()
-            
-            setDates(newDates)
-            setFunnelData(newFunnel)
-            setCycle(true)
         }
     }
 }

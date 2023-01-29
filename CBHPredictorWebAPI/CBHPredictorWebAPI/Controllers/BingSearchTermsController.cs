@@ -102,10 +102,11 @@ namespace CBHPredictorWebAPI.Controllers
             return response;
         }
 
-        [HttpGet("GetCurrentMonth")]
-        public async Task<string> SelectCurrentMonth()
+        [HttpGet("topterms")]
+        public async Task<ActionResult<IEnumerable<string>>> GetTopTerms()
         {
-            return await _context.BingSearchTerms.MaxAsync(e => e.date);
+            List<string> top = await _context.BingSearchTerms.OrderBy(e => e.date).ThenByDescending(e => e.impressions).Take(2).Select(e => e.terms).ToListAsync();
+            return top;
         }
 
         [HttpGet("dates")]
