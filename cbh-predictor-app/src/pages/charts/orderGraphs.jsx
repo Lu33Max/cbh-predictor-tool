@@ -275,6 +275,7 @@ const OrderChart = () => {
     const [showOthers1, setShowOthers1] = useState(true)
     const [showOthers2, setShowOthers2] = useState(true)    
     const [allEntries, setAllEntries] = useState([])
+    const [dates, setDates] = useState([])
 
     const user = authService.getCurrentUser()
     const navigate = useNavigate()
@@ -284,7 +285,10 @@ const OrderChart = () => {
     },[])
 
     useEffect(() => {
-        const url = Constants.API_URL_ORDER_ENTRIES;
+        var url = `${Constants.API_URL_ORDER_ENTRIES}/dates`
+        getDates(url)
+
+        url = Constants.API_URL_ORDER_ENTRIES;
         getEntries(url)
     }, [])
 
@@ -392,7 +396,15 @@ const OrderChart = () => {
 
     async function getEntries(url){
         const result = await axiosApiInstance.get(url)
-        setAllEntries(result.data)
+        if(result.status === 200){
+            setAllEntries(result.data)
+        }        
+    }
+    async function getDates(url){
+        const result = await axiosApiInstance.get(url)
+        if(result.status === 200){
+            setDates(result.data)
+        }
     }
 }
 

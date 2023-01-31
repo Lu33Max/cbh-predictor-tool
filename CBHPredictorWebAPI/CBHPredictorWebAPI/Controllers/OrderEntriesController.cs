@@ -151,6 +151,27 @@ namespace CBHPredictorWebAPI.Controllers
             return response;
         }
 
+        [HttpGet("dates")]
+        public async Task<ActionResult<IEnumerable<string>>> GetAllDates()
+        {
+            List<DateTime?> orderlist = await _context.OrderEntries.OrderByDescending(e => e.orderDate).Select(e => e.orderDate).ToListAsync();
+
+            var date = "0";
+
+            List<string> response = new List<string>();
+
+            foreach (DateTime entry in orderlist)
+            {
+                if (Convert.ToDateTime(entry).ToString("yyyy-MM") != date)
+                {
+                    response.Add(Convert.ToDateTime(entry).ToString("yyyy-MM"));
+                    date = Convert.ToDateTime(entry).ToString("yyyy-MM");
+                }
+            }
+
+            return response;
+        }
+
         [HttpGet("ExportToExcel")]
         public async Task<IActionResult> ExportOrderEntriesToExcel()
         {

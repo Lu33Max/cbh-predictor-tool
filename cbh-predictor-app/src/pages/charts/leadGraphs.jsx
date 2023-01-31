@@ -139,6 +139,7 @@ const LeadChart = () => {
     const [showOtherFields, setShowOtherFields] = useState(false)
     const [showOthers, setShowOthers] = useState(true)
     const [allEntries, setAllEntries] = useState([])
+    const [dates, setDates] = useState([])
 
     const user = authService.getCurrentUser()
     const navigate = useNavigate()
@@ -148,7 +149,10 @@ const LeadChart = () => {
     },[])
 
     useEffect(() => {
-        const url = Constants.API_URL_LEAD_ENTRIES;
+        var url = `${Constants.API_URL_LEAD_ENTRIES}/dates`
+        getDates(url)
+
+        url = Constants.API_URL_LEAD_ENTRIES;
         getEntries(url)
     }, [])
 
@@ -199,7 +203,15 @@ const LeadChart = () => {
 
     async function getEntries(url){
         const result = await axiosApiInstance.get(url)
-        setAllEntries(result.data)
+        if(result.status === 200){
+            setAllEntries(result.data)
+        }
+    }
+    async function getDates(url){
+        const result = await axiosApiInstance.get(url)
+        if(result.status === 200){
+            setDates(result.data)
+        }
     }
 }
 
