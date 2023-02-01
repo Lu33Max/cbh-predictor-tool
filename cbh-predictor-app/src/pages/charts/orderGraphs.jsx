@@ -11,8 +11,28 @@ var primaryScheme = ['#5fc431','#71d055','#83dc73','#96e890','#abf4ab','#c0ffc6'
 var secondaryScheme = ['#d15454','#e16c7c','#ec86a1','#f4a2c3','#f9bee1','#ffd9fa','#e6b2e3','#cc8bce','#b066bb','#9140a8','#711496']
 
 //// MAPPING FUNCTIONS ////
-function GetMatrices(entries, minMatrix, maxMatrix, showOthers) {
+function GetMatrices(minMatrix, maxMatrix, showOthers, dates, period) {
     const [data, setData] = useState([])
+    const [entries, setEntries] = useState([])
+    let interval = period
+
+    if(interval >= dates.length){
+        interval = dates.length -1
+    }
+
+    useEffect(() => {
+        if(dates.length > 0){
+            var filter
+
+            if(period > dates.length || period === -1) filter = []
+            else filter = [[`orderDate >= '${dates[interval]}-01'`, null]]
+
+            let sort = "ORDER BY orderDate DESC"
+
+            const url = `${Constants.API_URL_ORDER_ENTRIES}/filter/true/${sort}/null`
+            getData(url, filter, setEntries)
+        }
+    },[dates, period])
 
     useEffect(() => {
         const newData = []
@@ -40,6 +60,8 @@ function GetMatrices(entries, minMatrix, maxMatrix, showOthers) {
             }
         }
 
+        newData.sort((a,b) => b.value - a.value)
+
         if(showOthers) {
             newData.push({
                 id: "others",
@@ -54,8 +76,28 @@ function GetMatrices(entries, minMatrix, maxMatrix, showOthers) {
     return data
 }
 
-function GetDiagnosis(entries, minDiagnoses, maxDiagnoses, showOthers) {
+function GetDiagnosis(minDiagnoses, maxDiagnoses, showOthers, dates, period) {
     const [data, setData] = useState([])
+    const [entries, setEntries] = useState([])
+    let interval = period
+
+    if(interval >= dates.length){
+        interval = dates.length -1
+    }
+
+    useEffect(() => {
+        if(dates.length > 0){
+            var filter
+
+            if(period > dates.length || period === -1) filter = []
+            else filter = [[`orderDate >= '${dates[interval]}-01'`, null]]
+
+            let sort = "ORDER BY orderDate DESC"
+
+            const url = `${Constants.API_URL_ORDER_ENTRIES}/filter/true/${sort}/null`
+            getData(url, filter, setEntries)
+        }
+    },[dates, period])
 
     useEffect(() => {
         const newData = []
@@ -83,6 +125,8 @@ function GetDiagnosis(entries, minDiagnoses, maxDiagnoses, showOthers) {
             }
         }
 
+        newData.sort((a,b) => b.value - a.value)
+
         if(showOthers) {
             newData.push({
                 id: "others",
@@ -97,51 +141,28 @@ function GetDiagnosis(entries, minDiagnoses, maxDiagnoses, showOthers) {
     return data
 }
 
-function GetLabParameter(entries, minParams, maxParams, showOthers) {
+function GetSampleSizes(minSampleSize, showOthers, dates, period) {
     const [data, setData] = useState([])
+    const [entries, setEntries] = useState([])
+    let interval = period
+
+    if(interval >= dates.length){
+        interval = dates.length -1
+    }
 
     useEffect(() => {
-        const newData = []
-        var others = 0
+        if(dates.length > 0){
+            var filter
 
-        entries.map(function(entry){
-            if(newData.find(e => e.id === entry.labParameter)) {
-                newData[newData.findIndex((e => e.id === entry.labParameter))].value++
-            } else if (entry.labParameter != null) {
-                newData.push({
-                    id: entry.labParameter,
-                    name: entry.labParameter,
-                    value: 1
-                })
-            }
-        })
+            if(period > dates.length || period === -1) filter = []
+            else filter = [[`orderDate >= '${dates[interval]}-01'`, null]]
 
-        for(let i = 0; i <= newData.length; i++){
-            if(newData[i]){
-                if(newData[i].value < minParams || newData[i].value > maxParams){
-                    others += newData[i].value
-                    newData.splice(i, 1)
-                    i--
-                }
-            }
+            let sort = "ORDER BY orderDate DESC"
+
+            const url = `${Constants.API_URL_ORDER_ENTRIES}/filter/true/${sort}/null`
+            getData(url, filter, setEntries)
         }
-
-        if(showOthers) {
-            newData.push({
-                id: "others",
-                name: "others",
-                value: others
-            })
-        }
-
-        setData(newData)
-    }, [entries, minParams, maxParams, showOthers])
-
-    return data
-}
-
-function GetSampleSizes(entries, minSampleSize) {
-    const [data, setData] = useState([])
+    },[dates, period])
 
     useEffect(() => {
         const newData = []
@@ -169,14 +190,109 @@ function GetSampleSizes(entries, minSampleSize) {
             }
         }
 
+        newData.sort((a,b) => b.value - a.value)
+
+        if(showOthers) {
+            newData.push({
+                id: "others",
+                name: "others",
+                value: others
+            })
+        }
+
         setData(newData)
     }, [entries, minSampleSize])
 
     return data
 }
 
-function GetLabResult(entries, showOthers) {
+function GetLabParameter(minParams, maxParams, showOthers, dates, period) {
     const [data, setData] = useState([])
+    const [entries, setEntries] = useState([])
+    let interval = period
+
+    if(interval >= dates.length){
+        interval = dates.length -1
+    }
+
+    useEffect(() => {
+        if(dates.length > 0){
+            var filter
+
+            if(period > dates.length || period === -1) filter = []
+            else filter = [[`orderDate >= '${dates[interval]}-01'`, null]]
+
+            let sort = "ORDER BY orderDate DESC"
+
+            const url = `${Constants.API_URL_ORDER_ENTRIES}/filter/true/${sort}/null`
+            getData(url, filter, setEntries)
+        }
+    },[dates, period])
+
+    useEffect(() => {
+        const newData = []
+        var others = 0
+
+        entries.map(function(entry){
+            if(newData.find(e => e.id === entry.labParameter)) {
+                newData[newData.findIndex((e => e.id === entry.labParameter))].value++
+            } else if (entry.labParameter != null) {
+                newData.push({
+                    id: entry.labParameter,
+                    name: entry.labParameter,
+                    value: 1
+                })
+            }
+        })
+
+        for(let i = 0; i <= newData.length; i++){
+            if(newData[i]){
+                if(newData[i].value < minParams || newData[i].value > maxParams){
+                    others += newData[i].value
+                    newData.splice(i, 1)
+                    i--
+                }
+            }
+        }
+
+        newData.sort((a,b) => b.value - a.value)
+
+        if(showOthers) {
+            newData.push({
+                id: "others",
+                name: "others",
+                value: others
+            })
+        }
+
+        setData(newData)
+    }, [entries, minParams, maxParams, showOthers])
+
+    return data
+}
+
+function GetLabResult(showOthers, dates, period) {
+    const [data, setData] = useState([])
+    const [entries, setEntries] = useState([])
+    let interval = period
+
+    if(interval >= dates.length){
+        interval = dates.length -1
+    }
+
+    useEffect(() => {
+        if(dates.length > 0){
+            var filter
+
+            if(period > dates.length || period === -1) filter = []
+            else filter = [[`orderDate >= '${dates[interval]}-01'`, null]]
+
+            let sort = "ORDER BY orderDate DESC"
+
+            const url = `${Constants.API_URL_ORDER_ENTRIES}/filter/true/${sort}/null`
+            getData(url, filter, setEntries)
+        }
+    },[dates, period])
 
     useEffect(() => {
         const newData = []
@@ -218,6 +334,7 @@ function GetLabResult(entries, showOthers) {
             }
         }
         
+        newData.sort((a,b) => b.value - a.value)
         others = 100 - others
         
         if(showOthers) {
@@ -234,8 +351,28 @@ function GetLabResult(entries, showOthers) {
     return data
 }
 
-function GetOrders(entries) {
+function GetOrders(dates, period) {
     const [data, setData] = useState([])
+    const [entries, setEntries] = useState([])
+    let interval = period
+
+    if(interval >= dates.length){
+        interval = dates.length -1
+    }
+
+    useEffect(() => {
+        if(dates.length > 0){
+            var filter
+
+            if(period > dates.length) filter = []
+            else filter = [[`orderDate >= '${dates[interval]}-01'`, null]]
+
+            let sort = "ORDER BY orderDate DESC"
+
+            const url = `${Constants.API_URL_ORDER_ENTRIES}/filter/true/${sort}/null`
+            getData(url, filter, setEntries)
+        }
+    },[dates, period])
 
     useEffect(() => {
         const newData = [{
@@ -254,6 +391,8 @@ function GetOrders(entries) {
                 })
             }
         })
+        newData[0].data.reverse()
+
         setData(newData)
     }, [entries])
     return data
@@ -261,20 +400,22 @@ function GetOrders(entries) {
 
 function truncateTimeMonth(str) {
     return str.slice(0, 7)
-} 
+}
+
+async function getData(url, body, setEntries){
+    const result = await axiosApiInstance.post(url, body, {'Content-Type': 'application/json'})
+    if(result.status === 200){
+        setEntries(result.data)
+    }
+}
 
 //// RENDER VIEW ////
 const OrderChart = () => {
-    const [minMatrix, setMinMatrix] = useState(150)
-    const [maxMatrix, setMaxMatrix] = useState(7000)
-    const [minParams, setMinParams] = useState(150)
-    const [maxParams, setMaxParams] = useState(1000)
-    const [minDiagnoses, setMinDiagnoses] = useState(150)
-    const [maxDiagnoses, setMaxDiagnoses] = useState(800)
-    const [minSampleSize, setMinSampleSize] = useState(250)
+    const [min, setMin] = useState([150, 150, 150, 150])
+    const [max, setMax] = useState([7000, 1000, 800])
     const [showOthers1, setShowOthers1] = useState(true)
     const [showOthers2, setShowOthers2] = useState(true)    
-    const [allEntries, setAllEntries] = useState([])
+    const [periods, setPeriods] = useState([0, 0, 2])
     const [dates, setDates] = useState([])
 
     const user = authService.getCurrentUser()
@@ -282,42 +423,27 @@ const OrderChart = () => {
 
     useEffect(() => {
         if(!user) navigate("/login")
+
+        const url = `${Constants.API_URL_ORDER_ENTRIES}/dates`
+        getDates(url)
     },[])
 
-    useEffect(() => {
-        var url = `${Constants.API_URL_ORDER_ENTRIES}/dates`
-        getDates(url)
+    const minChange = (e) => {
+        let newMin = [...min]
+        newMin[e.target.name] = e.target.value
+        setMin(newMin)
+    }
 
-        url = Constants.API_URL_ORDER_ENTRIES;
-        getEntries(url)
-    }, [])
+    const maxChange = (e) => {
+        let newMax = [...max]
+        newMax[e.target.name] = e.target.value
+        setMax(newMax)
+    }
 
-    const onInputChange = (e) => {
-        switch(e.target.name){
-            case 'minMatrix':
-                setMinMatrix(e.target.value)
-                return
-            case 'maxMatrix':
-                setMaxMatrix(e.target.value)
-                return
-            case 'minParams':
-                setMinParams(e.target.value)
-                return
-            case 'maxParams':
-                setMaxParams(e.target.value)
-                return
-            case 'minDiagnoses':
-                setMinDiagnoses(e.target.value)
-                return
-            case 'maxDiagnoses':
-                setMaxDiagnoses(e.target.value)
-                return
-            case 'minSampleSize':
-                setMinSampleSize(e.target.value)
-                return
-            default:
-                return
-        }
+    const onPeriodChange = (e, index) => {
+        let newPeriods = periods.map(period => { return period })
+        newPeriods[index] = parseInt(e.target.value)
+        setPeriods(newPeriods)
     }
 
     return(
@@ -327,79 +453,73 @@ const OrderChart = () => {
             <div className={styles.grid_container_3_items}>
                 <div className={styles.settings}>
                     Period:
-                    <select>
-                        <option defaultValue={true}>Last 3 Months</option>
-                        <option>Last Year</option>
-                        <option>All Time</option>
+                    <select onChange={(e) => onPeriodChange(e, 0)}>
+                        <option defaultValue={true} value={0}>Last Month</option>
+                        <option value={2}>Last 3 Months</option>
+                        <option value={11}>Last Year</option>
+                        <option value={-1}>All Time</option>
                     </select>
                     Show Others
                     <input type="checkbox" defaultChecked onChange={() => setShowOthers1(!showOthers1)}></input>
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Frequent Matrices</h3>
-                    <PieChart data={GetMatrices(allEntries, minMatrix, maxMatrix, showOthers1)} scheme={primaryScheme}/>
-                    <div className={styles.min}>Min: <input className={styles.min_input} value={minMatrix} name="minMatrix" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxMatrix} name="maxMatrix" type="number" onChange={onInputChange}/></div>
+                    <PieChart data={GetMatrices(min[0], max[0], showOthers1, dates, periods[0])} scheme={primaryScheme}/>
+                    <div className={styles.min}>Min: <input className={styles.min_input} value={min[0]} name={0} type="number" onChange={minChange}/> Max: <input className={styles.min_input} value={max[0]} name={0} type="number" onChange={maxChange}/></div>
                 </div>
                 <div className={styles.middle_wrapper}>
                     <h3>Frequent Diagnoses</h3>
-                    <PieChart data={GetDiagnosis(allEntries, minDiagnoses, maxDiagnoses, showOthers1)} scheme={primaryScheme}/>
-                    <div className={styles.min}>Min: <input className={styles.min_input} value={minDiagnoses} name="minDiagnoses" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxDiagnoses} name="maxDiagnoses" type="number" onChange={onInputChange}/></div>
+                    <PieChart data={GetDiagnosis(min[1], max[1], showOthers1, dates, periods[0])} scheme={primaryScheme}/>
+                    <div className={styles.min}>Min: <input className={styles.min_input} value={min[1]} name={1} type="number" onChange={minChange}/> Max: <input className={styles.min_input} value={max[1]} name={1} type="number" onChange={maxChange}/></div>
                 </div>
                 <div className={styles.right_wrapper}>
                     <h3>Frequent Sample Sizes (in ml)</h3>
-                    <PieChart data={GetSampleSizes(allEntries, minSampleSize, showOthers1)} scheme={primaryScheme}/>
-                    <div className={styles.min}>Min: <input className={styles.min_input} value={minSampleSize} name="minSampleSize" type="number" onChange={onInputChange}/> </div>
+                    <PieChart data={GetSampleSizes(min[2], showOthers1, dates, periods[0])} scheme={primaryScheme}/>
+                    <div className={styles.min}>Min: <input className={styles.min_input} value={min[2]} name={2} type="number" onChange={minChange}/> </div>
                 </div>
             </div>
             {/* Second Block */}
             <div className={styles.grid_container_2_items}>
                 <div className={styles.settings}>
-                    Period:
-                    <select>
-                        <option defaultValue={true}>Last Month</option>
-                        <option>Last 3 Months</option>
-                        <option>Last Year</option>
-                        <option>All Time</option>
+                Period:
+                    <select onChange={(e) => onPeriodChange(e, 1)}>
+                        <option defaultValue={true} value={0}>Last Month</option>
+                        <option value={2}>Last 3 Months</option>
+                        <option value={11}>Last Year</option>
+                        <option value={-1}>All Time</option>
                     </select>
                     Show Others
                     <input type="checkbox" defaultChecked onChange={() => setShowOthers2(!showOthers2)}></input>
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Lab Parameters</h3>
-                    <PieChart data={GetLabParameter(allEntries, minParams, maxParams, showOthers2)} scheme={secondaryScheme}/>
-                    <div className={styles.min}>Min: <input className={styles.min_input} value={minParams} name="minParams" type="number" onChange={onInputChange}/> Max: <input className={styles.min_input} value={maxParams} name="maxParams" type="number" onChange={onInputChange}/></div>
+                    <PieChart data={GetLabParameter(min[3], max[2], showOthers2, dates, periods[1])} scheme={secondaryScheme}/>
+                    <div className={styles.min}>Min: <input className={styles.min_input} value={min[3]} name={3} type="number" onChange={minChange}/> Max: <input className={styles.min_input} value={max[2]} name={2} type="number" onChange={maxChange}/></div>
                 </div>
                 <div className={styles.middle_wrapper}>
                     <h3>Lab Results (in %)</h3>
-                    <PieChart data={GetLabResult(allEntries, showOthers2)} scheme={secondaryScheme}/>
+                    <PieChart data={GetLabResult(showOthers2, dates, periods[1])} scheme={secondaryScheme}/>
                 </div>
             </div>
             {/* Third Block */}
             <div className={styles.grid_container_3_items_1_row}>
                 <div className={styles.settings}>
-                    Period:
-                    <select>
-                        <option defaultValue={true}>Last Month</option>
-                        <option>Last 3 Months</option>
-                        <option>Last Year</option>
-                        <option>All Time</option>
+                Period:
+                    <select onChange={(e) => onPeriodChange(e, 2)}>
+                        <option defaultValue={true} value={2}>Last 3 Months</option>
+                        <option value={5}>Last 6 Months</option>
+                        <option value={11}>Last Year</option>
                     </select>
                 </div>
                 <div className={styles.center_wrapper_top}>
                     <br/>
                     <h3>Orders Over Time</h3>
-                    <LineChart data={GetOrders(allEntries)} scheme={primaryScheme}/>
+                    <LineChart data={GetOrders(dates, periods[2])} scheme={primaryScheme}/>
                 </div>
             </div>
         </div>
     )
 
-    async function getEntries(url){
-        const result = await axiosApiInstance.get(url)
-        if(result.status === 200){
-            setAllEntries(result.data)
-        }        
-    }
     async function getDates(url){
         const result = await axiosApiInstance.get(url)
         if(result.status === 200){
