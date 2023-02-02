@@ -151,6 +151,37 @@ namespace CBHPredictorWebAPI.Controllers
             return response;
         }
 
+        [HttpGet("new-month-count")]
+        public async Task<ActionResult<IDictionary<string, int>>> CountDistinctMonthsNew()
+        {
+            List<OrderEntry> orderlist = await _context.OrderEntries.OrderByDescending(e => e.orderDate).ThenBy(e => e.orderID).ToListAsync();
+
+            var date = "0";
+            var orderID = 0;
+            
+            Dictionary<string, int> response = new Dictionary<string, int>();
+
+            foreach (OrderEntry entry in orderlist)
+            {
+                date = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM");
+                if (response.ContainsKey(date))
+                {
+                    if (entry.orderID != orderID)
+                    {
+                        response[date]++;
+                        orderID = entry.orderID ?? 0;
+                    }
+                }
+                else
+                {
+                    orderID = entry.orderID ?? 0;
+                    response.Add(date, 1);
+                }
+            }
+
+            return response;
+        }
+
         [HttpGet("dates")]
         public async Task<ActionResult<IEnumerable<string>>> GetAllDates()
         {

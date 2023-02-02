@@ -39,7 +39,7 @@ function Navbar() {
                             return (
                                 <li key={index} className={item.cName}>
                                     {item.path !== "" ? (
-                                        <Link to={item.path}>
+                                        <Link to={item.path} reloadDocument={true}>
                                             {item.icon}
                                             <span>{item.title}</span>
                                         </Link>

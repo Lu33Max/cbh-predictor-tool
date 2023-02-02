@@ -180,7 +180,7 @@
 }
 
 .min_input {
-  width: 10%;
+  width: 15%;
   text-align: center;
   border: 1.5px solid #949494;
   border-radius: 6px;
@@ -313,4 +313,14 @@ input[type=checkbox]:hover {
 
 input[type=checkbox]:checked {
   background-color: #b9b9b9;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
 }

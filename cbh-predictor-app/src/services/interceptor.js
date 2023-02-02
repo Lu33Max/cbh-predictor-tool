@@ -20,12 +20,18 @@ axiosApiInstance.interceptors.response.use((response) => {
     return response
 }, async function(error) {
     const originalRequest = error.config
+    if(error.code === 'ERR_NETWORK'){
+        alert("Error: Cannot connect to server")
+    }
     if((error.response.status === 403 || error.response.status === 401) && !originalRequest._retry) {
         originalRequest._retry = true
         const accessToken = await tryRefreshingTokens()
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken
         return axiosApiInstance(originalRequest)
+    } else if(error.response.status === 500){
+        alert("Internal Server Error")
     }
+    
     return Promise.reject(error)
 })
 

@@ -258,7 +258,7 @@ const LeadChart = () => {
                         <option value={11}>Last Year</option>
                     </select>
                     Show Others
-                    <input type="checkbox" onChange={() => setShowOthers(!showOthers)}></input>
+                    <input type="checkbox" defaultChecked onChange={() => setShowOthers(!showOthers)}></input>
                 </div>
                 <div className={styles.left_wrapper}>
                     <h3>Customer Fields</h3>

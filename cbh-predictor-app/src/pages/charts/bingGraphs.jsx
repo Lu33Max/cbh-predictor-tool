@@ -537,10 +537,10 @@ const BingChart = () => {
     return(
         <div className={styles.body}>
             <button onClick={() => {navigate("/")}} className={styles.button_backarrow}>&#60;</button>
-            {/*<div className={styles.export}>
+            <div className={styles.export}>
                 <button onClick={() => handleDownloadPdf()} className={styles.button_export}>Export</button>
                 <button onClick={() => setShowExport(!showExport)} className={styles.button_showexport}><BiShow/></button>
-            </div>*/}
+            </div>
             {/* First Block */}
             <div className={styles.grid_container_3_items_small_mid}>
                 <div className={styles.settings}>

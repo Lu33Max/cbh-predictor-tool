@@ -484,9 +484,11 @@ const GoogleChart = () => {
     const [allEntries, setAllEntries] = useState([])
     const [dates, setDates] = useState([])
     const [terms, setTerms] = useState(["biobank","ffpe","ffpe tissue"])
+    const [includeExport, setIncludeExport] = useState([false, false, false, false, false, false, false])
+    const [sizes, ] = useState([[490, 680], [490, 600], [600, 830], [600, 830], [600, 1500], [600, 600], [600, 600]])
 
     const user = authService.getCurrentUser()
-    const printRef = useRef()
+    const printRef = useRef(new Array())
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -520,27 +522,42 @@ const GoogleChart = () => {
         setPeriods(newPeriods)
     }
 
+    const onIncludeChange = (index) => {
+        let newIncludes = [...includeExport]
+        newIncludes[index] = !newIncludes[index]
+        setIncludeExport(newIncludes)
+    }
+
     const handleDownloadPdf = async () => {
-        const element = printRef.current;
-        const canvas = await html2canvas(element, {scale: 3, height: 490, width: 600});
-        const data = canvas.toDataURL('image/png');
-    
         const pdf = new jsPDF();
-        const imgProperties = pdf.getImageProperties(data);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
-    
-        pdf.addImage(data, 'PNG', 40, 0, pdfWidth - 80, pdfHeight - 60);
+
+        for(let i = 0; i < includeExport.length; i++){
+            if(includeExport[i] === true){
+                if(i !== 0){
+                    pdf.addPage("a4","portrait")
+                }
+
+                const element = printRef.current[i];
+                const canvas = await html2canvas(element, {scale: 3, height: sizes[i][0], width: sizes[i][1]});
+                const data = canvas.toDataURL('image/png');          
+                
+                const imgProperties = pdf.getImageProperties(data);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
+            
+                pdf.addImage(data, 'PNG', 40, 0, pdfWidth - 80, pdfHeight - 60);
+            }
+        }
         pdf.save('print.pdf');
     };
 
     return(
         <div className={styles.body}>
             <button onClick={() => {navigate("/")}} className={styles.button_backarrow}>&#60;</button>
-            {/*<div className={styles.export}>
-                <button onClick={() => handleDownloadPdf()} className={styles.button_export}>Export</button>
+            <div className={styles.export}>
+                <button onClick={() => {setShowExport(!showExport); handleDownloadPdf()}} className={styles.button_export}>Export</button>
                 <button onClick={() => setShowExport(!showExport)} className={styles.button_showexport}><BiShow/></button>
-            </div>*/}
+            </div>
             {/* First Block */}
             <div className={styles.grid_container_3_items_small_mid}>
                 <div className={styles.settings}>
@@ -554,8 +571,8 @@ const GoogleChart = () => {
                     Show Others
                     <input type="checkbox" defaultChecked onChange={() => setShowOthers(!showOthers)}></input>
                 </div>
-                <div ref={printRef} className={styles.left_wrapper}>
-                    <h3>Impressions{showExport ? <input type="checkbox"></input> : <></>}</h3>
+                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.left_wrapper}>
+                    <h3>Impressions{showExport ? <input type="checkbox" onChange={() => onIncludeChange(0)}></input> : <></>}</h3>
                     <PieChart data={GetImpressions(allEntries, minImpr, showOthers, dates, periods[0])} scheme={primaryScheme}/>
                     <div className={styles.min}>Min. Impressions: <input className={styles.min_input} value={minImpr} name="minImpr" type="number" onChange={onInputChange}/> </div>
                 </div>
@@ -564,8 +581,8 @@ const GoogleChart = () => {
                     <h4>Click-Through-Rate:</h4>
                     {GetClickThrough(allEntries, dates, periods[0])} %
                 </div>
-                <div className={styles.right_wrapper}>
-                    <h3>Clicks{showExport ? <input type="checkbox"></input> : <></>}</h3>
+                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.right_wrapper}>
+                    <h3>Clicks{showExport ? <input type="checkbox"onChange={() => onIncludeChange(1)}></input> : <></>}</h3>
                     <PieChart data={GetClicks(allEntries, minClicks, showOthers, dates, periods[0])} scheme={primaryScheme}/>
                     <div className={styles.min}>Min. Clicks: <input className={styles.min_input} value={minClicks} name="minClicks" type="number" onChange={onInputChange}/> </div>
                 </div>
@@ -580,12 +597,12 @@ const GoogleChart = () => {
                         <option value={11}>Last Year</option>
                     </select>
                 </div>
-                <div className={styles.left_wrapper}>
-                    <h3>Impressions & Clicks{showExport ? <input type="checkbox"></input> : <></>}</h3>
+                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.left_wrapper}>
+                    <h3>Impressions & Clicks{showExport ? <input type="checkbox" onChange={() => onIncludeChange(2)}></input> : <></>}</h3>
                     <LineChart data={GetClicksAndImpressionsOverTime(dates, periods[1])} scheme={[primaryScheme[0], primaryScheme[8]]} axisBottom={"time"} axisLeft={""}/>
                 </div>
-                <div className={styles.middle_wrapper}>
-                    <h3>Click-Through-Rate{showExport ? <input type="checkbox"></input> : <></>}</h3>
+                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.middle_wrapper}>
+                    <h3>Click-Through-Rate{showExport ? <input type="checkbox" onChange={() => onIncludeChange(3)}></input> : <></>}</h3>
                     <LineChart data={GetClickThroughOverTime(dates, periods[1])} scheme={primaryScheme[10]} axisBottom={"time"} axisLeft={"%"}/>
                 </div>
             </div>
@@ -599,8 +616,8 @@ const GoogleChart = () => {
                         <option value={11}>Last Year</option>
                     </select>
                 </div>
-                <div className={styles.wrapper_2_wide_top}>
-                    <h3>Ranking over Time{showExport ? <input type="checkbox"></input> : <></>}</h3>
+                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.wrapper_2_wide_top}>
+                    <h3>Ranking over Time{showExport ? <input type="checkbox" onChange={() => onIncludeChange(4)}></input> : <></>}</h3>
                     <AreaBump data={GetCustomAreaBump(terms, dates, periods[2])} scheme={tempScheme} axisBottom={"time"} axisLeft={"%"}/>
                 </div>
                 <div className={styles.wrapper_2_wide_mid}>
@@ -610,12 +627,12 @@ const GoogleChart = () => {
                     </label>))}
                     <PopoverButton terms={terms} addToTerms={addToTerms}/>
                 </div>
-                <div className={styles.wrapper_left_bottom}>
-                    <h3>Terms per Month{showExport ? <input type="checkbox"></input> : <></>}</h3>
+                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.wrapper_left_bottom}>
+                    <h3>Terms per Month{showExport ? <input type="checkbox" onChange={() => onIncludeChange(5)}></input> : <></>}</h3>
                     <BarChart data={GetCustomBar(terms, dates, periods[2])} scheme={tempScheme} keys={terms} index={"date"} xAxis={"dates"} yAxis={""}/>
                 </div>
-                <div className={styles.wrapper_right_bottom}>
-                    <h3>Terms over Time{showExport ? <input type="checkbox"></input> : <></>}</h3>
+                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.wrapper_right_bottom}>
+                    <h3>Terms over Time{showExport ? <input type="checkbox" onChange={() => onIncludeChange(6)}></input> : <></>}</h3>
                     <LineChart data={GetCustomLine(terms, dates, periods[2])} scheme={tempScheme}/>
                 </div>
             </div>
