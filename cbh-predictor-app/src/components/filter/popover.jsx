@@ -117,7 +117,7 @@ function FilterOverlay (handleChange, handleChangeFiltertype, handleSubmit, filt
 const PopoverButton = (props) => {
     const initialFilter = { col: "", value: "", exact: false, fromVal: "", toVal: "", before: false}
 
-    const [filter,setFilter] = useState(initialFilter)
+    const [filter, setFilter] = useState(initialFilter)
     const [filtertype, setfiltertype] = useState('single')
 
     const handleChange = (e) => {
@@ -215,11 +215,19 @@ const PopoverButton = (props) => {
         }
         
         props.addFilter(newFilter)
+
+        let resetFilter = initialFilter
+        resetFilter.col = filter.col
+        setFilter(resetFilter)
+    }
+
+    const resetDefaults = () => {
+        setfiltertype("single")
         setFilter(initialFilter)
     }
 
     return(
-        <OverlayTrigger trigger="click" placement="left" rootClose="true" overlay={FilterOverlay(handleChange, handleChangeFiltertype, handleSubmit, filtertype, filter, props.table)}>
+        <OverlayTrigger trigger="click" placement="left" rootClose="true" onToggle={resetDefaults} overlay={FilterOverlay(handleChange, handleChangeFiltertype, handleSubmit, filtertype, filter, props.table)}>
             <button className={styles.button_popover}>+</button>
         </OverlayTrigger>
     )

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CBHPredictorWebAPI.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BingSearchTermsController : ControllerBase
@@ -103,9 +102,9 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         [HttpGet("topterms")]
-        public async Task<ActionResult<IEnumerable<string>>> GetTopTerms()
+        public async Task<ActionResult<IEnumerable<string?>>> GetTopTerms()
         {
-            List<string> top = await _context.BingSearchTerms.OrderBy(e => e.date).ThenByDescending(e => e.impressions).Take(2).Select(e => e.terms).ToListAsync();
+            List<string?> top = await _context.BingSearchTerms.OrderBy(e => e.date).ThenByDescending(e => e.impressions).Take(2).Select(e => e.terms).ToListAsync();
             return top;
         }
 

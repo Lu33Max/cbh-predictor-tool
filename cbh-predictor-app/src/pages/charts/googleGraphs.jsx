@@ -273,7 +273,6 @@ function GetClickThroughOverTime(dates, period) {
                     y: Math.round((clicks[j]/ impressions[j] + Number.EPSILON) * 1000) /10
                 })
             }
-            console.log(newData)
             newData[0].data.reverse()
         }
         setData(newData)
@@ -476,16 +475,18 @@ async function getData(url, body, setEntries){
 
 //// RENDER VIEW ////
 const GoogleChart = () => {
+    const initialExport = [false, false, false, false, false, false, false]
+    const headers = ["Impressions","Clicks","Impressions & Clicks","Click-Through-Rate","Ranking over Time","Terms per Month","Terms over Time"]
+    const [includeExport, setIncludeExport] = useState(initialExport)
     const [showExport, setShowExport] = useState(false)
+    
     const [minImpr, setMinImpr] = useState(200)
     const [minClicks, setMinClicks] = useState(20)
     const [periods, setPeriods] = useState([0, 2, 2])
     const [showOthers, setShowOthers] = useState(true)
     const [allEntries, setAllEntries] = useState([])
     const [dates, setDates] = useState([])
-    const [terms, setTerms] = useState(["biobank","ffpe","ffpe tissue"])
-    const [includeExport, setIncludeExport] = useState([false, false, false, false, false, false, false])
-    const [sizes, ] = useState([[490, 680], [490, 600], [600, 830], [600, 830], [600, 1500], [600, 600], [600, 600]])
+    const [terms, setTerms] = useState(["biobank","ffpe","ffpe tissue"]) 
 
     const user = authService.getCurrentUser()
     const printRef = useRef(new Array())
@@ -530,32 +531,97 @@ const GoogleChart = () => {
 
     const handleDownloadPdf = async () => {
         const pdf = new jsPDF();
+        let count = 0;
+        let exportnum = 0
+
+        for(let i = 0; i < includeExport.length; i++){
+            if(includeExport[i]) exportnum++
+        }
+
+        if(exportnum === 0){
+            alert("Nothing select for export")
+            return
+        }
 
         for(let i = 0; i < includeExport.length; i++){
             if(includeExport[i] === true){
-                if(i !== 0){
-                    pdf.addPage("a4","portrait")
-                }
+                count++
 
-                const element = printRef.current[i];
-                const canvas = await html2canvas(element, {scale: 3, height: sizes[i][0], width: sizes[i][1]});
-                const data = canvas.toDataURL('image/png');          
-                
-                const imgProperties = pdf.getImageProperties(data);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
-            
-                pdf.addImage(data, 'PNG', 40, 0, pdfWidth - 80, pdfHeight - 60);
+                const element = printRef.current[i]
+                const canvas = await html2canvas(element, {scale: 3})
+                const data = canvas.toDataURL('image/png')
+
+                if(i !== 4)
+                {
+                    const pageWidth = pdf.internal.pageSize.getWidth()
+                    const pageHeight = pdf.internal.pageSize.getHeight()
+
+                    const widthRatio = pageWidth / canvas.width;
+                    const heightRatio = pageHeight / canvas.height;
+                    const ratio = widthRatio > heightRatio ? heightRatio : widthRatio;
+
+                    const canvasWidth = (canvas.width * ratio) - (70 * ratio)
+                    const canvasHeight = (canvas.height * ratio) - (70 * ratio)
+
+                    const marginX = (pageWidth - canvasWidth) / 2
+
+                    pdf.setFontSize(30)
+
+                    if(count % 2 === 1)
+                    {
+                        pdf.text(headers[i], pageWidth / 2, 15, { align: "center"})
+                        pdf.addImage(data, 'PNG', marginX, 17, canvasWidth, canvasHeight)
+                    }
+                    else 
+                    {
+                        pdf.text(headers[i], pageWidth / 2, (pageHeight / 2) + 10, { align: "center"})
+                        pdf.addImage(data, 'PNG', marginX, (pageHeight / 2) + 12, canvasWidth, canvasHeight)
+                    }
+
+                    if(count % 2 === 0 && count !== exportnum)
+                        pdf.addPage("a4", "portrait")
+                }
+                else
+                {
+                    if(count % 2 === 1){
+                        pdf.deletePage(pdf.internal.pages.length -1)
+                        count++
+                        exportnum++
+                    }
+                    pdf.addPage("a4", "landscape")
+
+                    const pageWidth = pdf.internal.pageSize.getWidth()
+                    const pageHeight = pdf.internal.pageSize.getHeight()
+
+                    const widthRatio = pageWidth / canvas.width;
+                    const heightRatio = pageHeight / canvas.height;
+                    const ratio = widthRatio > heightRatio ? heightRatio : widthRatio;
+
+                    const canvasWidth = (canvas.width * ratio) - (70 * ratio)
+                    const canvasHeight = (canvas.height * ratio) - (70 * ratio)
+
+                    const marginX = (pageWidth - canvasWidth) / 2
+                    const marginY = (pageHeight - canvasHeight) / 2
+
+                    pdf.setFontSize(30)
+                    
+                    pdf.text(headers[i], pageWidth / 2, 60, { align: "center"})
+                    pdf.addImage(data, 'PNG', marginX, marginY, canvasWidth, canvasHeight)
+
+                    if(count !== exportnum)
+                        pdf.addPage("a4", "portrait")
+                }
             }
         }
-        pdf.save('print.pdf');
+        pdf.save('Searchterms_G.pdf')
+        setIncludeExport(initialExport)
     };
 
     return(
         <div className={styles.body}>
             <button onClick={() => {navigate("/")}} className={styles.button_backarrow}>&#60;</button>
             <div className={styles.export}>
-                <button onClick={() => {setShowExport(!showExport); handleDownloadPdf()}} className={styles.button_export}>Export</button>
+                <button onClick={() => {setShowExport(false); handleDownloadPdf()}} className={styles.button_export}>Export</button>
                 <button onClick={() => setShowExport(!showExport)} className={styles.button_showexport}><BiShow/></button>
             </div>
             {/* First Block */}
@@ -571,9 +637,11 @@ const GoogleChart = () => {
                     Show Others
                     <input type="checkbox" defaultChecked onChange={() => setShowOthers(!showOthers)}></input>
                 </div>
-                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.left_wrapper}>
+                <div className={styles.left_wrapper}>
                     <h3>Impressions{showExport ? <input type="checkbox" onChange={() => onIncludeChange(0)}></input> : <></>}</h3>
-                    <PieChart data={GetImpressions(allEntries, minImpr, showOthers, dates, periods[0])} scheme={primaryScheme}/>
+                    <div style={{width: "100%", height: "100%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <PieChart data={GetImpressions(allEntries, minImpr, showOthers, dates, periods[0])} scheme={primaryScheme}/>
+                    </div>
                     <div className={styles.min}>Min. Impressions: <input className={styles.min_input} value={minImpr} name="minImpr" type="number" onChange={onInputChange}/> </div>
                 </div>
                 <div className={styles.middle_wrapper}>
@@ -581,9 +649,11 @@ const GoogleChart = () => {
                     <h4>Click-Through-Rate:</h4>
                     {GetClickThrough(allEntries, dates, periods[0])} %
                 </div>
-                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.right_wrapper}>
+                <div className={styles.right_wrapper}>
                     <h3>Clicks{showExport ? <input type="checkbox"onChange={() => onIncludeChange(1)}></input> : <></>}</h3>
-                    <PieChart data={GetClicks(allEntries, minClicks, showOthers, dates, periods[0])} scheme={primaryScheme}/>
+                    <div style={{width: "100%", height: "100%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <PieChart data={GetClicks(allEntries, minClicks, showOthers, dates, periods[0])} scheme={primaryScheme}/>
+                    </div>
                     <div className={styles.min}>Min. Clicks: <input className={styles.min_input} value={minClicks} name="minClicks" type="number" onChange={onInputChange}/> </div>
                 </div>
             </div>
@@ -597,13 +667,17 @@ const GoogleChart = () => {
                         <option value={11}>Last Year</option>
                     </select>
                 </div>
-                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.left_wrapper}>
+                <div className={styles.left_wrapper}>
                     <h3>Impressions & Clicks{showExport ? <input type="checkbox" onChange={() => onIncludeChange(2)}></input> : <></>}</h3>
-                    <LineChart data={GetClicksAndImpressionsOverTime(dates, periods[1])} scheme={[primaryScheme[0], primaryScheme[8]]} axisBottom={"time"} axisLeft={""}/>
+                    <div style={{width: "100%", height: "100%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <LineChart data={GetClicksAndImpressionsOverTime(dates, periods[1])} scheme={[primaryScheme[0], primaryScheme[8]]} axisBottom={"time"} axisLeft={""}/>
+                    </div>
                 </div>
-                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.middle_wrapper}>
+                <div className={styles.middle_wrapper}>
                     <h3>Click-Through-Rate{showExport ? <input type="checkbox" onChange={() => onIncludeChange(3)}></input> : <></>}</h3>
-                    <LineChart data={GetClickThroughOverTime(dates, periods[1])} scheme={primaryScheme[10]} axisBottom={"time"} axisLeft={"%"}/>
+                    <div style={{width: "100%", height: "100%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <LineChart data={GetClickThroughOverTime(dates, periods[1])} scheme={primaryScheme[10]} axisBottom={"time"} axisLeft={"%"}/>
+                    </div>
                 </div>
             </div>
             {/* Third Block */}
@@ -616,9 +690,11 @@ const GoogleChart = () => {
                         <option value={11}>Last Year</option>
                     </select>
                 </div>
-                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.wrapper_2_wide_top}>
+                <div className={styles.wrapper_2_wide_top}>
                     <h3>Ranking over Time{showExport ? <input type="checkbox" onChange={() => onIncludeChange(4)}></input> : <></>}</h3>
-                    <AreaBump data={GetCustomAreaBump(terms, dates, periods[2])} scheme={tempScheme} axisBottom={"time"} axisLeft={"%"}/>
+                    <div style={{width: "100%", height: "100%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <AreaBump data={GetCustomAreaBump(terms, dates, periods[2])} scheme={tempScheme} axisBottom={"time"} axisLeft={"%"}/>
+                    </div>
                 </div>
                 <div className={styles.wrapper_2_wide_mid}>
                     {terms.map((item,i) => (<label className={styles.terms} key={i}>
@@ -627,13 +703,17 @@ const GoogleChart = () => {
                     </label>))}
                     <PopoverButton terms={terms} addToTerms={addToTerms}/>
                 </div>
-                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.wrapper_left_bottom}>
+                <div className={styles.wrapper_left_bottom}>
                     <h3>Terms per Month{showExport ? <input type="checkbox" onChange={() => onIncludeChange(5)}></input> : <></>}</h3>
-                    <BarChart data={GetCustomBar(terms, dates, periods[2])} scheme={tempScheme} keys={terms} index={"date"} xAxis={"dates"} yAxis={""}/>
+                    <div style={{width: "100%", height: "85%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <BarChart data={GetCustomBar(terms, dates, periods[2])} scheme={tempScheme} keys={terms} index={"date"} xAxis={"dates"} yAxis={""}/>
+                    </div>
                 </div>
-                <div ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)} className={styles.wrapper_right_bottom}>
+                <div className={styles.wrapper_right_bottom}>
                     <h3>Terms over Time{showExport ? <input type="checkbox" onChange={() => onIncludeChange(6)}></input> : <></>}</h3>
-                    <LineChart data={GetCustomLine(terms, dates, periods[2])} scheme={tempScheme}/>
+                    <div style={{width: "100%", height: "85%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <LineChart data={GetCustomLine(terms, dates, periods[2])} scheme={tempScheme}/>
+                    </div>
                 </div>
             </div>
         </div>

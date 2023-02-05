@@ -91,12 +91,6 @@ const TableScreen = (props) => {
         applyFilters()
     };
 
-    const DelButton = (props) => {
-        return(
-            <button onClick={() => {removeFilter(props.index)}}>X</button>
-        )
-    }
-
     return(
         <div className={styles.body}>
             {(showFileUpload === true) && (<FileUploadForm onFileUploaded={onFileUploaded} table={activeTable}/>)}

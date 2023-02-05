@@ -25,7 +25,7 @@ namespace CBHPredictorWebAPI.Controllers
         {
             if (tokenApiModel is null)
             {
-                return BadRequest("Invalid client request 1");
+                return BadRequest("Invalid client request");
             }
 
             string accessToken = tokenApiModel.AccessToken;
@@ -36,10 +36,8 @@ namespace CBHPredictorWebAPI.Controllers
 
             var user = await _context.UserModels.SingleOrDefaultAsync(u => u.UserName == username);
 
-            System.Diagnostics.Debug.WriteLine(user.UserName + " | " + user.RefreshToken + " | " + refreshToken + " | " + user.RefreshTokenExpiryTime);
-
             if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
-                return BadRequest("Invalid client request 2");
+                return BadRequest("Invalid client request");
 
             var newAccessToken = _tokenService.GenerateAccessToken(principal.Claims);
 

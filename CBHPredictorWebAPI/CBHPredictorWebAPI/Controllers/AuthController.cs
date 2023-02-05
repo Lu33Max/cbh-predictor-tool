@@ -2,11 +2,7 @@
 using CBHPredictorWebAPI.Models;
 using CBHPredictorWebAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -26,10 +22,13 @@ namespace CBHPredictorWebAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserModel userModel)
         {
-            if (userModel is null)
+            if (userModel.UserName is null || userModel.Password is null)
             {
                 return BadRequest("Invalid client request");
             }
+
+            userModel.UserName = Encode(userModel.UserName);
+            userModel.Password = Encode(userModel.Password);
 
             var user = _context.UserModels.FirstOrDefault(u => (u.UserName == userModel.UserName) && (u.Password == userModel.Password));
             if (user == null) return Unauthorized();
@@ -53,6 +52,26 @@ namespace CBHPredictorWebAPI.Controllers
                 Token = accessToken,
                 RefreshToken = refreshToken
             });
+        }
+
+        [HttpGet("encode")]
+        public string GetEncoded(string value) { 
+            return Encode(value);
+        }
+
+        private string Encode(string value)
+        {
+            byte[] encData_byte = new byte[value.Length];
+            int i = 0;
+
+            while (value.Length < 1024)
+            {
+                encData_byte = System.Text.Encoding.UTF8.GetBytes(value);
+                value = Convert.ToBase64String(encData_byte);
+                i++;
+            }
+
+            return value;
         }
     }
 }

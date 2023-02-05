@@ -228,11 +228,11 @@ const HomeScreen = () => {
         const resultBingTop = await axiosApiInstance.get(urlBingTop)
         if(resultBingTop.status === 200 && resultBingTop.data.length === 2){
             if(resultBingTop.data[0].length > 10){
-                resultBingTop.data[0] = resultBingTop.data[0].slice(0, 10)
+                resultBingTop.data[0] = resultBingTop.data[0].slice(0, 9)
                 resultBingTop.data[0] += "..."
             }
             if(resultBingTop.data[1].length > 10){
-                resultBingTop.data[1] = resultBingTop.data[1].slice(0, 10)
+                resultBingTop.data[1] = resultBingTop.data[1].slice(0, 9)
                 resultBingTop.data[1] += "..."
             }
             setBingTop(resultBingTop.data)
@@ -242,11 +242,11 @@ const HomeScreen = () => {
         const resultGoogleTop = await axiosApiInstance.get(urlGoogleTop)
         if(resultGoogleTop.status === 200 && resultGoogleTop.data.length === 2){
             if(resultGoogleTop.data[0].length > 10){
-                resultGoogleTop.data[0] = resultGoogleTop.data[0].slice(0, 10)
+                resultGoogleTop.data[0] = resultGoogleTop.data[0].slice(0, 9)
                 resultGoogleTop.data[0] += "..."
             }
             if(resultGoogleTop.data[1].length > 10){
-                resultGoogleTop.data[1] = resultGoogleTop.data[1].slice(0, 10)
+                resultGoogleTop.data[1] = resultGoogleTop.data[1].slice(0, 9)
                 resultGoogleTop.data[1] += "..."
             }
             setGoogleTop(resultGoogleTop.data)

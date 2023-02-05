@@ -273,7 +273,6 @@ function GetClickThroughOverTime(dates, period) {
                     y: Math.round((clicks[j]/ impressions[j] + Number.EPSILON) * 1000) /10
                 })
             }
-            console.log(newData)
             newData[0].data.reverse()
         }
         setData(newData)
@@ -476,6 +475,8 @@ async function getData(url, body, setEntries){
 
 //// RENDER VIEW ////
 const BingChart = () => {
+    const initialExport = [false, false, false, false, false, false, false]
+
     const [showExport, setShowExport] = useState(false)
     const [minImpr, setMinImpr] = useState(10)
     const [minClicks, setMinClicks] = useState(5)
@@ -484,9 +485,12 @@ const BingChart = () => {
     const [allEntries, setAllEntries] = useState([])
     const [dates, setDates] = useState([])
     const [terms, setTerms] = useState(["biobank","biorepository","ffpe tissue"])
+    const [includeExport, setIncludeExport] = useState(initialExport)
+
+    const headers = ["Impressions","Clicks","Impressions & Clicks","Click-Through-Rate","Ranking over Time","Terms per Month","Terms over Time"]
 
     const user = authService.getCurrentUser()
-    const printRef = useRef()
+    const printRef = useRef(new Array())
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -520,25 +524,105 @@ const BingChart = () => {
         setPeriods(newPeriods)
     }
 
+    const onIncludeChange = (index) => {
+        let newIncludes = [...includeExport]
+        newIncludes[index] = !newIncludes[index]
+        setIncludeExport(newIncludes)
+    }
+
     const handleDownloadPdf = async () => {
-        const element = printRef.current;
-        const canvas = await html2canvas(element, {scale: 3, height: 490, width: 600});
-        const data = canvas.toDataURL('image/png');
-    
         const pdf = new jsPDF();
-        const imgProperties = pdf.getImageProperties(data);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
-    
-        pdf.addImage(data, 'PNG', 40, 0, pdfWidth - 80, pdfHeight - 60);
-        pdf.save('print.pdf');
+        let count = 0;
+        let exportnum = 0
+
+        for(let i = 0; i < includeExport.length; i++){
+            if(includeExport[i]) exportnum++
+        }
+
+        if(exportnum === 0){
+            alert("Nothing select for export")
+            return
+        }
+
+        for(let i = 0; i < includeExport.length; i++){
+            if(includeExport[i] === true){
+                count++
+
+                const element = printRef.current[i]
+                const canvas = await html2canvas(element, {scale: 3})
+                const data = canvas.toDataURL('image/png')
+
+                if(i !== 4)
+                {
+                    const pageWidth = pdf.internal.pageSize.getWidth()
+                    const pageHeight = pdf.internal.pageSize.getHeight()
+
+                    const widthRatio = pageWidth / canvas.width;
+                    const heightRatio = pageHeight / canvas.height;
+                    const ratio = widthRatio > heightRatio ? heightRatio : widthRatio;
+
+                    const canvasWidth = (canvas.width * ratio) - (70 * ratio)
+                    const canvasHeight = (canvas.height * ratio) - (70 * ratio)
+
+                    const marginX = (pageWidth - canvasWidth) / 2
+
+                    pdf.setFontSize(30)
+
+                    if(count % 2 === 1)
+                    {
+                        pdf.text(headers[i], pageWidth / 2, 15, { align: "center"})
+                        pdf.addImage(data, 'PNG', marginX, 17, canvasWidth, canvasHeight)
+                    }
+                    else 
+                    {
+                        pdf.text(headers[i], pageWidth / 2, (pageHeight / 2) + 10, { align: "center"})
+                        pdf.addImage(data, 'PNG', marginX, (pageHeight / 2) + 12, canvasWidth, canvasHeight)
+                    }
+
+                    if(count % 2 === 0 && count !== exportnum)
+                        pdf.addPage("a4", "portrait")
+                }
+                else
+                {
+                    if(count % 2 === 1){
+                        pdf.deletePage(pdf.internal.pages.length -1)
+                        count++
+                        exportnum++
+                    }
+                    pdf.addPage("a4", "landscape")
+
+                    const pageWidth = pdf.internal.pageSize.getWidth()
+                    const pageHeight = pdf.internal.pageSize.getHeight()
+
+                    const widthRatio = pageWidth / canvas.width;
+                    const heightRatio = pageHeight / canvas.height;
+                    const ratio = widthRatio > heightRatio ? heightRatio : widthRatio;
+
+                    const canvasWidth = (canvas.width * ratio) - (70 * ratio)
+                    const canvasHeight = (canvas.height * ratio) - (70 * ratio)
+
+                    const marginX = (pageWidth - canvasWidth) / 2
+                    const marginY = (pageHeight - canvasHeight) / 2
+
+                    pdf.setFontSize(30)
+                    
+                    pdf.text(headers[i], pageWidth / 2, 60, { align: "center"})
+                    pdf.addImage(data, 'PNG', marginX, marginY, canvasWidth, canvasHeight)
+
+                    if(count !== exportnum)
+                        pdf.addPage("a4", "portrait")
+                }
+            }
+        }
+        pdf.save('Searchterms_B.pdf')
+        setIncludeExport(initialExport)
     };
 
     return(
         <div className={styles.body}>
             <button onClick={() => {navigate("/")}} className={styles.button_backarrow}>&#60;</button>
             <div className={styles.export}>
-                <button onClick={() => handleDownloadPdf()} className={styles.button_export}>Export</button>
+                <button onClick={() => {setShowExport(false); handleDownloadPdf()}} className={styles.button_export}>Export</button>
                 <button onClick={() => setShowExport(!showExport)} className={styles.button_showexport}><BiShow/></button>
             </div>
             {/* First Block */}
@@ -555,8 +639,10 @@ const BingChart = () => {
                     <input type="checkbox" defaultChecked onChange={() => setShowOthers(!showOthers)}></input>
                 </div>
                 <div className={styles.left_wrapper}>
-                    <h3>Impressions{showExport ? <input type="checkbox"></input> : <></>}</h3>
-                    <PieChart data={GetImpressions(allEntries, minImpr, showOthers, dates, periods[0])} scheme={primaryScheme}/>
+                    <h3>Impressions{showExport ? <input type="checkbox" onChange={() => onIncludeChange(0)}></input> : <></>}</h3>
+                    <div style={{width: "100%", height: "100%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <PieChart data={GetImpressions(allEntries, minImpr, showOthers, dates, periods[0])} scheme={primaryScheme}/>
+                    </div>
                     <div className={styles.min}>Min. Impressions: <input className={styles.min_input} value={minImpr} name="minImpr" type="number" onChange={onInputChange}/> </div>
                 </div>
                 <div className={styles.middle_wrapper}>
@@ -565,8 +651,10 @@ const BingChart = () => {
                     {GetClickThrough(allEntries, dates, periods[0])} %
                 </div>
                 <div className={styles.right_wrapper}>
-                    <h3>Clicks{showExport ? <input type="checkbox"></input> : <></>}</h3>
-                    <PieChart data={GetClicks(allEntries, minClicks, showOthers, dates, periods[0])} scheme={primaryScheme}/>
+                    <h3>Clicks{showExport ? <input type="checkbox" onChange={() => onIncludeChange(1)}></input> : <></>}</h3>
+                    <div style={{width: "100%", height: "100%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <PieChart data={GetClicks(allEntries, minClicks, showOthers, dates, periods[0])} scheme={primaryScheme}/>
+                    </div>
                     <div className={styles.min}>Min. Clicks: <input className={styles.min_input} value={minClicks} name="minClicks" type="number" onChange={onInputChange}/> </div>
                 </div>
             </div>
@@ -581,12 +669,16 @@ const BingChart = () => {
                     </select>
                 </div>
                 <div className={styles.left_wrapper}>
-                    <h3>Impressions & Clicks{showExport ? <input type="checkbox"></input> : <></>}</h3>
-                    <LineChart data={GetClicksAndImpressionsOverTime(dates, periods[1])} scheme={[primaryScheme[0], primaryScheme[8]]} axisBottom={"time"} axisLeft={""}/>
+                    <h3>Impressions & Clicks{showExport ? <input type="checkbox" onChange={() => onIncludeChange(2)}></input> : <></>}</h3>
+                    <div style={{width: "100%", height: "100%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <LineChart data={GetClicksAndImpressionsOverTime(dates, periods[1])} scheme={[primaryScheme[0], primaryScheme[8]]} axisBottom={"time"} axisLeft={""}/>
+                    </div>
                 </div>
                 <div className={styles.middle_wrapper}>
-                    <h3>Click-Through-Rate{showExport ? <input type="checkbox"></input> : <></>}</h3>
-                    <LineChart data={GetClickThroughOverTime(dates, periods[1])} scheme={primaryScheme[10]} axisBottom={"time"} axisLeft={"%"}/>
+                    <h3>Click-Through-Rate{showExport ? <input type="checkbox" onChange={() => onIncludeChange(3)}></input> : <></>}</h3>
+                    <div style={{width: "100%", height: "100%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <LineChart data={GetClickThroughOverTime(dates, periods[1])} scheme={primaryScheme[10]} axisBottom={"time"} axisLeft={"%"}/>
+                    </div>
                 </div>
             </div>
             {/* Third Block */}
@@ -600,8 +692,10 @@ const BingChart = () => {
                     </select>
                 </div>
                 <div className={styles.wrapper_2_wide_top}>
-                    <h3>Ranking over Time{showExport ? <input type="checkbox"></input> : <></>}</h3>
-                    <AreaBump data={GetCustomAreaBump(terms, dates, periods[2])} scheme={tempScheme} axisBottom={"time"} axisLeft={"%"}/>
+                    <h3>Ranking over Time{showExport ? <input type="checkbox" onChange={() => onIncludeChange(4)}></input> : <></>}</h3>
+                    <div style={{width: "100%", height: "100%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <AreaBump data={GetCustomAreaBump(terms, dates, periods[2])} scheme={tempScheme} axisBottom={"time"} axisLeft={"%"}/>
+                    </div>
                 </div>
                 <div className={styles.wrapper_2_wide_mid}>
                     {terms.map((item,i) => (<label className={styles.terms} key={i}>
@@ -611,12 +705,16 @@ const BingChart = () => {
                     <PopoverButton terms={terms} addToTerms={addToTerms}/>
                 </div>
                 <div className={styles.wrapper_left_bottom}>
-                    <h3>Terms per Month{showExport ? <input type="checkbox"></input> : <></>}</h3>
-                    <BarChart data={GetCustomBar(terms, dates, periods[2])} scheme={tempScheme} keys={terms} index={"date"} xAxis={"dates"} yAxis={""}/>
+                    <h3>Terms per Month{showExport ? <input type="checkbox" onChange={() => onIncludeChange(5)}></input> : <></>}</h3>
+                    <div style={{width: "100%", height: "85%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <BarChart data={GetCustomBar(terms, dates, periods[2])} scheme={tempScheme} keys={terms} index={"date"} xAxis={"dates"} yAxis={""}/>
+                    </div>
                 </div>
                 <div className={styles.wrapper_right_bottom}>
-                    <h3>Terms over Time{showExport ? <input type="checkbox"></input> : <></>}</h3>
-                    <LineChart data={GetCustomLine(terms, dates, periods[2])} scheme={tempScheme}/>
+                    <h3>Terms over Time{showExport ? <input type="checkbox" onChange={() => onIncludeChange(6)}></input> : <></>}</h3>
+                    <div style={{width: "100%", height: "85%"}} ref={ref => !printRef.current.includes(ref) && printRef.current.push(ref)}>
+                        <LineChart data={GetCustomLine(terms, dates, periods[2])} scheme={tempScheme}/>
+                    </div>
                 </div>
             </div>
         </div>
