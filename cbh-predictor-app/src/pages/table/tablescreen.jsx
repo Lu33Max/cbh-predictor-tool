@@ -279,11 +279,12 @@ const TableScreen = (props) => {
         }
 
         let options = { 
-            url: '/ExportToExcel',
+            url: '/export',
             method: 'GET',
             baseURL: base,
-            responseType: 'blob',
+            responseType: 'blob'
         };
+
         return axiosApiInstance.request(options)
         .then(response => { 
             let filename = response.headers['content-disposition']

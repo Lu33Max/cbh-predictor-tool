@@ -15,24 +15,21 @@ namespace CBHPredictorWebAPI.Controllers
     public class OrderEntriesController : ControllerBase
     {
         private readonly CBHDBContext _context;
-        public enum OrderColumns { customerID, orderID, orderDate, orderPrice, storageTemp, donorID, cbhSampleID, matrix, supplierID, supplierSampleID, productID, countryID, quantity , unit , age , gender , ethnicity , labParameter , resultNumerical , resultUnit , resultInterpretation , testMethod , testKitManufacturer , testSystemManufacturer , diagnosis , icd , histologicalDiagnosis , organ , collectionCountry , collectionDate }
-        public enum order { ascending, descending }
 
         public OrderEntriesController(CBHDBContext context)
         {
             _context = context;
         }
 
-        // GET: api/OrderEntries
-        // Gets all Entries in the OrderEntries Table
+        //------------------------------------------------------------BASIC-CRUD---------------------------------------------------------------------//
+        // Returns all entries in the OrderEntries table
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderEntry>>> GetOrderEntries()
         {
             return await _context.OrderEntries.OrderBy(e => e.orderDate).ToListAsync();
         }
 
-        // GET: api/OrderEntries/5
-        // Gets one specific Entry in the OrderEntries Table by ID
+        // Returns one specific entry in the OrderEntries table by ID
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderEntry>> GetOrderEntry([FromRoute]Guid id)
         {
@@ -46,181 +43,7 @@ namespace CBHPredictorWebAPI.Controllers
             return orderEntry;
         }
 
-        [HttpGet("count")]
-        public async Task<int> CountRows()
-        {
-            return await _context.OrderEntries.CountAsync();
-        }
-
-        [HttpGet("order-count")]
-        public async Task<int> CountOrders()
-        {
-            return await _context.OrderEntries.Select(e => e.orderID).Distinct().CountAsync();
-        }
-
-        [HttpGet("price-count")]
-        public async Task<ActionResult<IEnumerable<OrderPriceResponse>>> CountDistinctPrices()
-        {
-            return await _context.OrderEntries.GroupBy(e => e.orderPrice).Select(o => new OrderPriceResponse()
-                {
-                    id = o.Key + "specimen",
-                    group = "specimen",
-                    price = o.Key,
-                    volume = o.Distinct().Count()
-                }
-            ).OrderBy(e => e.price).ToListAsync();
-        }
-
-        [HttpGet("orderprice-count")]
-        public async Task<ActionResult<IEnumerable<OrderPriceResponse>>> CountPricePerOrder()
-        {
-            List<OrderPriceResponse> prices = await _context.OrderEntries.GroupBy(e => e.orderPrice).Select(o => new OrderPriceResponse()
-                {
-                    id = o.Key + "order",
-                    group = "order",
-                    price = o.Key,
-                    volume = o.Distinct().Count()
-                }
-            ).OrderBy(e => e.price).ToListAsync();
-
-            return prices.GroupBy(e => e.price).Select(o => new OrderPriceResponse()
-                {
-                    id = o.Key + "order",
-                    group = "order",
-                    price = o.Key,
-                    volume = o.Distinct().Count()
-                }
-            ).OrderBy(e => e.price).ToList();
-        }
-
-        [HttpGet("date-count")]
-        public async Task<ActionResult<IEnumerable<OrderDateResponse>>> CountDistinctDates()
-        {
-            List<OrderEntry> orderlist = await _context.OrderEntries.OrderBy(e => e.orderDate).ToListAsync();
-
-            var date = "0";
-            var index = -1;
-            List<OrderDateResponse> response = new List<OrderDateResponse>();
-
-            foreach(OrderEntry entry in orderlist) 
-            {
-                if(entry.orderDate.ToString().Remove(10) == date)
-                {
-                    response[index].value++;
-                } 
-                else
-                {
-                    response.Add(new OrderDateResponse() { day = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM-dd"), value = 1 });
-                    date = entry.orderDate.ToString().Remove(10);
-                    index++;
-                }
-            }
-
-            return response;
-        }
-
-        [HttpGet("month-count")]
-        public async Task<ActionResult<IEnumerable<MonthValueResponse>>> CountDistinctMonths()
-        {
-            List<OrderEntry> orderlist = await _context.OrderEntries.OrderByDescending(e => e.orderDate).ThenBy(e => e.orderID).ToListAsync();
-
-            var date = "0";
-            var orderID = 0;
-            var index = -1;
-            List<MonthValueResponse> response = new List<MonthValueResponse>();
-
-            foreach (OrderEntry entry in orderlist)
-            {
-                if (Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM") == date)
-                {
-                    if(entry.orderID != orderID)
-                    {
-                        response[index].value++;
-                        orderID = entry.orderID ?? 0;
-                    }
-                }
-                else
-                {
-                    response.Add(new MonthValueResponse() { month = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM"), value = 1 });
-                    date = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM");
-                    orderID = entry.orderID ?? 0;
-                    index++;
-                }
-            }
-
-            return response;
-        }
-
-        [HttpGet("new-month-count")]
-        public async Task<ActionResult<IDictionary<string, int>>> CountDistinctMonthsNew()
-        {
-            List<OrderEntry> orderlist = await _context.OrderEntries.OrderByDescending(e => e.orderDate).ThenBy(e => e.orderID).ToListAsync();
-
-            var date = "0";
-            var orderID = 0;
-            
-            Dictionary<string, int> response = new Dictionary<string, int>();
-
-            foreach (OrderEntry entry in orderlist)
-            {
-                date = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM");
-                if (response.ContainsKey(date))
-                {
-                    if (entry.orderID != orderID)
-                    {
-                        response[date]++;
-                        orderID = entry.orderID ?? 0;
-                    }
-                }
-                else
-                {
-                    orderID = entry.orderID ?? 0;
-                    response.Add(date, 1);
-                }
-            }
-
-            return response;
-        }
-
-        [HttpGet("dates")]
-        public async Task<ActionResult<IEnumerable<string>>> GetAllDates()
-        {
-            List<DateTime?> orderlist = await _context.OrderEntries.OrderByDescending(e => e.orderDate).Select(e => e.orderDate).ToListAsync();
-
-            var date = "0";
-
-            List<string> response = new List<string>();
-
-            foreach (DateTime entry in orderlist)
-            {
-                if (Convert.ToDateTime(entry).ToString("yyyy-MM") != date)
-                {
-                    response.Add(Convert.ToDateTime(entry).ToString("yyyy-MM"));
-                    date = Convert.ToDateTime(entry).ToString("yyyy-MM");
-                }
-            }
-
-            return response;
-        }
-
-        [HttpGet("ExportToExcel")]
-        public async Task<IActionResult> ExportOrderEntriesToExcel()
-        {
-            try
-            {
-                List<OrderEntry> sheet = await _context.OrderEntries.OrderBy(e => e.cbhSampleID + 0).ToListAsync();
-                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "OrderEntries.xlsx");
-
-                return fr;              
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult(ex);
-            }
-        }
-
-        // PUT: api/OrderEntries/5
-        // Edits one specific Entry in the OrderEntries Table by ID
+        // Edits one specific entry in the OrderEntries table by ID
         [HttpPut("{id}")]
         public async Task<IActionResult> PutOrderEntry([FromRoute]Guid id, OrderEntry orderEntry)
         {
@@ -251,8 +74,7 @@ namespace CBHPredictorWebAPI.Controllers
             return Ok(orderEntry);
         }
 
-        // POST: api/OrderEntries
-        // Adds one Entry to the OrderEntries Table
+        // Adds one entry to the OrderEntries table
         [HttpPost]
         public async Task<ActionResult<OrderEntry>> PostOrderEntry(OrderEntry orderEntry)
         {
@@ -262,7 +84,7 @@ namespace CBHPredictorWebAPI.Controllers
                 orderEntry.lastEdited = DateTime.Now;
                 await _context.OrderEntries.AddAsync(orderEntry);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction("GetOrderEntry", new { id = orderEntry.id }, orderEntry);
+                return CreatedAtAction("GetOrderEntry", new { orderEntry.id }, orderEntry);
             }
             else
             {
@@ -270,8 +92,7 @@ namespace CBHPredictorWebAPI.Controllers
             }
         }
 
-        // DELETE: api/OrderEntries/5
-        // Deletes one specific Entry in the OrderEntries Table by ID
+        // Deletes one specific entry in the OrderEntries table by ID
         [HttpDelete("{id}")]
         public async Task<string> DeleteOrderEntry(Guid id)
         {
@@ -281,7 +102,7 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // DELETE: api/LeadEntries
-        // Deletes all Entries in the OrderEntries Table
+        // Deletes all Entries in the OrderEntries table
         [HttpDelete]
         public async Task<string> DeleteOrderEntries()
         {
@@ -290,7 +111,196 @@ namespace CBHPredictorWebAPI.Controllers
             return "{\"success\":1}";
         }
 
+        //---------------------------------------------------------SPECIFIC-OPERATIONS------------------------------------------------------------------//
+        // Returns the number of all entries in the OrderEntries table
+        [HttpGet("count")]
+        public async Task<int> CountRows()
+        {
+            return await _context.OrderEntries.CountAsync();
+        }
+
+        // Returns the number of individual orders (entries with different orderID)
+        [HttpGet("order-count")]
+        public async Task<int> CountOrders()
+        {
+            return await _context.OrderEntries.Select(e => e.orderID).Distinct().CountAsync();
+        }
+
+        // Returns the number of distinct product prices in the form required by chart displaying it
+        [HttpGet("price-count")]
+        public async Task<ActionResult<IEnumerable<OrderPriceResponse>>> CountDistinctPrices()
+        {
+            return await _context.OrderEntries.GroupBy(e => e.orderPrice).Select(o => new OrderPriceResponse()
+            {
+                id = o.Key + "specimen",
+                group = "specimen",
+                price = o.Key,
+                volume = o.Distinct().Count()
+            }
+            ).OrderBy(e => e.price).ToListAsync();
+        }
+
+        // Returns the number of distinct order prices (sum of all products with the sam eorderID) in the form required by chart displaying it
+        [HttpGet("orderprice-count")]
+        public async Task<ActionResult<IEnumerable<OrderPriceResponse>>> CountPricePerOrder()
+        {
+            List<OrderPriceResponse> prices = await _context.OrderEntries.GroupBy(e => e.orderPrice).Select(o => new OrderPriceResponse()
+            {
+                id = o.Key + "order",
+                group = "order",
+                price = o.Key,
+                volume = o.Distinct().Count()
+            }
+            ).OrderBy(e => e.price).ToListAsync();
+
+            return prices.GroupBy(e => e.price).Select(o => new OrderPriceResponse()
+            {
+                id = o.Key + "order",
+                group = "order",
+                price = o.Key,
+                volume = o.Distinct().Count()
+            }
+            ).OrderBy(e => e.price).ToList();
+        }
+
+        // Returns the number of orders by date (used for the calendar)
+        [HttpGet("date-count")]
+        public async Task<ActionResult<IEnumerable<OrderDateResponse>>> CountDistinctDates()
+        {
+            List<OrderEntry> orderlist = await _context.OrderEntries.OrderBy(e => e.orderDate).ToListAsync();
+
+            var date = "0";
+            var index = -1;
+
+            List<OrderDateResponse> response = new List<OrderDateResponse>();
+
+            foreach (OrderEntry entry in orderlist)
+            {
+                if (entry.orderDate.ToString().Remove(10) == date)
+                {
+                    response[index].value++;
+                }
+                else
+                {
+                    response.Add(new OrderDateResponse() { day = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM-dd"), value = 1 });
+                    date = entry.orderDate.ToString().Remove(10);
+                    index++;
+                }
+            }
+
+            return response;
+        }
+
+        // Returns the number of individual orders (with different orderID) by month
+        [HttpGet("month-count")]
+        public async Task<ActionResult<IEnumerable<MonthValueResponse>>> CountDistinctMonths()
+        {
+            List<OrderEntry> orderlist = await _context.OrderEntries.OrderByDescending(e => e.orderDate).ThenBy(e => e.orderID).ToListAsync();
+
+            var date = "0";
+            var orderID = 0;
+            var index = -1;
+
+            List<MonthValueResponse> response = new List<MonthValueResponse>();
+
+            foreach (OrderEntry entry in orderlist)
+            {
+                if (Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM") == date)
+                {
+                    if (entry.orderID != orderID)
+                    {
+                        response[index].value++;
+                        orderID = entry.orderID ?? 0;
+                    }
+                }
+                else
+                {
+                    response.Add(new MonthValueResponse() { month = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM"), value = 1 });
+                    date = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM");
+                    orderID = entry.orderID ?? 0;
+                    index++;
+                }
+            }
+
+            return response;
+        }
+
+        //// Alternative concept for the above method; potential later use
+        //[HttpGet("new-month-count")]
+        //public async Task<ActionResult<IDictionary<string, int>>> CountDistinctMonthsNew()
+        //{
+        //    List<OrderEntry> orderlist = await _context.OrderEntries.OrderByDescending(e => e.orderDate).ThenBy(e => e.orderID).ToListAsync();
+
+        //    var date = "0";
+        //    var orderID = 0;
+
+        //    Dictionary<string, int> response = new Dictionary<string, int>();
+
+        //    foreach (OrderEntry entry in orderlist)
+        //    {
+        //        date = Convert.ToDateTime(entry.orderDate).ToString("yyyy-MM");
+        //        if (response.ContainsKey(date))
+        //        {
+        //            if (entry.orderID != orderID)
+        //            {
+        //                response[date]++;
+        //                orderID = entry.orderID ?? 0;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            orderID = entry.orderID ?? 0;
+        //            response.Add(date, 1);
+        //        }
+        //    }
+
+        //    return response;
+        //}
+
+        // Returns a list of all months stored in the database
+        // TODO: Add possibility to return other periods (days, years)
+        [HttpGet("dates")]
+        public async Task<ActionResult<IEnumerable<string>>> GetAllDates()
+        {
+            List<DateTime?> orderlist = await _context.OrderEntries.OrderByDescending(e => e.orderDate).Select(e => e.orderDate).ToListAsync();
+
+            var date = "0";
+
+            List<string> response = new List<string>();
+
+            foreach (DateTime entry in orderlist)
+            {
+                if (Convert.ToDateTime(entry).ToString("yyyy-MM") != date)
+                {
+                    response.Add(Convert.ToDateTime(entry).ToString("yyyy-MM"));
+                    date = Convert.ToDateTime(entry).ToString("yyyy-MM");
+                }
+            }
+
+            return response;
+        }
+
+        // Exports the OrderEntries table as an Excel file
+        // TODO: Add functionality to export with active filters
+        [HttpGet("export")]
+        public async Task<IActionResult> ExportOrderEntriesToExcel()
+        {
+            try
+            {
+                List<OrderEntry> sheet = await _context.OrderEntries.OrderBy(e => e.cbhSampleID + 0).ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "OrderEntries.xlsx");
+
+                return fr;
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
+        }
+
         //-------------------------------------------------------------FILTER----------------------------------------------------------------------//
+        // Creates and executes custom SQL query based on inputted filters and sorting
+        // TODO: Add Possibility to return only specified columns
         [HttpPost("filter/{relation}/{sort}/{cols}")]
         public async Task<ActionResult<IEnumerable<OrderEntry>>> FilterEntries([FromBody] string[][] filters, [FromRoute] bool relation, string sort, string cols)
         {

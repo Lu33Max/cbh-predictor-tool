@@ -19,6 +19,7 @@ namespace CBHPredictorWebAPI.Controllers
             _context = context;
         }
 
+        // Converts input month string to number
         private string ConvertEnum(Month _month)
         {
             int temp = Array.IndexOf(Enum.GetValues(_month.GetType()), _month) + 1;
@@ -32,25 +33,170 @@ namespace CBHPredictorWebAPI.Controllers
             return month;
         }
 
+        // Reads all Data from the Input Table and writes it to the BingSearchTerms Table
+        [HttpPost]
+        [Route("/BingTable/{_month}/{_year}")]
+        public async Task<string> BingSearchTermsImport(IFormFile file, Month _month, int _year)
+        {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            // Opens a new stream
+            using (var stream = new MemoryStream())
+            {
+                // Copies the file to the stream
+                await file.CopyToAsync(stream);
+
+                using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    // Converts the input file to a dataset
+                    DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    {
+                        ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
+                    });
+
+                    // Creates the date property of all new input values
+                    string month = ConvertEnum(_month);
+                    string _date = _year.ToString() + "-" + month;
+
+                    // Deletes all old entries with that date to avoid duplicates
+                    await _context.BingSearchTerms.Where(e => e.date == _date).ExecuteDeleteAsync();
+                    await _context.SaveChangesAsync();
+
+                    // Tests wether the input table is an original CBH table or a table created by the tool depending on the content of the first header cell
+                    if (result.Tables[0].Columns[0].ToString().Equals("Search term"))
+                    {
+                        foreach (DataRow row in result.Tables[0].Rows)
+                        {
+                            BingSearchTerm searchTerm = new BingSearchTerm()
+                            {
+                                id = Guid.NewGuid(),
+                                terms = ConvertToString(row["Search term"]),
+                                impressions = ConvertToInt(row["Impr."]),
+                                clicks = ConvertToInt(row["Clicks"]),
+                                date = _date
+                            };
+
+                            _context.Add(searchTerm);
+                        }
+                    }
+                    // The same as above but for tool-created tables
+                    else
+                    {
+                        foreach (DataRow row in result.Tables[0].Rows)
+                        {
+                            BingSearchTerm searchTerm = new BingSearchTerm()
+                            {
+                                id = Guid.NewGuid(),
+                                terms = ConvertToString(row["terms"]),
+                                impressions = ConvertToInt(row["impressions"]),
+                                clicks = ConvertToInt(row["clicks"]),
+                                date = ConvertToString(row["date"]) ?? _date
+                            };
+
+                            _context.Add(searchTerm);
+                        }
+                    }
+                }
+            }
+            await _context.SaveChangesAsync();
+            return "{\"success\":1}";
+        }
+
+        // Reads all Data from the Input Table and writes it to the GoogleSearchTerms Table
+        [HttpPost]
+        [Route("/GoogleTable/{_month}/{_year}")]
+        public async Task<string> GoogleSearchTermsImport(IFormFile file, Month _month, int _year)
+        {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            // Opens new stream
+            using (var stream = new MemoryStream())
+            {
+                // Copies file to stream
+                await file.CopyToAsync(stream);
+
+                using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    // Converts the input file to a dataset
+                    DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    {
+                        ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
+                    });
+
+                    // Creates the date property of all new input values
+                    string month = ConvertEnum(_month);
+                    string _date = _year.ToString() + "-" + month;
+
+                    // Deletes all old entries with that date to avoid duplicates
+                    await _context.GoogleSearchTerms.Where(e => e.date== _date).ExecuteDeleteAsync();
+                    await _context.SaveChangesAsync();
+
+                    // Tests wether the input table is an original CBH table or a table created by the tool depending on the content of the first header cell
+                    if (result.Tables[0].Columns[0].ToString().Equals("Terms"))
+                    {
+                        // Goes through the dataset row-by-row and creates a new entry in the database
+                        foreach (DataRow row in result.Tables[0].Rows)
+                        {
+                            GoogleSearchTerm term = new GoogleSearchTerm()
+                            {
+                                id = Guid.NewGuid(),
+                                terms = ConvertToString(row["Terms"]),
+                                impressions = ConvertToInt(row["Impressions"]),
+                                clicks = ConvertToInt(row["Clicks"]),
+                                date = _date
+                            };
+
+                            _context.Add(term);
+                        }
+                    }
+                    // The same as above but for tool-created tables
+                    else
+                    {
+                        foreach (DataRow row in result.Tables[0].Rows)
+                        {
+                            GoogleSearchTerm order = new GoogleSearchTerm()
+                            {
+                                id = Guid.NewGuid(),
+                                terms = ConvertToString(row["terms"]),
+                                impressions = ConvertToInt(row["impressions"]),
+                                clicks = ConvertToInt(row["clicks"]),
+                                date = ConvertToString(row["date"]) ?? _date
+                            };
+
+                            _context.Add(order);
+                        }
+                    }
+                }
+            }
+            await _context.SaveChangesAsync();
+            return "{\"success\":1}";
+        }
+
         // Reads all Data from the Input Table and writes it to the LeadEntries Table
         [HttpPost]
         [Route("/LeadTable")]
         public async Task<string> LeadImport(IFormFile file)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            // Opens new stream
             using (var stream = new MemoryStream())
             {
+                // Copies file to stream
                 await file.CopyToAsync(stream);
 
                 using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
                 {
+                    // Converts the input file to a dataset
                     DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
                     {
                         ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
                     });
 
+                    // Tests wether the input table is an original CBH table or a table created by the tool depending on the content of the first header cell
                     if (result.Tables[0].Columns[0].ToString().Equals("leadid"))
                     {
+                        // Goes through the dataset row-by-row and creates a new entry in the database if no other entry with the same leadID already exists
                         foreach (DataRow row in result.Tables[0].Rows)
                         {
                             if (!_context.LeadEntries.Any(e => e.leadID == ConvertToInt(row["leadid"])))
@@ -77,6 +223,7 @@ namespace CBHPredictorWebAPI.Controllers
                             }
                         }
                     }
+                    // The same as above but for tool-created tables
                     else
                     {
                         foreach (DataRow row in result.Tables[0].Rows)
@@ -118,19 +265,25 @@ namespace CBHPredictorWebAPI.Controllers
         public async Task<string> OrderImport(IFormFile file)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            // Opens new stream
             using (var stream = new MemoryStream())
             {
+                // Copies file to stream
                 await file.CopyToAsync(stream);
 
                 using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
                 {
+                    // Converts the input file to a dataset
                     DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
                     {
                         ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
                     });
 
+                    // Tests wether the input table is an original CBH table or a table created by the tool depending on the content of the first header cell
                     if (result.Tables[0].Columns[0].ToString().Equals("customerid"))
                     {
+                        // Goes through the dataset row-by-row and creates a new entry in the database if no other entry with the same Sample ID already exists
                         foreach (DataRow row in result.Tables[0].Rows)
                         {
                             if (!_context.OrderEntries.Any(e => e.cbhSampleID == ConvertToString(row["CBH_sample_id"])))
@@ -174,6 +327,7 @@ namespace CBHPredictorWebAPI.Controllers
                             }
                         }
                     }
+                    // The same as above but for tool-created tables
                     else
                     {
                         foreach (DataRow row in result.Tables[0].Rows)
@@ -226,193 +380,7 @@ namespace CBHPredictorWebAPI.Controllers
             return "{\"success\":1}";
         }
 
-        [HttpPost]
-        [Route("/GoogleTable/{_month}/{_year}")]
-        public async Task<string> GoogleSearchTermsImport(IFormFile file, Month _month, int _year)
-        {
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            using (var stream = new MemoryStream())
-            {
-                await file.CopyToAsync(stream);
-
-                using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
-                {
-                    DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
-                    {
-                        ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
-                    });
-
-                    string month = ConvertEnum(_month);
-                    string _date = _year.ToString() + "-" + month;
-
-                    string delcmd = "SELECT * FROM GoogleSearchTerms WHERE date = {0}";
-                    await _context.GoogleSearchTerms.FromSqlRaw(delcmd, _date).ExecuteDeleteAsync();
-
-                    await _context.SaveChangesAsync();
-
-                    if (result.Tables[0].Columns[0].ToString().Equals("Terms"))
-                    {
-                        foreach (DataRow row in result.Tables[0].Rows)
-                        {
-                            if (_context.GoogleSearchTerms.Where(e => (e.terms == ConvertToString(row["Terms"])) && (e.date == _date)).Any())
-                            {
-                                string command = "SELECT * FROM GoogleSearchTerms WHERE terms = {0} AND date = {1}";
-                                GoogleSearchTerm? tempTerm = await _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _date).FirstOrDefaultAsync();
-                                _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["Terms"]), _date).ExecuteDelete();
-
-                                tempTerm.impressions += ConvertToInt(row["Impressions"]);
-                                tempTerm.clicks += ConvertToInt(row["Clicks"]);
-
-                                _context.Add(tempTerm);
-                                await _context.SaveChangesAsync();
-                            }
-                            else
-                            {
-                                GoogleSearchTerm order = new GoogleSearchTerm()
-                                {
-                                    id = Guid.NewGuid(),
-                                    terms = ConvertToString(row["Terms"]),
-                                    impressions = ConvertToInt(row["Impressions"]),
-                                    clicks = ConvertToInt(row["Clicks"]),
-                                    date = _date
-                                };
-
-                                _context.Add(order);
-                                await _context.SaveChangesAsync();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach (DataRow row in result.Tables[0].Rows)
-                        {
-                            if (_context.GoogleSearchTerms.Where(e => (e.terms == ConvertToString(row["terms"])) && (e.date == _date)).Any())
-                            {
-                                string command = "SELECT * FROM GoogleSearchTerms WHERE terms = {0} AND date = {1}";
-                                GoogleSearchTerm? tempTerm = await _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["terms"]), _date).FirstOrDefaultAsync();
-                                _context.GoogleSearchTerms.FromSqlRaw(command, ConvertToString(row["terms"]), _date).ExecuteDelete();
-
-                                tempTerm.impressions += ConvertToInt(row["impressions"]);
-                                tempTerm.clicks += ConvertToInt(row["clicks"]);
-
-                                _context.Add(tempTerm);
-                                await _context.SaveChangesAsync();
-                            }
-                            else
-                            {
-                                GoogleSearchTerm order = new GoogleSearchTerm()
-                                {
-                                    id = Guid.NewGuid(),
-                                    terms = ConvertToString(row["terms"]),
-                                    impressions = ConvertToInt(row["impressions"]),
-                                    clicks = ConvertToInt(row["clicks"]),
-                                    date = _date
-                                };
-
-                                _context.Add(order);
-                                await _context.SaveChangesAsync();
-                            }
-                        }
-                    }
-                }
-            }
-            return "{\"success\":1}";
-        }
-
-        [HttpPost]
-        [Route("/BingTable/{_month}/{_year}")]
-        public async Task<string> BingSearchTermsImport(IFormFile file, Month _month, int _year)
-        {
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            using (var stream = new MemoryStream())
-            {
-                await file.CopyToAsync(stream);
-
-                using (IExcelDataReader reader = ExcelReaderFactory.CreateReader(stream))
-                {
-                    DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
-                    {
-                        ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
-                    });
-
-                    string month = ConvertEnum(_month);
-                    string _date = _year.ToString() + "-" + month;
-
-                    string delcmd = "SELECT * FROM BingSearchTerms WHERE date = {0}";
-                    await _context.BingSearchTerms.FromSqlRaw(delcmd, _date).ExecuteDeleteAsync();
-
-                    await _context.SaveChangesAsync();
-
-                    if (result.Tables[0].Columns[0].ToString().Equals("Search term"))
-                    {
-                        foreach (DataRow row in result.Tables[0].Rows)
-                        {
-                            if (_context.BingSearchTerms.Where(e => (e.terms == ConvertToString(row["Search term"])) && (e.date == _date)).Any())
-                            {
-                                string command = "SELECT * FROM BingSearchTerms WHERE terms = {0} AND date = {1}";
-                                BingSearchTerm? tempTerm = await _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _date).FirstOrDefaultAsync();
-                                _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["Search term"]), _date).ExecuteDelete();
-
-                                tempTerm.impressions += ConvertToInt(row["Impr."]);
-                                tempTerm.clicks += ConvertToInt(row["Clicks"]);
-
-                                _context.Add(tempTerm);
-                                await _context.SaveChangesAsync();
-                            }
-                            else
-                            {
-                                BingSearchTerm searchTerm = new BingSearchTerm()
-                                {
-                                    id = Guid.NewGuid(),
-                                    terms = ConvertToString(row["Search term"]),
-                                    impressions = ConvertToInt(row["Impr."]),
-                                    clicks = ConvertToInt(row["Clicks"]),
-                                    date = _date
-                                };
-
-                                _context.Add(searchTerm);
-                                await _context.SaveChangesAsync();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach (DataRow row in result.Tables[0].Rows)
-                        {
-                            if (_context.BingSearchTerms.Where(e => (e.terms == ConvertToString(row["terms"])) && (e.date == _date)).Any())
-                            {
-                                string command = "SELECT * FROM BingSearchTerms WHERE terms = {0} AND date = {1}";
-                                BingSearchTerm? tempTerm = await _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["terms"]), _date).FirstOrDefaultAsync();
-                                _context.BingSearchTerms.FromSqlRaw(command, ConvertToString(row["terms"]), _date).ExecuteDelete();
-
-                                tempTerm.impressions += ConvertToInt(row["impressions"]);
-                                tempTerm.clicks += ConvertToInt(row["clicks"]);
-
-                                _context.Add(tempTerm);
-                                await _context.SaveChangesAsync();
-                            }
-                            else
-                            {
-                                BingSearchTerm searchTerm = new BingSearchTerm()
-                                {
-                                    id = Guid.NewGuid(),
-                                    terms = ConvertToString(row["terms"]),
-                                    impressions = ConvertToInt(row["impressions"]),
-                                    clicks = ConvertToInt(row["clicks"]),
-                                    date = _date
-                                };
-
-                                _context.Add(searchTerm);
-                                await _context.SaveChangesAsync();
-                            }
-                        }
-                    }
-                }
-            }
-            await _context.SaveChangesAsync();
-            return "{\"success\":1}";
-        }
-
+        //-------------------------------------------------------------UTILITY---------------------------------------------------------------------//
         //// Converter Functions // Check for Null Values
         private static int? ConvertToInt(object obj)
         {

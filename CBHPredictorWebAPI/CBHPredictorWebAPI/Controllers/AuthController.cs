@@ -18,21 +18,28 @@ namespace CBHPredictorWebAPI.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
-
+      
+        // Authenticates the user
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserModel userModel)
         {
+            // Checks the input fpr null values
             if (userModel.UserName is null || userModel.Password is null)
             {
                 return BadRequest("Invalid client request");
             }
 
+            // Encodes both username and password
             userModel.UserName = Encode(userModel.UserName);
             userModel.Password = Encode(userModel.Password);
 
+            // Searches the Database for the given user
             var user = _context.UserModels.FirstOrDefault(u => (u.UserName == userModel.UserName) && (u.Password == userModel.Password));
+
+            // Returns an unauthorized response if the user doesn't exist
             if (user == null) return Unauthorized();
 
+            // Creates new access and refresh tokens and returns them
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, userModel.UserName),
@@ -52,11 +59,6 @@ namespace CBHPredictorWebAPI.Controllers
                 Token = accessToken,
                 RefreshToken = refreshToken
             });
-        }
-
-        [HttpGet("encode")]
-        public string GetEncoded(string value) { 
-            return Encode(value);
         }
 
         private string Encode(string value)

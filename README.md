@@ -13,7 +13,7 @@
 		- Terminal *muss* geöffnet bleiben
 		- Website sollte geöffnet bleiben > Änderungen im Code werden in Echtzeit ausgeführt
 
-## Quickfixes Aka. "Ich hab gepullt und nichts funktioniert mehr"
+## Quickfixes
 
 Grundsätzlich gibt es zwei Arten von potenziellen Fehlern:
 

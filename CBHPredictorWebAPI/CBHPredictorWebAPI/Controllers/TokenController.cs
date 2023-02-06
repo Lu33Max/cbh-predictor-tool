@@ -16,14 +16,16 @@ namespace CBHPredictorWebAPI.Controllers
         private readonly ITokenService _tokenService;
         public TokenController(CBHDBContext userContext, ITokenService tokenService)
         {
-            this._context = userContext ?? throw new ArgumentNullException(nameof(userContext));
-            this._tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+            _context = userContext ?? throw new ArgumentNullException(nameof(userContext));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
+        // Refreshes the access token
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody]TokenApiModel tokenApiModel)
         {
-            if (tokenApiModel is null)
+            // Checks for null input
+            if (tokenApiModel.AccessToken == null || tokenApiModel.RefreshToken == null)
             {
                 return BadRequest("Invalid client request");
             }
@@ -31,17 +33,19 @@ namespace CBHPredictorWebAPI.Controllers
             string accessToken = tokenApiModel.AccessToken;
             string refreshToken = tokenApiModel.RefreshToken;
 
+            // Gets information stored in old access token
             var principal = _tokenService.GetPrincipalFromExpiredToken(accessToken);
             var username = principal.Identity.Name;
 
+            // Searches for user in database
             var user = await _context.UserModels.SingleOrDefaultAsync(u => u.UserName == username);
 
+            // Checks if the user exists, the refresh token is equal to the refresh token assigned to that user and the refresh token is not expired
             if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
                 return BadRequest("Invalid client request");
 
+            // Creates a new access token based on all prior claims and returns it
             var newAccessToken = _tokenService.GenerateAccessToken(principal.Claims);
-
-            await _context.SaveChangesAsync();
 
             return Ok(new AuthenticatedResponse()
             {
@@ -50,6 +54,8 @@ namespace CBHPredictorWebAPI.Controllers
             });
         }
 
+        // CURRENTLY NOT IN USE
+        // Revokes the refresh token of the user
         [HttpPost, Authorize]
         [Route("revoke")]
         public async Task<IActionResult> Revoke()
