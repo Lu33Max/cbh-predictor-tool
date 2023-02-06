@@ -56,11 +56,11 @@ const HomeScreen = () => {
     useEffect(() => {
         if(cycle){
             const interval = setInterval(() => {
-                console.log(dateIndex)
                 dateIndex++
-                if(dateIndex >= dates.length){
+                
+                if(dateIndex >= dates.length)
                     dateIndex = 0
-                }
+                
                 setActiveDate(dateIndex)
             }, 10000);
             return () => {

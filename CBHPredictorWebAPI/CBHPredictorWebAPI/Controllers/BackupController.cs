@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using System.Data.SqlTypes;
-using System.Drawing;
 
 namespace CBHPredictorWebAPI.Controllers
 {
@@ -13,55 +11,56 @@ namespace CBHPredictorWebAPI.Controllers
     [ApiController]
     public class BackupController : Controller
     {
+        // CURRENTLY NOT USED
+        // Saves a backup of the current database status on the users system
         [HttpGet]
-        public async Task<String> CreateBackup()
+        public async Task<string> CreateBackup()
         {
             //Create the object of SqlConnection class to connect with database sql server
-            using (SqlConnection conn = new SqlConnection())
+            using (SqlConnection conn = new())
             {
-                String backupDestination = "C:/backups/";
+                // Creates the directory to save the backup in
+                string backupDestination = "C:/backups/";
 
                 if (!Directory.Exists(backupDestination))
                 {
                     Directory.CreateDirectory(backupDestination);
                 }
 
-                //prepare connection string
                 conn.ConnectionString = "server =(local); database=CBHDB; Trusted_Connection=True; TrustServerCertificate=True;";
 
                 try
                 {
-                    //Prepare SQL command that we want to query
+                    // Setup of the SQL query
                     SqlCommand cmd = new SqlCommand();
                     cmd.CommandType = CommandType.Text;
-                    // cmd.CommandText = "SELECT * FROM MYTABLE";
+
                     cmd.CommandText = "BACKUP DATABASE CBHDB TO DISK = 'C:/backups/CBHDB" + DateTime.Now.ToString("yyyy-MM-dd@HH_mm") + ".bak';";
                     cmd.Connection = conn;
 
-                    // open database connection.
+                    // Opens connection to the SQL server
                     conn.Open();
 
-                    Console.WriteLine("Connection Open!");
-
-                    //Execute the query 
+                    // Executes the query
                     SqlDataReader sdr = cmd.ExecuteReader();
 
-                    ////Retrieve data from table and Display result
+                    // Retrieve data from table and Display result
                     while (sdr.Read())
                     {
                         int id = (int)sdr["id"];
                         Console.WriteLine(id);
                     }
+
                     //Close the connection
                     conn.Close();
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Can not open connection!");
+                    Console.WriteLine(ex.Message);
 
                 }
             }
-            return "Success";
+            return "{\"success\":1}";
         }
     }
 }

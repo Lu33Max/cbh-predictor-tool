@@ -13,24 +13,21 @@ namespace CBHPredictorWebAPI.Controllers
     public class LeadEntriesController : ControllerBase
     {
         private readonly CBHDBContext _context;
-        public enum LeadColumns { leadID, leadNo, leadStatus, leadDate, organisationID, countryID, channel, fieldOfInterest, specificOfInterest, paramOfInterest, diagnosisOfInterest, matrixOfInterest, quantityOfInterest }
-        public enum order { ascending, descending }
 
         public LeadEntriesController(CBHDBContext context)
         {
             _context = context;
         }
 
-        // GET: api/LeadEntries
-        // Gets all Entries in the LeadEntries Table
+        //------------------------------------------------------------BASIC-CRUD---------------------------------------------------------------------//
+        // Returns all Entries in the LeadEntries table
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeadEntry>>> GetLeadEntries()
         {
             return await _context.LeadEntries.OrderBy(e => e.leadDate).ToListAsync();
         }
 
-        // GET: api/LeadEntries/5
-        // Gets one specific Entry in the LeadEntries Table by ID
+        // Returns one specific Entry in the LeadEntries table by ID
         [HttpGet("{id}")]
         public async Task<ActionResult<LeadEntry>> GetLeadEntry([FromRoute]Guid id)
         {
@@ -44,50 +41,7 @@ namespace CBHPredictorWebAPI.Controllers
             return leadEntry;
         }
 
-        [HttpGet("count")]
-        public async Task<int> CountRows()
-        {
-            return await _context.LeadEntries.CountAsync();
-        }
-
-        [HttpGet("dates")]
-        public async Task<ActionResult<IEnumerable<string>>> GetAllDates()
-        {
-            List<DateTime?> leadlist = await _context.LeadEntries.OrderByDescending(e => e.leadDate).Select(e => e.leadDate).ToListAsync();
-
-            var date = "0";
-
-            List<string> response = new List<string>();
-
-            foreach (DateTime entry in leadlist)
-            {
-                if (Convert.ToDateTime(entry).ToString("yyyy-MM") != date)
-                {
-                    response.Add(Convert.ToDateTime(entry).ToString("yyyy-MM"));
-                    date = Convert.ToDateTime(entry).ToString("yyyy-MM");
-                }
-            }
-
-            return response;
-        }
-
-        [HttpGet("ExportToExcel")]
-        public async Task<IActionResult> ExportLeadEntriesToExcel()
-        {
-            try
-            {
-                List<LeadEntry> sheet = await _context.LeadEntries.OrderBy(e => e.leadID).ToListAsync();
-                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "LeadEntries.xlsx");
-                return fr;
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult(ex);
-            }
-        }
-
-        // PUT: api/LeadEntries/5
-        // Edits one specific Entry in the LeadEntries Table by ID
+        // Edits one specific Entry in the LeadEntries table by ID
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLeadEntry(Guid id, LeadEntry leadEntry)
         {
@@ -118,8 +72,7 @@ namespace CBHPredictorWebAPI.Controllers
             return Ok(leadEntry);
         }
 
-        // POST: api/LeadEntries
-        // Adds one Entry to the LeadEntries Table
+        // Adds one Entry to the LeadEntries table
         [HttpPost]
         public async Task<ActionResult<LeadEntry>> PostLeadEntry(LeadEntry leadEntry)
         {
@@ -129,7 +82,7 @@ namespace CBHPredictorWebAPI.Controllers
                 leadEntry.lastEdited = DateTime.Now;
                 await _context.LeadEntries.AddAsync(leadEntry);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction("GetLeadEntry", new { id = leadEntry.id }, leadEntry);
+                return CreatedAtAction("GetLeadEntry", new { leadEntry.id }, leadEntry);
             }
             else
             {
@@ -137,8 +90,7 @@ namespace CBHPredictorWebAPI.Controllers
             }
         }
 
-        // DELETE: api/LeadEntries/5
-        // Deletes one specific Entry in the LeadEntries Table by ID
+        // Deletes one specific Entry in the LeadEntries table by ID
         [HttpDelete("{id}")]
         public async Task<string> DeleteLeadEntry(Guid id)
         {
@@ -147,8 +99,7 @@ namespace CBHPredictorWebAPI.Controllers
             return "{\"success\":1}";
         }
 
-        // DELETE: api/LeadEntries
-        // Deletes all Entries in the LeadEntries Table
+        // Deletes all Entries in the LeadEntries table
         [HttpDelete]
         public async Task<string> DeleteLeadEntries()
         {
@@ -157,7 +108,57 @@ namespace CBHPredictorWebAPI.Controllers
             return "{\"success\":1}";
         }
 
+        //---------------------------------------------------------SPECIFIC-OPERATIONS------------------------------------------------------------------//
+        // Returns the number of all entries in the LeadEntries table
+        [HttpGet("count")]
+        public async Task<int> CountRows()
+        {
+            return await _context.LeadEntries.CountAsync();
+        }
+
+        // Returns a list of all months stored in the database
+        // TODO: Add possibility to return other periods (days, years)
+        [HttpGet("dates")]
+        public async Task<ActionResult<IEnumerable<string>>> GetAllDates()
+        {
+            List<DateTime?> leadlist = await _context.LeadEntries.OrderByDescending(e => e.leadDate).Select(e => e.leadDate).ToListAsync();
+
+            var date = "0";
+
+            List<string> response = new List<string>();
+
+            foreach (DateTime entry in leadlist)
+            {
+                if (Convert.ToDateTime(entry).ToString("yyyy-MM") != date)
+                {
+                    response.Add(Convert.ToDateTime(entry).ToString("yyyy-MM"));
+                    date = Convert.ToDateTime(entry).ToString("yyyy-MM");
+                }
+            }
+
+            return response;
+        }
+
+        // Exports the LeadEntries table as an Excel file
+        // TODO: Add functionality to export with active filters
+        [HttpGet("export")]
+        public async Task<IActionResult> ExportLeadEntriesToExcel()
+        {
+            try
+            {
+                List<LeadEntry> sheet = await _context.LeadEntries.OrderBy(e => e.leadID).ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "LeadEntries.xlsx");
+                return fr;
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
+        }
+
         //-------------------------------------------------------------FILTER----------------------------------------------------------------------//
+        // Creates and executes custom SQL query based on inputted filters and sorting
+        // TODO: Add Possibility to return only specified columns
         [HttpPost("filter/{relation}/{sort}/{cols}")]
         public async Task<ActionResult<IEnumerable<LeadEntry>>> FilterEntries([FromBody] string[][] filters, [FromRoute] bool relation, string sort, string cols)
         {

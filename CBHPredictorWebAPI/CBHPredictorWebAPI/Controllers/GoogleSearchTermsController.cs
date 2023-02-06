@@ -13,24 +13,21 @@ namespace CBHPredictorWebAPI.Controllers
     public class GoogleSearchTermsController : ControllerBase
     {
         private readonly CBHDBContext _context;
-        public enum GSearchTerms { terms, impressions, clicks, date }
-        public enum order { ascending , descending }
 
         public GoogleSearchTermsController(CBHDBContext context)
         {
             _context = context;
         }
 
-        // GET: api/GoogleSearchTerms
-        // Gets all Entries in the GoogleSearchTerms Table
+        //------------------------------------------------------------BASIC-CRUD---------------------------------------------------------------------//
+        // Returns all entries in the BingSearchTerms table
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> GetSearchTerms()
         {
             return await _context.GoogleSearchTerms.OrderBy(e => e.date).ThenBy(e => e.terms).ToListAsync();
         }
 
-        // GET: api/GoogleSearchTerms/5
-        // Gets one specific Entry in the GoogleSearchTerms Table by ID
+        // Returns one specific entry in the BingSearchTerms table by ID
         [HttpGet("{id}")]
         public async Task<ActionResult<GoogleSearchTerm>> GetSearchTerm([FromRoute]Guid id)
         {
@@ -44,104 +41,7 @@ namespace CBHPredictorWebAPI.Controllers
             return searchTerm;
         }
 
-        [HttpGet("count")]
-        public async Task<int> CountRows()
-        {
-            return await _context.GoogleSearchTerms.CountAsync();
-        }
-
-        [HttpGet("impressions")]
-        public async Task<ActionResult<IEnumerable<MonthValueResponse>>> CountImpressions()
-        {
-            List<GoogleSearchTerm> termlist = await _context.GoogleSearchTerms.OrderByDescending(e => e.date).ToListAsync();
-
-            var date = "0";
-            var index = -1;
-            List<MonthValueResponse> response = new List<MonthValueResponse>();
-
-            foreach (GoogleSearchTerm term in termlist)
-            {
-                if (term.date == date)
-                {
-                    response[index].value += term.impressions;
-                }
-                else
-                {
-                    response.Add(new MonthValueResponse() { month = term.date, value = term.impressions });
-                    date = term.date;
-                    index++;
-                }
-            }
-
-            return response;
-        }
-
-        [HttpGet("clicks")]
-        public async Task<ActionResult<IEnumerable<MonthValueResponse>>> CountClicks()
-        {
-            List<GoogleSearchTerm> termlist = await _context.GoogleSearchTerms.OrderByDescending(e => e.date).ToListAsync();
-
-            var date = "0";
-            var index = -1;
-            List<MonthValueResponse> response = new List<MonthValueResponse>();
-
-            foreach (GoogleSearchTerm term in termlist)
-            {
-                if (term.date == date)
-                {
-                    response[index].value += term.clicks;
-                }
-                else
-                {
-                    response.Add(new MonthValueResponse() { month = term.date, value = term.clicks });
-                    date = term.date;
-                    index++;
-                }
-            }
-
-            return response;
-        }
-
-        [HttpGet("topterms")]
-        public async Task<ActionResult<IEnumerable<string>>> GetTopTerms()
-        {
-            List<string> top = await _context.GoogleSearchTerms.OrderBy(e => e.date).ThenByDescending(e => e.impressions).Take(2).Select(e => e.terms).ToListAsync();
-            return top;
-        }
-
-        [HttpGet("dates")]
-        public async Task<List<string>> GetAllDates()
-        {
-            List<GoogleSearchTerm> temp = await _context.GoogleSearchTerms.GroupBy(e => e.date).Select(e => e.First()).ToListAsync();
-            List<string> dates = new List<string>();
-
-            foreach (GoogleSearchTerm term in temp)
-            {
-                dates.Add(term.date);
-            }
-
-            dates.Reverse();
-
-            return dates;
-        }
-
-        [HttpGet("ExportToExcel")]
-        public async Task<IActionResult> ExportGTermsToExcel()
-        {
-            try
-            {
-                List<GoogleSearchTerm> sheet = await _context.GoogleSearchTerms.OrderBy(e => e.date).ThenBy(e => e.terms).ToListAsync();
-                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "GoogleSearchTerms.xlsx");
-                return fr;
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult(ex);
-            }
-        }
-
-        // PUT: api/GoogleSearchTerms/5
-        // Edits one specific Entry in the GoogleSearchTerms Table by ID
+        // Edits one specific entry in the GoogleSearchTerms table by ID
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSearchTerm([FromRoute]Guid id, GoogleSearchTerm googleSearchTerm)
         {
@@ -171,19 +71,17 @@ namespace CBHPredictorWebAPI.Controllers
             return Ok(googleSearchTerm);
         }
 
-        // POST: api/GoogleSearchTerms
-        // Adds one Entry to the GoogleSearchTerms Table
+        // Adds one entry to the GoogleSearchTerms table
         [HttpPost]
         public async Task<ActionResult<GoogleSearchTerm>> PostSearchTerm(GoogleSearchTerm googleSearchTerm)
         {
             googleSearchTerm.id = Guid.NewGuid();
             await _context.GoogleSearchTerms.AddAsync(googleSearchTerm);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetSearchTerm", new { id = googleSearchTerm.id }, googleSearchTerm);
+            return CreatedAtAction("GetSearchTerm", new { googleSearchTerm.id }, googleSearchTerm);
         }
 
-        // DELETE: api/GoogleSearchTerms/5
-        // Deletes one specific Entry in the GoogleSearchTerms Table by ID
+        // Deletes one specific entry in the GoogleSearchTerms table by ID
         [HttpDelete("{id}")]
         public async Task<string> DeleteSearchTerm(Guid id)
         {
@@ -192,8 +90,7 @@ namespace CBHPredictorWebAPI.Controllers
             return "{\"success\":1}";
         }
 
-        // DELETE: api/LeadEntries
-        // Deletes all Entries in the GoogleSearchTerms Table
+        // Deletes all entries in the GoogleSearchTerms table
         [HttpDelete]
         public async Task<string> DeleteSearchTerms()
         {
@@ -202,7 +99,116 @@ namespace CBHPredictorWebAPI.Controllers
             return "{\"success\":1}";
         }
 
+        //---------------------------------------------------------SPECIFIC-OPERATIONS------------------------------------------------------------------//
+        // Returns the number of all entries in the GoogleSearchTerms table
+        [HttpGet("count")]
+        public async Task<int> CountRows()
+        {
+            return await _context.GoogleSearchTerms.CountAsync();
+        }
+
+        // Returns a custom response consisting of all months and the number of impressions in each one
+        [HttpGet("impressions")]
+        public async Task<ActionResult<IEnumerable<MonthValueResponse>>> CountImpressions()
+        {
+            List<GoogleSearchTerm> termlist = await _context.GoogleSearchTerms.OrderByDescending(e => e.date).ToListAsync();
+
+            var date = "0";
+            var index = -1;
+
+            List<MonthValueResponse> response = new List<MonthValueResponse>();
+
+            foreach (GoogleSearchTerm term in termlist)
+            {
+                if (term.date == date)
+                {
+                    response[index].value += term.impressions;
+                }
+                else
+                {
+                    response.Add(new MonthValueResponse() { month = term.date, value = term.impressions });
+                    date = term.date;
+                    index++;
+                }
+            }
+
+            return response;
+        }
+
+        // Returns a custom response consisting of all months and the number of clicks in each one
+        // TODO: Combine with method above
+        [HttpGet("clicks")]
+        public async Task<ActionResult<IEnumerable<MonthValueResponse>>> CountClicks()
+        {
+            List<GoogleSearchTerm> termlist = await _context.GoogleSearchTerms.OrderByDescending(e => e.date).ToListAsync();
+
+            var date = "0";
+            var index = -1;
+
+            List<MonthValueResponse> response = new List<MonthValueResponse>();
+
+            foreach (GoogleSearchTerm term in termlist)
+            {
+                if (term.date == date)
+                {
+                    response[index].value += term.clicks;
+                }
+                else
+                {
+                    response.Add(new MonthValueResponse() { month = term.date, value = term.clicks });
+                    date = term.date;
+                    index++;
+                }
+            }
+
+            return response;
+        }
+
+        // Returns the two most searched terms of the latest month
+        // TODO: Switch between impressions and clicks
+        [HttpGet("topterms")]
+        public async Task<ActionResult<IEnumerable<string?>>> GetTopTerms()
+        {
+            List<string?> top = await _context.GoogleSearchTerms.OrderBy(e => e.date).ThenByDescending(e => e.impressions).Take(2).Select(e => e.terms).ToListAsync();
+            return top;
+        }
+
+        // Returns a list of all months stored in the database
+        [HttpGet("dates")]
+        public async Task<List<string>> GetAllDates()
+        {
+            List<GoogleSearchTerm> temp = await _context.GoogleSearchTerms.GroupBy(e => e.date).Select(e => e.First()).ToListAsync();
+            List<string> dates = new List<string>();
+
+            foreach (GoogleSearchTerm term in temp)
+            {
+                dates.Add(term.date);
+            }
+
+            dates.Reverse();
+            return dates;
+        }
+
+        // Exports the GoogleSearchTerms table as an Excel file
+        // TODO: Add functionality to export with active filters
+        [HttpGet("export")]
+        public async Task<IActionResult> ExportGTermsToExcel()
+        {
+            try
+            {
+                List<GoogleSearchTerm> sheet = await _context.GoogleSearchTerms.OrderBy(e => e.date).ThenBy(e => e.terms).ToListAsync();
+                FileStreamResult fr = ExportToExcel.CreateExcelFile.StreamExcelDocument(sheet, "GoogleSearchTerms.xlsx");
+                return fr;
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex);
+            }
+        }
+
         //-------------------------------------------------------------FILTER----------------------------------------------------------------------//
+        // Creates and executes custom SQL query based on inputted filters and sorting
+        // TODO: Add Possibility to return only specified columns
         [HttpPost("filter/{relation}/{sort}/{cols}")]
         public async Task<ActionResult<IEnumerable<GoogleSearchTerm>>> FilterEntries([FromBody] string[][] filters, [FromRoute] bool relation, string sort, string cols)
         {

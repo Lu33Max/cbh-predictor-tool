@@ -5,6 +5,7 @@ namespace CBHPredictorWebAPI.Data
 {
     public class CBHDBContext : DbContext
     {
+        // Defines the DBContext and all tables assigned to it
         public CBHDBContext(DbContextOptions<CBHDBContext> options) : base(options) {}
 
         public DbSet<OrderEntry> OrderEntries { get; set; }
@@ -13,6 +14,7 @@ namespace CBHPredictorWebAPI.Data
         public DbSet<BingSearchTerm> BingSearchTerms { get; set; }
         public DbSet<UserModel> UserModels { get; set; }
 
+        // Inserts a user into the database when it's created
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserModel>().HasData(new UserModel
