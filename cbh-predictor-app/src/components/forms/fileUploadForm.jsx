@@ -9,6 +9,8 @@ const FileUploadForm = (props) => {
     const [month, setMonth] = useState('Jan');
     const [year, setYear] = useState(2022);
 
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+
     const handleMonthChange = (e) => {
         setMonth(e.target.value);
     }
@@ -23,6 +25,23 @@ const FileUploadForm = (props) => {
 
 	async function handleSubmission(e) {
         e.preventDefault();
+
+        if(props.table === "Bing" || props.table === "Google"){
+            if(year < 2000 || year > 3000){
+                alert("Invalid year")
+                return
+            }
+
+            for(let i = 0; i < months.length; i++){
+                if(month.includes(months[i]))
+                    break
+
+                if(i === months.length -1){
+                    alert("Invalid month")
+                    return
+                }         
+            }
+        } 
 
 		const formData = new FormData();
         var url;
@@ -49,6 +68,9 @@ const FileUploadForm = (props) => {
         const result = await axiosApiInstance.post(url, formData)
         if(result.status === 200){
             props.onFileUploaded(true)
+        }
+        if(result.status === 500){
+            alert("Uploaded file not in the correct format")
         }
 	};
 

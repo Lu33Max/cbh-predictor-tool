@@ -103,9 +103,6 @@ namespace CBHPredictorWebAPI
             builder.Services.AddCors();
 
             var app = builder.Build();
-  
-            using (var context = app.Services.GetService<CBHDBContext>())
-                context.Database.Migrate();
 
             app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("Content-Disposition"));
 

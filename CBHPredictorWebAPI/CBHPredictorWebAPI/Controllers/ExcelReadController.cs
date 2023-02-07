@@ -12,7 +12,7 @@ namespace CBHPredictorWebAPI.Controllers
     public class ExcelReadController : ControllerBase
     {
         private readonly CBHDBContext _context;
-        public enum Month { Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec }
+        public string[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
         public ExcelReadController(CBHDBContext context)
         {
@@ -20,9 +20,11 @@ namespace CBHPredictorWebAPI.Controllers
         }
 
         // Converts input month string to number
-        private string ConvertEnum(Month _month)
+        private string ConvertEnum(string _month)
         {
-            int temp = Array.IndexOf(Enum.GetValues(_month.GetType()), _month) + 1;
+            _month = _month.Substring(0, 3);
+
+            int temp = Array.IndexOf(months, _month) + 1;
             string month = temp.ToString();
 
             if (temp <= 9)
@@ -36,7 +38,7 @@ namespace CBHPredictorWebAPI.Controllers
         // Reads all Data from the Input Table and writes it to the BingSearchTerms Table
         [HttpPost]
         [Route("/BingTable/{_month}/{_year}")]
-        public async Task<string> BingSearchTermsImport(IFormFile file, Month _month, int _year)
+        public async Task<string> BingSearchTermsImport(IFormFile file, string _month, int _year)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
@@ -105,7 +107,7 @@ namespace CBHPredictorWebAPI.Controllers
         // Reads all Data from the Input Table and writes it to the GoogleSearchTerms Table
         [HttpPost]
         [Route("/GoogleTable/{_month}/{_year}")]
-        public async Task<string> GoogleSearchTermsImport(IFormFile file, Month _month, int _year)
+        public async Task<string> GoogleSearchTermsImport(IFormFile file, string _month, int _year)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
